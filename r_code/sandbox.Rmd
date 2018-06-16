@@ -1,0 +1,341 @@
+---
+title: "DDS_Case_Study_1"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document:
+    df_print: paged
+---
+
+
+```{r setup}
+require(dplyr)
+require(tidyr)
+require(knitr)
+require(ggplot2)
+require(maps)
+require(RColorBrewer)
+
+```
+
+
+## Clean Breweries Data
+```{r}
+
+breweries_data <- read.csv("../data/Breweries.csv", header=TRUE)
+
+str(breweries_data)
+
+# confirm brew_id is a unique key
+# summary(breweries_data)
+# summarize breweries
+# breweries_summary <- 
+#   select(breweries_data, Brew_ID, City, State, Name) %>%
+#   group_by(Name) %>%
+#   summarize_all(funs(
+#     count = n_distinct(Brew_ID, City, State)
+#   )) %>%
+#   arrange(desc(Brew_ID_count))
+
+# remove punctionation from all columns and trim whitespace
+breweries_data <- as.data.frame(apply(breweries_data, 2, function(x) trimws(gsub('[[:punct:] ]+',' ',x))), stringsAsFactors = FALSE) 
+breweries_data$Name <- as.factor(breweries_data$Name)
+breweries_data$Brew_ID <- as.integer(breweries_data$Brew_ID)
+
+# confirm Brew_ID + City + State is a unique key
+breweries_summary <- 
+  select(breweries_data, Brew_ID, City, State, Name) %>%
+  group_by(Name) %>%
+  summarize_all(funs(
+    count = n_distinct(Brew_ID, City, State)
+  )) %>%
+  arrange(desc(Brew_ID_count))
+ 
+
+# capture potential duplicates
+breweries_dups <- filter(breweries_summary, Brew_ID_count > 1)
+
+# rejoin potential dups to original dataset
+breweries_dups <- select(breweries_dups %>% inner_join(breweries_data), -ends_with("_count"))
+
+
+# Fix Errors #
+
+# Fix Brew_ID=378, change City(Menominee -> Menominie) 
+breweries_dups <- breweries_dups %>%
+     mutate(City=replace(City, Brew_ID==378, "Menominie")) %>%
+     as.data.frame()
+
+# Fix Brew_ID=96, change State(MA -> MI)
+breweries_dups <- breweries_dups %>%
+     mutate(State=replace(State, Brew_ID==96, "MI")) %>%
+     as.data.frame()
+
+#capture known duplicates
+breweries_dups <- breweries_dups %>%
+                  group_by(Name, City, State) %>%
+                  filter(n()>1)
+
+
+#create surrogate key for duplicates
+breweries_sk <- breweries_dups %>%
+                    group_by(Name, City, State) %>%
+                    summarize_all(funs(
+                      Brew_SK = (sum(Brew_ID)*sum(Brew_ID)),
+                      count = n()
+                      )) %>% #end summarize_all
+                    ungroup() %>%
+                    right_join(breweries_dups) %>% #rejoin to dupes by name, city, state
+                    select(Brew_ID, Brew_SK)
+  
+
+breweries_data$Brew_ID[(breweries_data$Brew_ID %in% breweries_sk$Brew_ID)] <- breweries_sk$Brew_SK 
+
+
+
+breweries_clean <- distinct(breweries_data, Brew_ID, .keep_all = TRUE) %>% rename(Brewery_Name = Name)
+
+
+```
+
+
+## Clean Beer Data
+```{r}
+
+beer_data <- read.csv("../data/Beers.csv", header=TRUE)
+
+
+head(beer_data)
+
+
+beer_data$Brewery_id[(beer_data$Brewery_id %in% breweries_sk$Brew_ID)]  <- breweries_sk$Brew_SK #update brewery_ids
+
+
+beer_clean <- distinct(beer_data) %>% rename(Brew_ID = Brewery_id, Beer_Name = Name)
+
+
+
+```
+
+
+
+
+
+## Question 1
+```{r}
+
+state_ll <- read.csv("../data/state_coords.csv") %>% mutate(State = toupper(State)) %>% rename(state = State) %>% select(-Latitude, -Longitude)
+states <- map_data("state") %>%
+          mutate(region = toupper(region)) %>%
+          rename(state=region) %>%
+          select(long, lat, state, group)
+        
+states <- states %>%          
+          left_join(
+            states %>%
+            group_by(state) %>%
+            summarise_all(funs(n=n())) %>%
+            select(state, group_n) %>%
+            distinct(state, .keep_all = TRUE)
+          )
+          
+          
+
+
+
+breweries_by_state <- select(breweries_clean, Brew_ID, State) %>%
+  group_by(State) %>%
+  summarise_all(funs(Brewery_count = n())) 
+
+# state_ll %>%
+#   inner_join(states)
+
+ggplot(data = breweries_by_state %>%
+  inner_join(state_ll, by=c("State" = "Abbr")) %>%
+  inner_join(states)) +
+  geom_polygon(aes(x = long, y = lat, group=group, fill=Brewery_count), color = "black") + 
+  #geom_text(aes(x = long, y = lat, label = as.character(Brewery_count), color = "black")) +
+  coord_fixed(1.3) +
+  guides(alpha=FALSE)
+  # scale_fill_gradientn(colours = "black",
+  #                         breaks = c(2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50))
+
+
+
+summary(breweries_by_state)
+
+
+
+
+
+
+
+```
+
+
+## Question 2
+```{r}
+# merge beer and breweries
+merged_data <- breweries_clean %>%
+               full_join(beer_clean, by="Brew_ID")
+
+
+#TODO: Plot -> brews by brewery
+
+```
+
+
+
+
+## Question 3
+```{r}
+
+# Number of nulls in each column
+merged_data %>%
+  select_if(function(x) any(is.na(x))) %>% 
+  summarise_all(funs(sum(is.na(.))))
+
+#TODO: add plot?
+
+```
+
+
+## Question 4
+```{r } 
+#fig.width=11
+
+# compute median ABV and IBU by state
+
+
+merged_by_state <- select(merged_data, State, ABV, IBU) %>%
+                   group_by(State) %>%
+                   summarise_all(median)#funs(median(!is.na(.)))) #TODO: Double check this is calculating correctly
+
+merged_by_state$State <- as.factor(merged_by_state$State)  
+
+
+# vars <- rbind(merged_by_state %>% mutate(var="ABV") %>%rename(value=ABV) %>% select(State, var, value),
+#       merged_by_state %>% mutate(var="IBU") %>%rename(value=IBU) %>% select(State, var, value))
+# 
+# vars$value
+
+summary(merged_by_state)
+
+ggplot(merged_by_state, aes(x=State, y=ABV)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  ylim(0, .075) +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
+
+ggplot(merged_by_state, aes(x=State, y=IBU)) + #TODO: something is fishy with IBU
+  geom_bar(stat = "identity", position = "dodge") +
+  #ylim(0, .075) +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
+
+```
+
+
+
+## Question 5
+```{r}
+# max_abv <- max(merged_data$ABV, na.rm = TRUE)
+  
+
+ggplot(merged_data, aes(x=State , y=ABV)) +  #TODO: Make Pretty
+  geom_boxplot() +
+  #ylim(0, .075) +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
+ 
+ggplot(merged_data, aes(x=State , y=IBU)) +  #TODO: Make Pretty
+  geom_boxplot() +
+  #ylim(0, .075) +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
+ 
+max_abv <-  (select(merged_data, State, ABV) %>%
+                   group_by(State) %>%
+                   #filter(ABV == max(ABV)) %>%
+                   arrange(desc(ABV))  %>% #sort by ABV
+                   filter(row_number() == 1))[1,] #get first row
+          
+max_abv
+
+
+max_ibu <-  (select(merged_data, State, IBU) %>%
+                   group_by(State) %>%
+                   #filter(ABV == max(ABV)) %>%
+                   arrange(desc(IBU))  %>% #sort by ABV
+                   filter(row_number() == 1))[1,] #get first row
+          
+max_ibu
+
+
+
+```
+
+
+## Question 6
+```{r}
+
+#summaryize ABV
+
+# tidy_summary <- tidy(summary(merged_data$ABV)) #For some reason this line wont knit
+
+
+abv_stats <- as.data.frame(t(summary(merged_data$ABV))) %>% #summarize and transpose
+             rename("ABV"=Freq, Statistic=Var2) %>%
+             select(Statistic, ABV)
+
+abv_stats$ABV <- round(abv_stats$ABV, digits = 3)
+  
+
+abv_stats #TODO: Add IQR, stdev
+
+
+
+
+```
+
+
+## Question 7
+```{r }
+# fig.height=48
+#plot relationshiop of ABV and IBU
+
+#retreive linear model equation -- source(https://stackoverflow.com/questions/7549694/adding-regression-line-equation-and-r2-on-graph)
+lm_eqn = function(m) {
+
+  l <- list(a = format(coef(m)[1], digits = 2),
+      b = format(abs(coef(m)[2]), digits = 2),
+      r2 = format(summary(m)$r.squared, digits = 3));
+
+  if (coef(m)[2] >= 0)  {
+    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,l)
+  } else {
+    eq <- substitute(italic(y) == a - b %.% italic(x)*","~~italic(r)^2~"="~r2,l)    
+  }
+
+  as.character(as.expression(eq));                 
+}
+ggplot(beer_clean, aes(x=ABV, y=IBU)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  geom_text(aes(x = .02, y = 100, label = lm_eqn(lm(ABV ~ IBU ,beer_clean))), parse = TRUE, color = "red")
+
+# Yes, there is a positive relationship between ABV and IBU. #TODO:Add explanation
+
+
+```
+
+```{r}
+
+```
+
+
+
+
+
+
+
