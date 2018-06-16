@@ -2,9 +2,11 @@
 
 library(tidyverse)
 
+
+
 # read in data
-beers <- read.csv("Beers.csv", stringsAsFactors = FALSE)
-breweries <- read.csv("Breweries.csv", stringsAsFactors = FALSE)
+beers <- read.csv("data/Beers.csv", stringsAsFactors = FALSE)
+breweries <- read.csv("data/Breweries.csv", stringsAsFactors = FALSE)
 
 # calculate breweries by state
 breweries_by_state <- breweries %>% count(State) %>% arrange(desc(n))
