@@ -26,6 +26,7 @@ B) Purpose of the study              -> Matthew #2
 C-D) R Markdown/Presentation 
     - Code comments / descriptions   -> Samuel
     - R code to answer questions     -> Brock
+	- Input DDL Tables
     - R Markdown Formatting          -> Brock
     - Plots                          -> TBD
     - Presentation Formatting        -> Quinton
@@ -51,6 +52,14 @@ H) Be active -
 Github Link: https://github.com/la-mar/DDS_Case_Study_1 
 
 
+- 20min Presentation
+- Each person has to present some part of the presentation
+-
+
+Deliverables:
+- R Markdown
+- R Code
+- Presentation
 
 
 

@@ -291,7 +291,7 @@ abv_stats <- as.data.frame(t(summary(merged_data$ABV))) %>% #summarize and trans
 abv_stats$ABV <- round(abv_stats$ABV, digits = 3)
   
 
-abv_stats #TODO: Add IQR, stdev
+abv_stats #TODO: Add IQR, stdev    #TODO: Compare to quinton's summary
 
 
 
