@@ -15,16 +15,36 @@ require(knitr)
 require(ggplot2)
 require(maps)
 require(RColorBrewer)
+require(summarytools)
+```
+
+
+
+
+##Import Breweries Data
+```{r}
+
+
+#import breweries data
+breweries_data <- read.csv("../data/Breweries.csv", header=TRUE)
+
+
+
+freq(breweries_data$State, order = "freq")
+
+# breweries_by_state <- select(breweries_data, State, Brew_ID) %>% group_by(State) %>% summarize_all(funs(count=n())) %>% arrange(desc(count))
+
+#overview and summarize
 
 ```
+
+
 
 
 ## Clean Breweries Data
 ```{r}
 
-breweries_data <- read.csv("../data/Breweries.csv", header=TRUE)
-
-str(breweries_data)
+# str(breweries_data)
 
 # confirm brew_id is a unique key
 # summary(breweries_data)
@@ -96,6 +116,19 @@ breweries_data$Brew_ID[(breweries_data$Brew_ID %in% breweries_sk$Brew_ID)] <- br
 breweries_clean <- distinct(breweries_data, Brew_ID, .keep_all = TRUE) %>% rename(Brewery_Name = Name)
 
 
+
+```
+
+
+```{r}
+#Check for Outliers
+#Impute missing values
+
+summary(breweries_clean)
+
+
+
+
 ```
 
 
@@ -112,6 +145,8 @@ beer_data$Brewery_id[(beer_data$Brewery_id %in% breweries_sk$Brew_ID)]  <- brewe
 
 
 beer_clean <- distinct(beer_data) %>% rename(Brew_ID = Brewery_id, Beer_Name = Name)
+
+kable(as.data.frame(summarytools::descr(beer_clean)),digits = 2)
 
 
 
@@ -150,6 +185,21 @@ breweries_by_state <- select(breweries_clean, Brew_ID, State) %>%
 # state_ll %>%
 #   inner_join(states)
 
+
+
+kable(as.data.frame(summarytools::descr(breweries_by_state, transpose = TRUE)),digits = 2)
+
+freq(breweries_clean$State, order = "freq")
+
+
+
+
+
+```
+
+
+```{r}
+#map of breweries by state
 ggplot(data = breweries_by_state %>%
   inner_join(state_ll, by=c("State" = "Abbr")) %>%
   inner_join(states)) +
@@ -161,14 +211,18 @@ ggplot(data = breweries_by_state %>%
   #                         breaks = c(2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50))
 
 
-
-summary(breweries_by_state)
-
+```
 
 
-
-
-
+```{r fig.height=10}
+#barplot brewery data by state
+ggplot(breweries_by_state, aes(x=reorder(State, Brewery_count), y= Brewery_count)) +  #TODO: Make Pretty
+  geom_bar(stat="identity") +
+  ylim(0, 50) +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) +
+  scale_fill_hue(c=45, l=40, direction = -1) +
+  coord_flip()
 
 ```
 
@@ -221,13 +275,19 @@ merged_by_state$State <- as.factor(merged_by_state$State)
 
 summary(merged_by_state)
 
+kable(as.data.frame(summarytools::descr(beer_clean)),digits = 2)
+
+merged_by_state %>% na.omit(IBU)
+
+#MEDIAN
+
 ggplot(merged_by_state, aes(x=State, y=ABV)) +
   geom_bar(stat = "identity", position = "dodge") +
   ylim(0, .075) +
   theme(text = element_text(size=10),
         axis.text.x = element_text(angle=90, hjust=1)) 
 
-ggplot(merged_by_state, aes(x=State, y=IBU)) + #TODO: something is fishy with IBU
+ggplot((merged_by_state %>% na.omit()), aes(x=State, y=IBU)) + #TODO: something is fishy with IBU
   geom_bar(stat = "identity", position = "dodge") +
   #ylim(0, .075) +
   theme(text = element_text(size=10),

@@ -1,0 +1,35 @@
+---
+title: "sandbox2"
+author: "Brock Friedrich"
+date: "June 19, 2018"
+output: html_document
+---
+
+
+
+```{r setup}
+require(dplyr)
+require(tidyr)
+require(knitr)
+require(ggplot2)
+require(maps)
+require(RColorBrewer)
+require(summarytools)
+```
+
+##Import Breweries Data
+```{r}
+
+
+#import breweries data
+breweries_data <- read.csv("../data/Breweries.csv", header=TRUE)
+
+kable(as.data.frame(summarytools::descr(breweries_data)),digits = 2)
+
+view(freq(breweries_data$State, order = "freq"))
+
+breweries_by_state <- select(breweries_data, State, Brew_ID) %>% group_by(State) %>% summarize_all(funs(count=n())) %>% arrange(desc(count))
+
+#overview and summarize
+
+```
