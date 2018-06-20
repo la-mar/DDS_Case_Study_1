@@ -21,15 +21,57 @@ require(summarytools)
 ```{r}
 
 
-#import breweries data
-breweries_data <- read.csv("../data/Breweries.csv", header=TRUE)
+summary(breweries_data)
 
-kable(as.data.frame(summarytools::descr(breweries_data)),digits = 2)
+summary(beer_data)
 
-view(freq(breweries_data$State, order = "freq"))
 
-breweries_by_state <- select(breweries_data, State, Brew_ID) %>% group_by(State) %>% summarize_all(funs(count=n())) %>% arrange(desc(count))
+#(as.data.frame(summarytools::descr(breweries_data)),digits = 2)
 
-#overview and summarize
+#view(freq(breweries_data$State, order = "freq"))
+
+
 
 ```
+
+```{r fig.height=20, fig.width=30}
+
+beer_data %>% distinct(Style)
+
+
+notnull <- beer_data %>% filter(is.na(IBU)) %>% distinct(Style)
+
+
+isnull <- beer_data %>% filter(!is.na(IBU)) %>% distinct(Style, IBU) %>% arrange(Style)
+
+styles <- notnull %>% 
+          full_join(isnull, by = "Style") %>% arrange(Style)
+
+
+#styles %>% filter(!is.na(IBU))
+
+styles %>%
+  group_by(Style) %>%
+  summarise_all(funs(count=n(), min(IBU), max(IBU), mean(IBU), median(IBU), sd(IBU)))
+  #select_if(function(x) any(is.na(x))) %>%
+  #summarise_all(funs(sum(is.na(.))))
+
+ggplot(styles, aes(x=Style, y=IBU)) +
+    geom_boxplot() +
+    theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
