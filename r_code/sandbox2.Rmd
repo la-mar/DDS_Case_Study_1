@@ -34,6 +34,8 @@ summary(beer_data)
 
 ```
 
+
+## Impute IBU
 ```{r fig.height=20, fig.width=30}
 
 beer_data %>% distinct(Style)
@@ -42,17 +44,18 @@ beer_data %>% distinct(Style)
 notnull <- beer_data %>% filter(is.na(IBU)) %>% distinct(Style)
 
 
-isnull <- beer_data %>% filter(!is.na(IBU)) %>% distinct(Style, IBU) %>% arrange(Style)
+isnull <- beer_data %>% filter(!is.na(IBU)) %>% distinct(Style, IBU, ABV, Ounces) %>% arrange(Style)
 
 styles <- notnull %>% 
-          full_join(isnull, by = "Style") %>% arrange(Style)
+          full_join(isnull, by = "Style") %>% arrange(Style) #%>%
+          #mutate_each(funs(as.character), Style)
 
 
 #styles %>% filter(!is.na(IBU))
 
-styles %>%
-  group_by(Style) %>%
-  summarise_all(funs(count=n(), min(IBU), max(IBU), mean(IBU), median(IBU), sd(IBU)))
+x <- styles %>%
+  dplyr::group_by(Style) %>%
+  dplyr::summarize_each(funs(count=n(), min(IBU), max(IBU), mean(IBU), median(IBU), sd(IBU)))
   #select_if(function(x) any(is.na(x))) %>%
   #summarise_all(funs(sum(is.na(.))))
 
@@ -61,14 +64,82 @@ ggplot(styles, aes(x=Style, y=IBU)) +
     theme(text = element_text(size=10),
         axis.text.x = element_text(angle=90, hjust=1)) 
 
+ggplot(styles, aes(x=reorder(Style, ABV, FUN=median), y=ABV)) +
+    geom_boxplot() +
+    theme_light() +
+    theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1))
+    
 
 
 
 ```
 
 
+### IBU Transform
+```{r}
+
+styles$IBU_log <- log(styles$IBU)
+
+ggplot(styles) +
+    geom_histogram(aes(x=IBU)) +
+    theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
 
 
+#IBU_log_mean <- mean(styles$IBU_log)
+
+ggplot(styles) +
+    geom_histogram(aes(x=IBU_log)) +
+#    geom_vline(xintercept = IBU_log_mean) +
+    theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
+
+```
+
+
+## ABV Transform
+```{r }
+#fig.height=20, fig.width=30
+
+styles$ABV_log <- log(styles$ABV)
+
+ggplot(styles) +
+    geom_histogram(aes(x=ABV)) +
+    theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
+
+ggplot(styles) +
+    geom_histogram(aes(x=ABV_log)) +
+    theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
+
+
+
+ggplot(styles, aes(x=Ounces, y=ABV, group=Ounces)) +
+    geom_boxplot() +
+    #geom_point(position=position_dodge(width=0.75),aes(group=Ounces)) +
+    #scale_fill_manual(values = Ounces) +
+    #scale_x_discrete(limits = c("8.4","12.0","16.0","16.9","19.2","24.0","32.0","NA")) +
+    theme_light() +
+    theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1))
+    
+
+
+
+styles$Ounces <- as.character(styles$Ounces)
+
+styles %>% distinct(Ounces) %>% select(Ounces)
+
+ggplot(styles, aes(x=reorder(Style, ABV, FUN=median), y=ABV)) +
+    geom_boxplot() +
+    theme_light() +
+    theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1))
+    
+
+```
 
 
 

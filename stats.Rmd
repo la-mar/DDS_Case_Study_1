@@ -1,0 +1,145 @@
+---
+title: "stats"
+output: pdf_document
+---
+
+
+
+Assumptions
+
+For the Pearson r correlation, both variables should be normally distributed (normally distributed variables have a bell-shaped curve).  Other assumptions include linearity and homoscedasticity.  Linearity assumes a straight line relationship between each of the two variables and homoscedasticity assumes that data is equally distributed about the regression line.
+(http://www.statisticssolutions.com/correlation-pearson-kendall-spearman/) 
+
+```{r}
+
+
+#TODO: Readdress pearson vs spearman
+
+a=1-.05/2
+
+ss <- sample_n(styles, size = 300) #sample data frame rows so IBU and ABV remain paired
+ss
+
+m = "spearman" # ABV and IBU are both ordinal
+
+plot(styles$IBU, styles$ABV)
+results <- cor.test(styles$IBU, styles$ABV, method = m, conf.level = a)
+
+results
+
+
+
+r_sq <- results[["estimate"]][["rho"]]^2
+r_sq
+
+#qt(a, results[["parameter"]][["df"]])
+
+
+
+results <- cor.test(ss$IBU, ss$ABV, method = m, conf.level = a)
+
+results
+
+
+r_sq <- results[["estimate"]][["rho"]]^2
+r_sq
+
+#qt(a, results[["parameter"]][["df"]])
+
+plot(select(ss, IBU, ABV))
+
+print("There is strong evidence that the ABV and IBU are correlated (p-value > 0.001)") #TODO: calculate conf int
+
+#TODO: check number of ties
+
+```
+
+```{r}
+
+
+lm_eqn = function(m) {
+
+  l <- list(a = format(coef(m)[1], digits = 2),
+      b = format(abs(coef(m)[2]), digits = 2),
+      r2 = format(summary(m)$r.squared, digits = 3));
+
+  if (coef(m)[2] >= 0)  {
+    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,l)
+  } else {
+    eq <- substitute(italic(y) == a - b %.% italic(x)*","~~italic(r)^2~"="~r2,l)    
+  }
+
+  as.character(as.expression(eq));                 
+}
+ggplot(ss, aes(x=ABV, y=IBU)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  geom_text(aes(x = .06, y = 100, label = lm_eqn(lm(ABV ~ IBU ,ss))), parse = TRUE, color = "red")
+
+ggplot(styles, aes(x=ABV, y=IBU)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  geom_text(aes(x = .06, y = 100, label = lm_eqn(lm(ABV ~ IBU ,styles))), parse = TRUE, color = "red")
+
+```
+
+
+```{r fig.height = 12, fig.width = 6}
+
+ggplot((styles %>% drop_na(IBU)), aes(x="", y=IBU)) +
+      geom_point(aes(fill = ifelse((IBU>3.29*IQR(IBU)),"Outlier","Valid")), size = 5, shape = 21, position = position_jitter())+#= position_jitterdodge()) +
+      stat_boxplot(geom ='errorbar') +
+      geom_boxplot(alpha=.5, outlier.shape = NA) +#, outlier.colour = "red") +
+      #geom_text(aes(label=ifelse((IBU>3.29*IQR(IBU)),IBU,"")), hjust=1.1) +
+      stat_summary(fun.y=mean, geom="point", shape=5, size=4)
+      #geom_text(aes(label=ifelse((x>4*IQR(x)|y>4*IQR(y)),label,"")), hjust=1.1)
+
+bp <- boxplot(styles$IBU, styles$ABV)
+
+bp[["out"]]
+
+```
+
+#check normality of sample
+```{r}
+
+ggplot(ss) +
+    geom_histogram(aes(x=IBU)) +
+    theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
+
+ggplot(ss) +
+    geom_histogram(aes(x=ABV)) +
+    theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
+
+
+
+
+
+
+```
+
+# Check normality of log sample
+```{r}
+
+ss$IBU_log <- log(ss$IBU)
+ss$ABV_log <- log(ss$ABV)
+
+ggplot(ss) +
+    geom_histogram(aes(x=IBU_log)) +
+    theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
+
+ggplot(ss) +
+    geom_histogram(aes(x=ABV_log)) +
+    theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90, hjust=1)) 
+
+
+# log plots seem to also suggest spearman over pearson
+
+```
+
+
+
