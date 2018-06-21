@@ -15,6 +15,9 @@ require(ggplot2)
 require(maps)
 require(RColorBrewer)
 require(summarytools)
+
+#automatically set working directory to the directory containing this R script
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 ```
 
 ##Import Breweries Data
@@ -46,25 +49,27 @@ notnull <- beer_data %>% filter(is.na(IBU)) %>% distinct(Style)
 
 isnull <- beer_data %>% filter(!is.na(IBU)) %>% distinct(Style, IBU, ABV, Ounces) %>% arrange(Style)
 
+
+#A distinct list of beer styles. A distinct beer style is noted as having a unique style name, IBU, ABV, and Ounces values.
 styles <- notnull %>% 
           full_join(isnull, by = "Style") %>% arrange(Style) #%>%
           #mutate_each(funs(as.character), Style)
 
 
-#styles %>% filter(!is.na(IBU))
 
-x <- styles %>%
+#Summary statistics for each unique beer Stlye
+summary_by_style <- styles %>%
   dplyr::group_by(Style) %>%
-  dplyr::summarize_each(funs(count=n(), min(IBU), max(IBU), mean(IBU), median(IBU), sd(IBU)))
+  dplyr::summarize_each(funs(count=n_distinct(.), min(.), max(.), mean(.), median(.), sd(.)))
   #select_if(function(x) any(is.na(x))) %>%
   #summarise_all(funs(sum(is.na(.))))
 
-ggplot(styles, aes(x=Style, y=IBU)) +
+ggplot(styles, aes(x=Style, y=IBU, fill=Ounces)) +
     geom_boxplot() +
     theme(text = element_text(size=10),
         axis.text.x = element_text(angle=90, hjust=1)) 
 
-ggplot(styles, aes(x=reorder(Style, ABV, FUN=median), y=ABV)) +
+ggplot(styles, aes(x=reorder(Style, ABV, FUN=median), y=ABV,  fill=Ounces)) +
     geom_boxplot() +
     theme_light() +
     theme(text = element_text(size=10),

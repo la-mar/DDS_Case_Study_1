@@ -16,6 +16,15 @@ require(ggplot2)
 require(maps)
 require(RColorBrewer)
 require(summarytools)
+
+
+#automatically set working directory to the directory containing this R script
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+Sys.info()
+
+
+
 ```
 
 
@@ -29,12 +38,17 @@ require(summarytools)
 breweries_data <- read.csv("../data/Breweries.csv", header=TRUE)
 
 
+#summary of breweries raw data
+brewery_summary_raw <- select(breweries_data, State, Brew_ID) %>% #select columns
+                   dplyr::group_by(State) %>% #group by
+                   dplyr::summarize_each(funs(count=n_distinct(.), min(.), max(.), mean(.), median(.), sd(.))) #specify aggregates to include in summary. (.) is a dummy variable
 
-freq(breweries_data$State, order = "freq")
 
-# breweries_by_state <- select(breweries_data, State, Brew_ID) %>% group_by(State) %>% summarize_all(funs(count=n())) %>% arrange(desc(count))
 
-#overview and summarize
+#print the summary in a way that it doesn't look like vomit
+kable(brewery_summary_raw, digits = 2)
+
+
 
 ```
 
@@ -44,21 +58,16 @@ freq(breweries_data$State, order = "freq")
 ## Clean Breweries Data
 ```{r}
 
-# str(breweries_data)
 
-# confirm brew_id is a unique key
-# summary(breweries_data)
-# summarize breweries
-# breweries_summary <- 
-#   select(breweries_data, Brew_ID, City, State, Name) %>%
-#   group_by(Name) %>%
-#   summarize_all(funs(
-#     count = n_distinct(Brew_ID, City, State)
-#   )) %>%
-#   arrange(desc(Brew_ID_count))
 
 # remove punctionation from all columns and trim whitespace
-breweries_data <- as.data.frame(apply(breweries_data, 2, function(x) trimws(gsub('[[:punct:] ]+',' ',x))), stringsAsFactors = FALSE) 
+breweries_data <- as.data.frame(
+                      apply(breweries_data #data set
+                            , 2 #apply function column-wise
+                            , function(x) trimws(gsub('[[:punct:] ]+',' ',x))) #anonymous function to remove punctuation and trim whitespace
+                            , stringsAsFactors = FALSE)  #do not implicitly convert strings to factors
+
+
 breweries_data$Name <- as.factor(breweries_data$Name)
 breweries_data$Brew_ID <- as.integer(breweries_data$Brew_ID)
 

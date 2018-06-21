@@ -4,6 +4,12 @@ output: pdf_document
 ---
 
 
+```{r}
+
+
+#automatically set working directory to the directory containing this R script
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+```
 
 Assumptions
 
@@ -84,6 +90,8 @@ ggplot(styles, aes(x=ABV, y=IBU)) +
 ```
 
 
+
+# Check for Outliers
 ```{r fig.height = 12, fig.width = 6}
 
 ggplot((styles %>% drop_na(IBU)), aes(x="", y=IBU)) +
@@ -94,9 +102,9 @@ ggplot((styles %>% drop_na(IBU)), aes(x="", y=IBU)) +
       stat_summary(fun.y=mean, geom="point", shape=5, size=4)
       #geom_text(aes(label=ifelse((x>4*IQR(x)|y>4*IQR(y)),label,"")), hjust=1.1)
 
-bp <- boxplot(styles$IBU, styles$ABV)
+bp <- boxplot(styles$IBU, plot = FALSE)[["out"]]
 
-bp[["out"]]
+bp
 
 ```
 
