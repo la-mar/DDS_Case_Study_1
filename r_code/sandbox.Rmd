@@ -16,12 +16,13 @@ require(ggplot2)
 require(maps)
 require(RColorBrewer)
 require(summarytools)
+require(magrittr)
 
 
 #automatically set working directory to the directory containing this R script
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
-Sys.info()
+#Sys.info()
 
 
 
@@ -36,6 +37,9 @@ Sys.info()
 
 #import breweries data
 breweries_data <- read.csv("../data/Breweries.csv", header=TRUE)
+
+#TODO: all columns to lowercase
+#colnames(breweries_data) %<>% tolower # column names to lower case. %<>% is a compound operator that also reassigns the new column names back to the input dataframe
 
 
 #summary of breweries raw data
@@ -68,24 +72,27 @@ breweries_data <- as.data.frame(
                             , stringsAsFactors = FALSE)  #do not implicitly convert strings to factors
 
 
-breweries_data$Name <- as.factor(breweries_data$Name)
-breweries_data$Brew_ID <- as.integer(breweries_data$Brew_ID)
+breweries_data$Name <- as.factor(breweries_data$Name) # convert Name column to factor
+breweries_data$Brew_ID <- as.integer(breweries_data$Brew_ID) # convert Brew_ID to integer
 
 # confirm Brew_ID + City + State is a unique key
 breweries_summary <- 
   select(breweries_data, Brew_ID, City, State, Name) %>%
   group_by(Name) %>%
   summarize_all(funs(
-    count = n_distinct(Brew_ID, City, State)
-  )) %>%
-  arrange(desc(Brew_ID_count))
+    count = n_distinct(Brew_ID, City, State))) %>%
+  select(Name, Brew_ID_count) %>% # select only Name and Brew_ID_count columns
+  arrange(desc(Brew_ID_count)) # sort by Brew_ID_count desc
  
 
+
+
+
 # capture potential duplicates
-breweries_dups <- filter(breweries_summary, Brew_ID_count > 1)
+breweries_dups <- filter(breweries_summary, Brew_ID_count > 1) # if Brew_ID_count > 1 then there is a potential duplicate on that Brew_ID
 
 # rejoin potential dups to original dataset
-breweries_dups <- select(breweries_dups %>% inner_join(breweries_data), -ends_with("_count"))
+breweries_dups <- select(breweries_dups %>% inner_join(breweries_data, by="Name"), -ends_with("_count"))
 
 
 # Fix Errors #
@@ -114,15 +121,15 @@ breweries_sk <- breweries_dups %>%
                       count = n()
                       )) %>% #end summarize_all
                     ungroup() %>%
-                    right_join(breweries_dups) %>% #rejoin to dupes by name, city, state
+                    right_join(breweries_dups, by = c("Name", "City", "State")) %>% # rejoin to dupes by name, city, state
                     select(Brew_ID, Brew_SK)
   
 
-breweries_data$Brew_ID[(breweries_data$Brew_ID %in% breweries_sk$Brew_ID)] <- breweries_sk$Brew_SK 
+breweries_data$Brew_ID[(breweries_data$Brew_ID %in% breweries_sk$Brew_ID)] <- breweries_sk$Brew_SK # update Brew_ID in original dataset 
 
 
 
-breweries_clean <- distinct(breweries_data, Brew_ID, .keep_all = TRUE) %>% rename(Brewery_Name = Name)
+breweries_clean <- distinct(breweries_data, Brew_ID, .keep_all = TRUE) %>% rename(Brewery_Name = Name) # select distinct breweries according to the unique composite key and rename
 
 
 
@@ -135,7 +142,7 @@ breweries_clean <- distinct(breweries_data, Brew_ID, .keep_all = TRUE) %>% renam
 
 summary(breweries_clean)
 
-
+# See stats.rmd
 
 
 ```
@@ -150,12 +157,12 @@ beer_data <- read.csv("../data/Beers.csv", header=TRUE)
 head(beer_data)
 
 
-beer_data$Brewery_id[(beer_data$Brewery_id %in% breweries_sk$Brew_ID)]  <- breweries_sk$Brew_SK #update brewery_ids
+beer_data$Brewery_id[(beer_data$Brewery_id %in% breweries_sk$Brew_ID)]  <- breweries_sk$Brew_SK # update brewery_ids from brewery_sk data
 
 
-beer_clean <- distinct(beer_data) %>% rename(Brew_ID = Brewery_id, Beer_Name = Name)
+beer_clean <- distinct(beer_data) %>% rename(Brew_ID = Brewery_id, Beer_Name = Name) # 
 
-kable(as.data.frame(summarytools::descr(beer_clean)),digits = 2)
+# kable(as.data.frame(summarytools::descr(beer_clean)),digits = 2)
 
 
 

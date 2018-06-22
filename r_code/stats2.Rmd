@@ -1,0 +1,19 @@
+---
+title: "stats2"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+header-includes:
+- \usepackage{amsmath}
+- \usepackage{mathtools}
+- \usepackage{float}
+- \usepackage{xcolor,pifont}
+- \newcommand{\cmark}{\Large\textcolor{green}{\ding{52}}}
+- \newcommand{\xmark}{\Large\textcolor{red}{\ding{55}}}
+---
+
+```{r}
+print("hello")
+```
+

@@ -1,29 +1,76 @@
 ---
 title: "stats"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+header-includes:
+- \usepackage{amsmath}
+- \usepackage{mathtools}
+- \usepackage{float}
+- \usepackage{xcolor,pifont}
+- \newcommand{\cmark}{\Large\textcolor{green}{\ding{52}}}
+- \newcommand{\xmark}{\Large\textcolor{red}{\ding{55}}}
 ---
 
 
 ```{r}
+require(dplyr)
+require(tidyr)
+require(knitr)
+require(ggplot2)
+require(maps)
+require(RColorBrewer)
+require(summarytools)
 
+sessionInfo()
 
-#automatically set working directory to the directory containing this R script
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 ```
+
+
+### Stats
 
 Assumptions
 
 For the Pearson r correlation, both variables should be normally distributed (normally distributed variables have a bell-shaped curve).  Other assumptions include linearity and homoscedasticity.  Linearity assumes a straight line relationship between each of the two variables and homoscedasticity assumes that data is equally distributed about the regression line.
 (http://www.statisticssolutions.com/correlation-pearson-kendall-spearman/) 
 
+
+
+H~o~: $\rho$~ABV~=$\rho$~IBU~
+H~A~: $\rho$~ABV~=$\rho$~IBU~
+
 ```{r}
+
+beer_data <- read.csv("../data/Beers.csv", header=TRUE)
+
+
+head(beer_data)
+
+
+#beer_data$Brewery_id[(beer_data$Brewery_id %in% breweries_sk$Brew_ID)]  <- breweries_sk$Brew_SK # update brewery_ids from brewery_sk data
+
+
+beer_clean <- distinct(beer_data) %>% rename(Brew_ID = Brewery_id, Beer_Name = Name) 
+
+notnull <- beer_data %>% filter(is.na(IBU)) %>% distinct(Style)
+
+
+isnull <- beer_data %>% filter(!is.na(IBU)) %>% distinct(Style, IBU, ABV, Ounces) %>% arrange(Style)
+
+
+#A distinct list of beer styles. A distinct beer style is noted as having a unique style name, IBU, ABV, and Ounces values.
+styles <- notnull %>% 
+          full_join(isnull, by = "Style") %>% arrange(Style) #%>%
+          #mutate_each(funs(as.character), Style)
+
 
 
 #TODO: Readdress pearson vs spearman
 
 a=1-.05/2
 
-ss <- sample_n(styles, size = 300) #sample data frame rows so IBU and ABV remain paired
+ss <- sample_n(styles, size = 30) #sample data frame rows so IBU and ABV remain paired
 ss
 
 m = "spearman" # ABV and IBU are both ordinal
@@ -32,8 +79,6 @@ plot(styles$IBU, styles$ABV)
 results <- cor.test(styles$IBU, styles$ABV, method = m, conf.level = a)
 
 results
-
-
 
 r_sq <- results[["estimate"]][["rho"]]^2
 r_sq
@@ -60,7 +105,7 @@ print("There is strong evidence that the ABV and IBU are correlated (p-value > 0
 
 ```
 
-```{r}
+```{r fig.width= 10, fig.height = 10}
 
 
 lm_eqn = function(m) {
@@ -83,30 +128,58 @@ ggplot(ss, aes(x=ABV, y=IBU)) +
   geom_text(aes(x = .06, y = 100, label = lm_eqn(lm(ABV ~ IBU ,ss))), parse = TRUE, color = "red")
 
 ggplot(styles, aes(x=ABV, y=IBU)) +
-  geom_point() +
+  geom_point(aes(colour=as.factor(Ounces))) +
+  scale_colour_brewer() +
   geom_smooth(method = "lm") +
-  geom_text(aes(x = .06, y = 100, label = lm_eqn(lm(ABV ~ IBU ,styles))), parse = TRUE, color = "red")
+  theme(legend.position="none")
+  #geom_text(aes(x = .06, y = 100, label = lm_eqn(lm(ABV ~ IBU ,styles))), parse = TRUE, color = "red")
 
 ```
 
 
 
-# Check for Outliers
-```{r fig.height = 12, fig.width = 6}
+# Check for Outliers in IBU
+```{r fig.height = 3, fig.width = 14}
+
+ibu_outliers <- boxplot(styles$IBU, plot = FALSE)[["out"]]
 
 ggplot((styles %>% drop_na(IBU)), aes(x="", y=IBU)) +
-      geom_point(aes(fill = ifelse((IBU>3.29*IQR(IBU)),"Outlier","Valid")), size = 5, shape = 21, position = position_jitter())+#= position_jitterdodge()) +
+      geom_point(aes(fill = ifelse((IBU %in% ibu_outliers),"Outlier","Valid")), size = 5, shape = 21, position = position_jitter())+
       stat_boxplot(geom ='errorbar') +
       geom_boxplot(alpha=.5, outlier.shape = NA) +#, outlier.colour = "red") +
-      #geom_text(aes(label=ifelse((IBU>3.29*IQR(IBU)),IBU,"")), hjust=1.1) +
-      stat_summary(fun.y=mean, geom="point", shape=5, size=4)
+      stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
+      coord_flip()
       #geom_text(aes(label=ifelse((x>4*IQR(x)|y>4*IQR(y)),label,"")), hjust=1.1)
 
-bp <- boxplot(styles$IBU, plot = FALSE)[["out"]]
 
-bp
+
+ibu_outliers
 
 ```
+
+# Check for Outliers in ABV
+```{r fig.height = 3, fig.width = 14}
+
+abv_outliers <- boxplot(styles$ABV, plot = FALSE)[["out"]]
+
+abv_outliers
+
+ggplot((styles %>% drop_na(ABV)), aes(x="", y=ABV)) +
+      #geom_point(aes(fill = ifelse((ABV>3.29*IQR(ABV)),"Outlier","Valid")), size = 5, shape = 21, position = position_jitter())+#= position_jitterdodge()) +
+      geom_point(aes(fill = ifelse((ABV %in% abv_outliers),"Outlier","Valid")), size = 5, shape = 21, position = position_jitter())+
+      stat_boxplot(geom ='errorbar') +
+      geom_boxplot(alpha=.5, outlier.shape = NA) +#, outlier.colour = "red") +
+      stat_summary(fun.y=mean, geom="point", shape=5, size=4) + 
+      coord_flip()
+      #geom_text(aes(label=ifelse((x>4*IQR(x)|y>4*IQR(y)),label,"")), hjust=1.1)
+
+boxplot(styles$ABV, plot = TRUE)
+
+
+
+```
+
+
 
 #check normality of sample
 ```{r}
