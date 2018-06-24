@@ -52,6 +52,11 @@ require(magrittr)
 
 
 ##Import Breweries Data
+
+In this section we load and begin cleaning the data in order to aid our
+exploratory analysis.  Column names are set to lowercase for ease of reading and
+we begin to summarize the data.
+
 ```{r}
 
 
@@ -80,6 +85,26 @@ kable(brewery_summary_raw, digits = 2)
 
 
 ## Clean Breweries Data
+
+Before we can confidently proceed with our analysis it's important to ensure
+we have scrubbed the data, removed duplicates, and decide how we will deal with
+errors and missing values.
+
+We start this process by removing punctuation and whitespace from columns.  Humans
+are fallible and typos are easy to make.  Without knowing the origin of the data
+in the files provided, its prudent to assume that mistakes have been made and 
+take measures to correct them.
+
+Remvoing punctuation allows us to mitigate the possibility of commas being
+erroneously typed as periods.  "Detroit, MI", for example, would be identified
+as a different city than "Detroit. MI"  Removing punctuation resolves this issue.  
+Both city/state combinations simply become "Detroit MI."
+
+Likewise, it's helpful to remove whitespace.  Although whitespace can appear
+"invisible" to the human eye, computers can "see" this space as if it were a
+number or a letter.
+
+We use the apply function to make these changes to every row in the dataframe.
 ```{r}
 
 
