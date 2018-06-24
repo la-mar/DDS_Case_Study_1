@@ -105,6 +105,21 @@ Likewise, it's helpful to remove whitespace.  Although whitespace can appear
 number or a letter.
 
 We use the apply function to make these changes to every row in the dataframe.
+
+Removing duplicates is more of a challenge.  Before we can remove duplicates we
+need to confirm whether or not two rows are the same.  We identify duplicates by
+creating a unique key for each brewery that's a combination of the brewery ID,
+city, and state.  
+
+De-duplicating in this case is a multi-step process.  We start by identifying
+brewery ids that show up more than once which indicate possible duplicates.  
+Further investigation determines whether or not they are actually duplicates.
+
+In addition to removing identifying and removing duplicates programatically, we
+also need to correct a few entries manually.  There are some entries that are 
+clearly mis-spelled and need to be addressed.
+
+
 ```{r}
 
 
