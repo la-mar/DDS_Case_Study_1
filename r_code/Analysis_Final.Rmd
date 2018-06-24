@@ -396,6 +396,14 @@ ggplot((merged_by_state %>% na.omit()), aes(x=State, y=IBU)) + #TODO: something 
 
 
 ## Question 5
+
+Before you can "push the limits" you have to know what the limits are.  We want
+to determine which state has the most alcoholic beer and which state has the most
+bitter beer.
+
+This is relatively simple.  We can determine this visually using boxplots and
+confirm programmatically by sorting the tables in descending order based on the
+values of interest.
 ```{r}
 # max_abv <- max(merged_data$ABV, na.rm = TRUE)
   
@@ -435,6 +443,8 @@ max_ibu
 
 
 ## Question 6
+
+Summarizing the statistics for ABV can be accomplished in a signle commande.
 ```{r}
 
 #summaryize ABV
@@ -458,6 +468,15 @@ abv_stats #TODO: Add IQR, stdev    #TODO: Compare to quinton's summary
 
 
 ## Question 7
+
+To determine the relationship between ABV and IBU it's helpful to see all values
+for both variables at the same time.  This is most easily accomplished using
+a scatterplot.
+
+With ABV on one axis and IBU on the other we start to see what appears to be a 
+linear correlation between the values.
+
+Adding a trendline allows us to determine a formula that specifies this correlation.
 ```{r }
 # fig.height=48
 #plot relationshiop of ABV and IBU
