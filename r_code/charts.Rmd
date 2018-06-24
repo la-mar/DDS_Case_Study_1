@@ -21,24 +21,11 @@ require(magrittr)
 ```{r echo=FALSE, tidy=TRUE}
 
 
-#import breweries data
-breweries_data <- read.csv("../data/Breweries.csv", header=TRUE)
+select(merged_data, style, ibu) %>%
+  group_by(style) %>%
+  # select_if(function(x) any(is.na(x))) %>% 
+  summarise_all(funs(sum(n(), is.na(.)))) 
 
-#TODO: all columns to lowercase
-#colnames(breweries_data) %<>% tolower # column names to lower case. %<>% is a compound operator that also reassigns the new column names back to the input dataframe
-
-
-#summary of breweries raw data
-brewery_summary_raw <- select(breweries_data, State, Brew_ID) %>% #select columns
-                   dplyr::group_by(State) %>% #group by
-                   dplyr::summarize_each(funs(count=n_distinct(.), min(.), max(.), mean(.), median(.), sd(.))) #specify aggregates to include in summary. (.) is a dummy variable
-
-
-
-#print the summary in a way that it doesn't look like vomit
-#kable(brewery_summary_raw, digits = 2)
-
-brewery_summary_raw
 
 ```
 

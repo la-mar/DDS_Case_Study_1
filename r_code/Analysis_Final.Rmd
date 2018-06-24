@@ -20,9 +20,9 @@ header-includes:
 
 
 
-\newenvironment{sciabstract}{%
-\begin{quote} \bf}
-{\end{quote}}
+<!-- \newenvironment{sciabstract}{% -->
+<!-- \begin{quote} \bf} -->
+<!-- {\end{quote}} -->
 
 
 ```{r echo=FALSE, tidy=TRUE}
@@ -46,6 +46,7 @@ require(magrittr)
 
 
 ##Import Breweries Data
+
 ```{r}
 
 
@@ -53,19 +54,31 @@ require(magrittr)
 breweries_data <- read.csv("../data/Breweries.csv", header=TRUE)
 
 
-colnames(breweries_data) %<>% tolower
+colnames(breweries_data) %<>% tolower #lower case colnames
 
+breweries_data %<>% rename(brewery_id = brew_id) #rename
 
 #summary of breweries raw data
-brewery_summary_raw <- select(breweries_data, state, brew_id) %>% #select columns
+brewery_summary_raw <- select(breweries_data, state, brewery_id) %>% #select columns
                    dplyr::group_by(state) %>% #group by
-                   dplyr::summarize_all(funs(n_distinct(.), 
-                                             min(.), 
-                                             max(.), 
-                                             mean(.), 
-                                             median(.), 
-                                             sd(.))) 
-kable(brewery_summary_raw, digits = 2)
+                   dplyr::summarize_all(funs(n_distinct(.))) 
+
+
+
+
+kable(brewery_summary_raw, digits = 0)
+
+
+#TODO: Fix chart
+ggplot(brewery_summary_raw, aes(x=state, color=brewery_id)) +
+    geom_histogram(aes(y=..density..,fill = brewery_id, alpha=0.5), binwidth = 5, stat="count") +
+    #stat_count(aes("identity")) +
+    geom_density(alpha=.2, fill="black", color="black") +
+    #facet_grid(. ~ gender) +
+    theme_bw() +
+    theme(legend.position="bottom")
+    #theme(legend.position="none")
+    #theme(text = element_text(size=10), axis.text.x = element_text(angle=90, hjust=1)) 
 
 
 ```
@@ -74,8 +87,11 @@ kable(brewery_summary_raw, digits = 2)
 
 
 ## Clean Breweries Data
-```{r}
 
+
+
+```{r}
+#TODO: Breakup chunk
 
 
 # remove punctionation from all columns and trim whitespace
@@ -86,83 +102,78 @@ breweries_data <- as.data.frame(
                             , stringsAsFactors = FALSE)  #do not implicitly convert strings to factors
 
 
-breweries_data$Name <- as.factor(breweries_data$Name) # convert Name column to factor
-breweries_data$Brew_ID <- as.integer(breweries_data$Brew_ID) # convert Brew_ID to integer
+breweries_data$name <- as.factor(breweries_data$name) # convert Name column to factor
+breweries_data$brewery_id <- as.integer(breweries_data$brewery_id) # convert Brew_ID to integer
 
 # confirm Brew_ID + City + State is a unique key
 breweries_summary <- 
-  select(breweries_data, Brew_ID, City, State, Name) %>%
-  group_by(Name) %>%
+  select(breweries_data, brewery_id, city, state, name) %>%
+  group_by(name) %>%
   summarize_all(funs(
-    count = n_distinct(Brew_ID, City, State))) %>%
-  select(Name, Brew_ID_count) %>% # select only Name and Brew_ID_count columns
-  arrange(desc(Brew_ID_count)) # sort by Brew_ID_count desc
+    count = n_distinct(brewery_id, city, state))) %>%
+  select(name, brewery_id_count) %>% # select only Name and Brew_ID_count columns
+  arrange(desc(brewery_id_count)) # sort by Brew_ID_count desc
  
 
 
 
-
 # capture potential duplicates
-breweries_dups <- filter(breweries_summary, Brew_ID_count > 1) # if Brew_ID_count > 1 then there is a potential duplicate on that Brew_ID
+breweries_dups <- filter(breweries_summary, brewery_id_count > 1) # if Brew_ID_count > 1 then there is a potential duplicate on that Brew_ID
 
 # rejoin potential dups to original dataset
-breweries_dups <- select(breweries_dups %>% inner_join(breweries_data, by="Name"), -ends_with("_count"))
+breweries_dups <- select(breweries_dups %>% inner_join(breweries_data, by="name"), -ends_with("_count"))
 
 
 # Fix Errors #
 
 # Fix Brew_ID=378, change City(Menominee -> Menominie) 
 breweries_dups <- breweries_dups %>%
-     mutate(City=replace(City, Brew_ID==378, "Menominie")) %>%
+     mutate(City=replace(city, brewery_id==378, "Menominie")) %>%
      as.data.frame()
+
+#TODO: Fix SKs
 
 # Fix Brew_ID=96, change State(MA -> MI)
 breweries_dups <- breweries_dups %>%
-     mutate(State=replace(State, Brew_ID==96, "MI")) %>%
+     mutate(State=replace(state, brewery_id==96, "MI")) %>%
      as.data.frame()
 
 #capture known duplicates
 breweries_dups <- breweries_dups %>%
-                  group_by(Name, City, State) %>%
+                  group_by(name, city, state) %>%
                   filter(n()>1)
 
 
 #create surrogate key for duplicates
 breweries_sk <- breweries_dups %>%
-                    group_by(Name, City, State) %>%
+                    group_by(name, city, state) %>%
                     summarize_all(funs(
-                      Brew_SK = (sum(Brew_ID)*sum(Brew_ID)),
-                      count = n()
-                      )) %>% #end summarize_all
+                        brew_sk = (sum(brewery_id)*sum(brewery_id)),
+                        count = n()
+                        )) %>% #end summarize_all
                     ungroup() %>%
-                    right_join(breweries_dups, by = c("Name", "City", "State")) %>% # rejoin to dupes by name, city, state
-                    select(Brew_ID, Brew_SK)
+                    right_join(breweries_dups, by = c("name", "city", "state")) %>% # rejoin to dupes by name, city, state
+                    select(brewery_id, brewery_id_brew_sk)
   
 
-breweries_data$Brew_ID[(breweries_data$Brew_ID %in% breweries_sk$Brew_ID)] <- breweries_sk$Brew_SK # update Brew_ID in original dataset 
+
+
+breweries_data$brewery_id[(breweries_data$brewery_id %in% breweries_sk$brewery_id)] <- breweries_sk$brewery_id # update Brew_ID in original dataset 
 
 
 
-breweries_clean <- distinct(breweries_data, Brew_ID, .keep_all = TRUE) %>% rename(Brewery_Name = Name) # select distinct breweries according to the unique composite key and rename
+breweries_clean <- distinct(breweries_data, brewery_id, .keep_all = TRUE) %>% rename(brewery_name = name) # select distinct breweries according to the unique composite key and rename
 
 
 
 ```
 
 
-```{r}
-#Check for Outliers
-#Impute missing values
 
-summary(breweries_clean)
-
-# See stats.rmd
-
-
-```
 
 
 ## Clean Beer Data
+
 ```{r}
 
 beer_data <- read.csv("../data/Beers.csv", header=TRUE)
@@ -170,11 +181,13 @@ beer_data <- read.csv("../data/Beers.csv", header=TRUE)
 
 head(beer_data)
 
+colnames(beer_data) %<>% tolower #lower case colnames
 
-beer_data$Brewery_id[(beer_data$Brewery_id %in% breweries_sk$Brew_ID)]  <- breweries_sk$Brew_SK # update brewery_ids from brewery_sk data
+
+beer_data$brewery_id[(beer_data$brewery_id %in% breweries_sk$brewery_id)]  <- breweries_sk$brewery_id_brew_sk # update brewery_ids from brewery_sk data
 
 
-beer_clean <- distinct(beer_data) %>% rename(Brew_ID = Brewery_id, Beer_Name = Name) # 
+beer_clean <- distinct(beer_data)#%>% rename(Brew_ID = Brewery_id, Beer_Name = Name) # 
 
 # kable(as.data.frame(summarytools::descr(beer_clean)),digits = 2)
 
@@ -187,9 +200,15 @@ beer_clean <- distinct(beer_data) %>% rename(Brew_ID = Brewery_id, Beer_Name = N
 
 
 ## Question 1
+
+
+
 ```{r}
 
+#TODO: break up chunk
+
 state_ll <- read.csv("../data/state_coords.csv") %>% mutate(State = toupper(State)) %>% rename(state = State) %>% select(-Latitude, -Longitude)
+
 states <- map_data("state") %>%
           mutate(region = toupper(region)) %>%
           rename(state=region) %>%
@@ -208,9 +227,10 @@ states <- states %>%
 
 
 
-breweries_by_state <- select(breweries_clean, Brew_ID, State) %>%
-  group_by(State) %>%
-  summarise_all(funs(Brewery_count = n())) 
+breweries_by_state <- select(breweries_clean, brewery_id, state) %>%
+  group_by(state) %>%
+  summarise_all(funs(brewery_count = n())) 
+
 
 # state_ll %>%
 #   inner_join(states)
@@ -219,10 +239,7 @@ breweries_by_state <- select(breweries_clean, Brew_ID, State) %>%
 
 kable(as.data.frame(summarytools::descr(breweries_by_state, transpose = TRUE)),digits = 2)
 
-freq(breweries_clean$State, order = "freq")
-
-
-
+# freq(breweries_clean$state, order = "freq")
 
 
 ```
@@ -240,28 +257,19 @@ ggplot(data = breweries_by_state %>%
   # scale_fill_gradientn(colours = "black",
   #                         breaks = c(2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50))
 
-
-```
-
-
-```{r fig.height=10}
-#barplot brewery data by state
-ggplot(breweries_by_state, aes(x=reorder(State, Brewery_count), y= Brewery_count)) +  #TODO: Make Pretty
-  geom_bar(stat="identity") +
-  ylim(0, 50) +
-  theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=90, hjust=1)) +
-  scale_fill_hue(c=45, l=40, direction = -1) +
-  coord_flip()
+# TODO: Overlay frequencies on states
+# TODO: fix color scale
+# TODO: high level summary table
 
 ```
 
 
 ## Question 2
+
 ```{r}
 # merge beer and breweries
 merged_data <- breweries_clean %>%
-               full_join(beer_clean, by="Brew_ID")
+               full_join(beer_clean, by="brewery_id")
 
 
 #TODO: Plot -> brews by brewery
@@ -272,6 +280,7 @@ merged_data <- breweries_clean %>%
 
 
 ## Question 3
+
 ```{r}
 
 # Number of nulls in each column
@@ -279,84 +288,82 @@ merged_data %>%
   select_if(function(x) any(is.na(x))) %>% 
   summarise_all(funs(sum(is.na(.))))
 
+
+merged_data %>% filter(state == 'CA')
+
 #TODO: add plot?
 
 ```
 
 
 ## Question 4
-```{r } 
-#fig.width=11
 
-# compute median ABV and IBU by state
+```{r fig.height = 12, fig.width = 12} 
 
 
-merged_by_state <- select(merged_data, State, ABV, IBU) %>%
-                   group_by(State) %>%
-                   summarise_all(median)#funs(median(!is.na(.)))) #TODO: Double check this is calculating correctly
+#TODO: Make bar plot pretty
 
-merged_by_state$State <- as.factor(merged_by_state$State)  
+merged_by_state <- select(merged_data, state, abv, ibu) %>%
+                   group_by(state) %>%
+                   summarise_all(median, na.rm = TRUE)#funs(median(!is.na(.)))) #TODO: Double check this is calculating correctly
+
+merged_by_state$state <- as.factor(merged_by_state$state)  
+
+#kable(as.data.frame(summarytools::descr(beer_clean)),digits = 2)
 
 
-# vars <- rbind(merged_by_state %>% mutate(var="ABV") %>%rename(value=ABV) %>% select(State, var, value),
-#       merged_by_state %>% mutate(var="IBU") %>%rename(value=IBU) %>% select(State, var, value))
-# 
-# vars$value
+#TODO: facet by state
 
-summary(merged_by_state)
-
-kable(as.data.frame(summarytools::descr(beer_clean)),digits = 2)
-
-merged_by_state %>% na.omit(IBU)
-
-#MEDIAN
-
-ggplot(merged_by_state, aes(x=State, y=ABV)) +
+ggplot(merged_by_state, aes(x=state, y=abv)) +
   geom_bar(stat = "identity", position = "dodge") +
   ylim(0, .075) +
+  #facet_grid(state ~ .) +
   theme(text = element_text(size=10),
         axis.text.x = element_text(angle=90, hjust=1)) 
 
-ggplot((merged_by_state %>% na.omit()), aes(x=State, y=IBU)) + #TODO: something is fishy with IBU
+ggplot(merged_by_state, aes(x=state, y=ibu)) +
   geom_bar(stat = "identity", position = "dodge") +
   #ylim(0, .075) +
+  #facet_grid(state ~ .) +
   theme(text = element_text(size=10),
         axis.text.x = element_text(angle=90, hjust=1)) 
+
 
 ```
 
 
 
 ## Question 5
+
 ```{r}
-# max_abv <- max(merged_data$ABV, na.rm = TRUE)
+
   
 
-ggplot(merged_data, aes(x=State , y=ABV)) +  #TODO: Make Pretty
+ggplot(merged_data, aes(x=state , y=abv)) +  #TODO: Move to Appendix
   geom_boxplot() +
   #ylim(0, .075) +
   theme(text = element_text(size=10),
         axis.text.x = element_text(angle=90, hjust=1)) 
  
-ggplot(merged_data, aes(x=State , y=IBU)) +  #TODO: Make Pretty
+ggplot(merged_data, aes(x=state , y=ibu)) +  #TODO: Move to Appendix
   geom_boxplot() +
   #ylim(0, .075) +
   theme(text = element_text(size=10),
         axis.text.x = element_text(angle=90, hjust=1)) 
  
-max_abv <-  (select(merged_data, State, ABV) %>%
-                   group_by(State) %>%
+max_abv <-  (select(merged_data, state, abv) %>%
+                   group_by(state) %>%
                    #filter(ABV == max(ABV)) %>%
-                   arrange(desc(ABV))  %>% #sort by ABV
+                   arrange(desc(abv))  %>% #sort by ABV
                    filter(row_number() == 1))[1,] #get first row
           
 max_abv
 
 
-max_ibu <-  (select(merged_data, State, IBU) %>%
-                   group_by(State) %>%
+max_ibu <-  (select(merged_data, state, ibu) %>%
+                   group_by(state) %>%
                    #filter(ABV == max(ABV)) %>%
-                   arrange(desc(IBU))  %>% #sort by ABV
+                   arrange(desc(ibu))  %>% #sort by ABV
                    filter(row_number() == 1))[1,] #get first row
           
 max_ibu
@@ -367,6 +374,7 @@ max_ibu
 
 
 ## Question 6
+
 ```{r}
 
 #summaryize ABV
@@ -374,11 +382,12 @@ max_ibu
 # tidy_summary <- tidy(summary(merged_data$ABV)) #For some reason this line wont knit
 
 
-abv_stats <- as.data.frame(t(summary(merged_data$ABV))) %>% #summarize and transpose
-             rename("ABV"=Freq, Statistic=Var2) %>%
-             select(Statistic, ABV)
+abv_stats <- as.data.frame(t(summary(merged_data$abv))) %>% #summarize and transpose
+             rename("abv"=Freq, Statistic=Var2) %>%
+             select(Statistic, abv)
 
-abv_stats$ABV <- round(abv_stats$ABV, digits = 3)
+
+abv_stats$abv <- round(abv_stats$abv, digits = 3)
   
 
 abv_stats #TODO: Add IQR, stdev    #TODO: Compare to quinton's summary
@@ -390,6 +399,7 @@ abv_stats #TODO: Add IQR, stdev    #TODO: Compare to quinton's summary
 
 
 ## Question 7
+
 ```{r }
 # fig.height=48
 #plot relationshiop of ABV and IBU
@@ -409,10 +419,10 @@ lm_eqn = function(m) {
 
   as.character(as.expression(eq));                 
 }
-ggplot(beer_clean, aes(x=ABV, y=IBU)) +
+ggplot(beer_clean, aes(x=abv, y=ibu)) +
   geom_point() +
   geom_smooth(method = "lm") +
-  geom_text(aes(x = .02, y = 100, label = lm_eqn(lm(ABV ~ IBU ,beer_clean))), parse = TRUE, color = "red")
+  geom_text(aes(x = .02, y = 100, label = lm_eqn(lm(abv ~ ibu ,beer_clean))), parse = TRUE, color = "red")
 
 # Yes, there is a positive relationship between ABV and IBU. #TODO:Add explanation
 

@@ -1,9 +1,9 @@
 ---
 title: "stats"
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 header-includes:
 - \usepackage{amsmath}
 - \usepackage{mathtools}
@@ -47,7 +47,7 @@ beer_clean <- distinct(beer_data) %>% rename(Brew_ID = Brewery_id, Beer_Name = N
 notnull <- beer_data %>% filter(is.na(IBU)) %>% distinct(Style)
 
 
-isnull <- beer_data %>% filter(!is.na(IBU)) %>% distinct(Style, IBU, ABV, Ounces) %>% arrange(Style)
+isnull <- beer_data %>% filter(!is.na(IBU)) %>% distinct(Beer_ID, Style, IBU, ABV, Ounces) %>% arrange(Style)
 
 
 #A distinct list of beer styles. A distinct beer style is noted as having a unique style name, IBU, ABV, and Ounces values.
@@ -78,6 +78,7 @@ lm_eqn = function(m) {
 
   as.character(as.expression(eq));                 
 }
+
 ggplot(ss, aes(x=ABV, y=IBU)) +
   geom_point() +
   geom_smooth(method = "lm") +
@@ -89,6 +90,9 @@ ggplot(styles, aes(x=ABV, y=IBU)) +
   geom_smooth(method = "lm") +
   theme(legend.position="none")
   #geom_text(aes(x = .06, y = 100, label = lm_eqn(lm(ABV ~ IBU ,styles))), parse = TRUE, color = "red")
+
+
+
 
 ```
 
@@ -188,11 +192,9 @@ ggplot(styles) +
 
 ggplot(styles) +
     geom_histogram(aes(x=ABV_log)) +
-    geom_density() +
+    #geom_density() +
     theme(text = element_text(size=10),
         axis.text.x = element_text(angle=90, hjust=1)) 
-
-
 
 
 
