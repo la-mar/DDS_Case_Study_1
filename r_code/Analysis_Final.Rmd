@@ -119,6 +119,9 @@ In addition to removing identifying and removing duplicates programatically, we
 also need to correct a few entries manually.  There are some entries that are 
 clearly mis-spelled and need to be addressed.
 
+Once potential duplicates are identified and assigned temporary keys, they are
+evaluated apart from the main dataset and returned to the main dataset once 
+duplicates have been removed.
 
 ```{r}
 
@@ -209,6 +212,8 @@ summary(breweries_clean)
 
 
 ## Clean Beer Data
+
+A similar process is used to remove duplicates from the Beers dataset.
 ```{r}
 
 beer_data <- read.csv("../data/Beers.csv", header=TRUE)
@@ -233,6 +238,9 @@ beer_clean <- distinct(beer_data) %>% rename(Brew_ID = Brewery_id, Beer_Name = N
 
 
 ## Question 1
+
+To determine the number breweries in each state we simply count the number of times
+each state appears in the table.  
 ```{r}
 
 state_ll <- read.csv("../data/state_coords.csv") %>% mutate(State = toupper(State)) %>% rename(state = State) %>% select(-Latitude, -Longitude)
@@ -304,6 +312,12 @@ ggplot(breweries_by_state, aes(x=reorder(State, Brewery_count), y= Brewery_count
 
 
 ## Question 2
+
+In data science, like in life, sometimes less is more.  Instead of maintaining
+separate tables for breweries and beers, it's helpful to merge the two datasets
+into a single combined dataset.  We do this by joining the two tables by the
+Brew_ID variable.
+
 ```{r}
 # merge beer and breweries
 merged_data <- breweries_clean %>%
