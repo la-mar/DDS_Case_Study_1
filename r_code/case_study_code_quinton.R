@@ -1,12 +1,12 @@
-#setwd("~/Documents/@Grad School/@SMU/@Term 1 Courses/Doing Data Science/Week5/CaseStudy_2_2_2")
+#setwd("~/Documents/@Grad School/@SMU/@Term 1 Courses/Doing Data Science/Week5/DDS_Case_Study_1/data")
 
 library(tidyverse)
 
 
 
 # read in data
-beers <- read.csv("Beers.csv", stringsAsFactors = FALSE)
-breweries <- read.csv("Breweries.csv", stringsAsFactors = FALSE)
+beers <- read.csv("data/Beers.csv", stringsAsFactors = FALSE)
+breweries <- read.csv("data/Breweries.csv", stringsAsFactors = FALSE)
 
 # calculate breweries by state
 breweries_by_state <- breweries %>% count(State) %>% arrange(desc(n))
