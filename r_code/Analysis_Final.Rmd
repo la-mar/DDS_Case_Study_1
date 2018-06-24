@@ -24,6 +24,12 @@ header-includes:
 <!-- \begin{quote} \bf} -->
 <!-- {\end{quote}} -->
 
+## Loading required libraries
+
+The following code loads useful libraries that aren't included in base R.  The
+of these libraries come from the "tidyverse" including dplyr for manipulating
+dataframes, tidyr for making data tidy, knitr for creating reproducible documents
+ggplot2 for plots, maps for help with geographic plots, RColorBrewer...
 
 ```{r echo=FALSE, tidy=TRUE}
 
@@ -47,6 +53,13 @@ require(magrittr)
 
 ##Import Breweries Data
 
+<<<<<<< HEAD
+=======
+In this section we load and begin cleaning the data in order to aid our
+exploratory analysis.  Column names are set to lowercase for ease of reading and
+we begin to summarize the data.
+
+>>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
 ```{r}
 
 
@@ -87,6 +100,48 @@ ggplot(brewery_summary_raw, aes(x=state, color=brewery_id)) +
 
 
 ## Clean Breweries Data
+<<<<<<< HEAD
+=======
+
+Before we can confidently proceed with our analysis it's important to ensure
+we have scrubbed the data, removed duplicates, and decide how we will deal with
+errors and missing values.
+
+We start this process by removing punctuation and whitespace from columns.  Humans
+are fallible and typos are easy to make.  Without knowing the origin of the data
+in the files provided, its prudent to assume that mistakes have been made and 
+take measures to correct them.
+
+Remvoing punctuation allows us to mitigate the possibility of commas being
+erroneously typed as periods.  "Detroit, MI", for example, would be identified
+as a different city than "Detroit. MI"  Removing punctuation resolves this issue.  
+Both city/state combinations simply become "Detroit MI."
+
+Likewise, it's helpful to remove whitespace.  Although whitespace can appear
+"invisible" to the human eye, computers can "see" this space as if it were a
+number or a letter.
+
+We use the apply function to make these changes to every row in the dataframe.
+
+Removing duplicates is more of a challenge.  Before we can remove duplicates we
+need to confirm whether or not two rows are the same.  We identify duplicates by
+creating a unique key for each brewery that's a combination of the brewery ID,
+city, and state.  
+
+De-duplicating in this case is a multi-step process.  We start by identifying
+brewery ids that show up more than once which indicate possible duplicates.  
+Further investigation determines whether or not they are actually duplicates.
+
+In addition to removing identifying and removing duplicates programatically, we
+also need to correct a few entries manually.  There are some entries that are 
+clearly mis-spelled and need to be addressed.
+
+Once potential duplicates are identified and assigned temporary keys, they are
+evaluated apart from the main dataset and returned to the main dataset once 
+duplicates have been removed.
+
+```{r}
+>>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
 
 
 
@@ -174,6 +229,10 @@ breweries_clean <- distinct(breweries_data, brewery_id, .keep_all = TRUE) %>% re
 
 ## Clean Beer Data
 
+<<<<<<< HEAD
+=======
+A similar process is used to remove duplicates from the Beers dataset.
+>>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
 ```{r}
 
 beer_data <- read.csv("../data/Beers.csv", header=TRUE)
@@ -201,8 +260,13 @@ beer_clean <- distinct(beer_data)#%>% rename(Brew_ID = Brewery_id, Beer_Name = N
 
 ## Question 1
 
+<<<<<<< HEAD
 
 
+=======
+To determine the number breweries in each state we simply count the number of times
+each state appears in the table.  
+>>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
 ```{r}
 
 #TODO: break up chunk
@@ -266,6 +330,14 @@ ggplot(data = breweries_by_state %>%
 
 ## Question 2
 
+<<<<<<< HEAD
+=======
+In data science, like in life, sometimes less is more.  Instead of maintaining
+separate tables for breweries and beers, it's helpful to merge the two datasets
+into a single combined dataset.  We do this by joining the two tables by the
+Brew_ID variable.
+
+>>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
 ```{r}
 # merge beer and breweries
 merged_data <- breweries_clean %>%
@@ -281,6 +353,14 @@ merged_data <- breweries_clean %>%
 
 ## Question 3
 
+<<<<<<< HEAD
+=======
+Sometimes data are not available.  This analysis is no exception.  To better
+understand how our analysis could be impacted by missing values we first have to
+identify and county them.
+
+Below is a count missing values by variable.
+>>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
 ```{r}
 
 # Number of nulls in each column
@@ -297,6 +377,13 @@ merged_data %>% filter(state == 'CA')
 
 
 ## Question 4
+<<<<<<< HEAD
+=======
+
+Computing the median is straightforward.  We simply...
+```{r } 
+#fig.width=11
+>>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
 
 ```{r fig.height = 12, fig.width = 12} 
 
@@ -335,6 +422,16 @@ ggplot(merged_by_state, aes(x=state, y=ibu)) +
 
 ## Question 5
 
+<<<<<<< HEAD
+=======
+Before you can "push the limits" you have to know what the limits are.  We want
+to determine which state has the most alcoholic beer and which state has the most
+bitter beer.
+
+This is relatively simple.  We can determine this visually using boxplots and
+confirm programmatically by sorting the tables in descending order based on the
+values of interest.
+>>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
 ```{r}
 
   
@@ -375,6 +472,10 @@ max_ibu
 
 ## Question 6
 
+<<<<<<< HEAD
+=======
+Summarizing the statistics for ABV can be accomplished in a signle commande.
+>>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
 ```{r}
 
 #summaryize ABV
@@ -400,6 +501,17 @@ abv_stats #TODO: Add IQR, stdev    #TODO: Compare to quinton's summary
 
 ## Question 7
 
+<<<<<<< HEAD
+=======
+To determine the relationship between ABV and IBU it's helpful to see all values
+for both variables at the same time.  This is most easily accomplished using
+a scatterplot.
+
+With ABV on one axis and IBU on the other we start to see what appears to be a 
+linear correlation between the values.
+
+Adding a trendline allows us to determine a formula that specifies this correlation.
+>>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
 ```{r }
 # fig.height=48
 #plot relationshiop of ABV and IBU
