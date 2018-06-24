@@ -332,6 +332,12 @@ merged_data <- breweries_clean %>%
 
 
 ## Question 3
+
+Sometimes data are not available.  This analysis is no exception.  To better
+understand how our analysis could be impacted by missing values we first have to
+identify and county them.
+
+Below is a count missing values by variable.
 ```{r}
 
 # Number of nulls in each column
@@ -345,6 +351,8 @@ merged_data %>%
 
 
 ## Question 4
+
+Computing the median is straightforward.  We simply...
 ```{r } 
 #fig.width=11
 
