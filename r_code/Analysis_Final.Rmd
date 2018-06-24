@@ -20,9 +20,7 @@ header-includes:
 
 
 
-<!-- \newenvironment{sciabstract}{% -->
-<!-- \begin{quote} \bf} -->
-<!-- {\end{quote}} -->
+
 
 ## Loading required libraries
 
@@ -43,6 +41,7 @@ require(summarytools)
 require(magrittr) 
 #automatically set working directory to the directory containing this R script
 
+opts_chunk$set(results='asis') #table format option
 
 
 
@@ -53,13 +52,10 @@ require(magrittr)
 
 ##Import Breweries Data
 
-<<<<<<< HEAD
-=======
 In this section we load and begin cleaning the data in order to aid our
 exploratory analysis.  Column names are set to lowercase for ease of reading and
 we begin to summarize the data.
 
->>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
 ```{r}
 
 
@@ -82,17 +78,19 @@ brewery_summary_raw <- select(breweries_data, state, brewery_id) %>% #select col
 kable(brewery_summary_raw, digits = 0)
 
 
-#TODO: Fix chart
-ggplot(brewery_summary_raw, aes(x=state, color=brewery_id)) +
-    geom_histogram(aes(y=..density..,fill = brewery_id, alpha=0.5), binwidth = 5, stat="count") +
-    #stat_count(aes("identity")) +
-    geom_density(alpha=.2, fill="black", color="black") +
-    #facet_grid(. ~ gender) +
-    theme_bw() +
-    theme(legend.position="bottom")
-    #theme(legend.position="none")
-    #theme(text = element_text(size=10), axis.text.x = element_text(angle=90, hjust=1)) 
 
+
+# #TODO: Fix chart
+# ggplot(brewery_summary_raw, aes(x=state, color=brewery_id)) +
+#     geom_histogram(aes(y=..density..,fill = brewery_id, alpha=0.5), binwidth = 5, stat="count") +
+#     #stat_count(aes("identity")) +
+#     geom_density(alpha=.2, fill="black", color="black") +
+#     #facet_grid(. ~ gender) +
+#     theme_bw() +
+#     theme(legend.position="bottom")
+#     #theme(legend.position="none")
+#     #theme(text = element_text(size=10), axis.text.x = element_text(angle=90, hjust=1)) 
+# 
 
 ```
 
@@ -100,8 +98,8 @@ ggplot(brewery_summary_raw, aes(x=state, color=brewery_id)) +
 
 
 ## Clean Breweries Data
-<<<<<<< HEAD
-=======
+
+
 
 Before we can confidently proceed with our analysis it's important to ensure
 we have scrubbed the data, removed duplicates, and decide how we will deal with
@@ -140,8 +138,6 @@ Once potential duplicates are identified and assigned temporary keys, they are
 evaluated apart from the main dataset and returned to the main dataset once 
 duplicates have been removed.
 
-```{r}
->>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
 
 
 
@@ -229,10 +225,12 @@ breweries_clean <- distinct(breweries_data, brewery_id, .keep_all = TRUE) %>% re
 
 ## Clean Beer Data
 
-<<<<<<< HEAD
-=======
+
+
 A similar process is used to remove duplicates from the Beers dataset.
->>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
+
+
+
 ```{r}
 
 beer_data <- read.csv("../data/Beers.csv", header=TRUE)
@@ -260,31 +258,42 @@ beer_clean <- distinct(beer_data)#%>% rename(Brew_ID = Brewery_id, Beer_Name = N
 
 ## Question 1
 
-<<<<<<< HEAD
 
 
-=======
+
+
 To determine the number breweries in each state we simply count the number of times
 each state appears in the table.  
->>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
+
+
+
 ```{r}
+
+
+
 
 #TODO: break up chunk
 
-state_ll <- read.csv("../data/state_coords.csv") %>% mutate(State = toupper(State)) %>% rename(state = State) %>% select(-Latitude, -Longitude)
+state_ll <- read.csv("../data/state_coords.csv") %>% 
+                    mutate(State = toupper(State)) %>% 
+                    rename(name = State, lat_center = Latitude, lon_center = Longitude) #%>% select(-Latitude, -Longitude)
 
 states <- map_data("state") %>%
           mutate(region = toupper(region)) %>%
-          rename(state=region) %>%
-          select(long, lat, state, group)
-        
+          rename(name=region) %>%
+          select(long, lat, name, group)
+ 
+# states %>% group_by(name) %>%
+#             summarise_all(funs(n=n()))
+# 
+#        
 states <- states %>%          
           left_join(
             states %>%
-            group_by(state) %>%
+            group_by(name) %>%
             summarise_all(funs(n=n())) %>%
-            select(state, group_n) %>%
-            distinct(state, .keep_all = TRUE)
+            select(name, group_n) %>%
+            distinct(name, .keep_all = TRUE)
           )
           
           
@@ -293,7 +302,8 @@ states <- states %>%
 
 breweries_by_state <- select(breweries_clean, brewery_id, state) %>%
   group_by(state) %>%
-  summarise_all(funs(brewery_count = n())) 
+  summarise_all(funs(brewery_count = n()))  %>%
+  left_join(state_ll, by=c("state" = "Abbr"))
 
 
 # state_ll %>%
@@ -306,20 +316,38 @@ kable(as.data.frame(summarytools::descr(breweries_by_state, transpose = TRUE)),d
 # freq(breweries_clean$state, order = "freq")
 
 
+
 ```
+
+
+
+
 
 
 ```{r}
 #map of breweries by state
-ggplot(data = breweries_by_state %>%
-  inner_join(state_ll, by=c("State" = "Abbr")) %>%
-  inner_join(states)) +
-  geom_polygon(aes(x = long, y = lat, group=group, fill=Brewery_count), color = "black") + 
-  #geom_text(aes(x = long, y = lat, label = as.character(Brewery_count), color = "black")) +
-  coord_fixed(1.3) +
-  guides(alpha=FALSE)
-  # scale_fill_gradientn(colours = "black",
-  #                         breaks = c(2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50))
+
+#one to many join of breweries by state
+breweries_geo <- breweries_by_state %>%
+                  inner_join(states, by = c("name" = "name"))
+
+# the color scales REFUSE to work
+ggplot(data = breweries_geo, aes(group = state, stat="identity")) +
+  geom_polygon(aes(x = long, 
+                   y = lat, 
+                   group=group, 
+                   fill=brewery_count), 
+               color = "black") + 
+  geom_text(data = (breweries_by_state %>% 
+                    filter(!(state %in% c("AK", "DC", "HI")))), #filter to continental 50 states
+            aes(x = lon_center, 
+                y = lat_center, 
+                label = as.character(brewery_count), 
+                size = 7)
+            ) +
+  coord_fixed(1.3) 
+
+
 
 # TODO: Overlay frequencies on states
 # TODO: fix color scale
@@ -330,14 +358,15 @@ ggplot(data = breweries_by_state %>%
 
 ## Question 2
 
-<<<<<<< HEAD
-=======
+
+
 In data science, like in life, sometimes less is more.  Instead of maintaining
 separate tables for breweries and beers, it's helpful to merge the two datasets
 into a single combined dataset.  We do this by joining the two tables by the
 Brew_ID variable.
 
->>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
+
+
 ```{r}
 # merge beer and breweries
 merged_data <- breweries_clean %>%
@@ -353,14 +382,15 @@ merged_data <- breweries_clean %>%
 
 ## Question 3
 
-<<<<<<< HEAD
-=======
+
+
 Sometimes data are not available.  This analysis is no exception.  To better
 understand how our analysis could be impacted by missing values we first have to
 identify and county them.
 
 Below is a count missing values by variable.
->>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
+
+
 ```{r}
 
 # Number of nulls in each column
@@ -377,13 +407,12 @@ merged_data %>% filter(state == 'CA')
 
 
 ## Question 4
-<<<<<<< HEAD
-=======
+
+
 
 Computing the median is straightforward.  We simply...
-```{r } 
-#fig.width=11
->>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
+
+
 
 ```{r fig.height = 12, fig.width = 12} 
 
@@ -422,8 +451,8 @@ ggplot(merged_by_state, aes(x=state, y=ibu)) +
 
 ## Question 5
 
-<<<<<<< HEAD
-=======
+
+
 Before you can "push the limits" you have to know what the limits are.  We want
 to determine which state has the most alcoholic beer and which state has the most
 bitter beer.
@@ -431,7 +460,8 @@ bitter beer.
 This is relatively simple.  We can determine this visually using boxplots and
 confirm programmatically by sorting the tables in descending order based on the
 values of interest.
->>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
+
+
 ```{r}
 
   
@@ -472,10 +502,11 @@ max_ibu
 
 ## Question 6
 
-<<<<<<< HEAD
-=======
+
+
 Summarizing the statistics for ABV can be accomplished in a signle commande.
->>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
+
+
 ```{r}
 
 #summaryize ABV
@@ -501,8 +532,8 @@ abv_stats #TODO: Add IQR, stdev    #TODO: Compare to quinton's summary
 
 ## Question 7
 
-<<<<<<< HEAD
-=======
+
+
 To determine the relationship between ABV and IBU it's helpful to see all values
 for both variables at the same time.  This is most easily accomplished using
 a scatterplot.
@@ -511,49 +542,125 @@ With ABV on one axis and IBU on the other we start to see what appears to be a
 linear correlation between the values.
 
 Adding a trendline allows us to determine a formula that specifies this correlation.
->>>>>>> a0ace3e0a6c6c956e0a107d8931df155ecb16538
-```{r }
-# fig.height=48
-#plot relationshiop of ABV and IBU
 
-#retreive linear model equation -- source(https://stackoverflow.com/questions/7549694/adding-regression-line-equation-and-r2-on-graph)
-lm_eqn = function(m) {
 
-  l <- list(a = format(coef(m)[1], digits = 2),
-      b = format(abs(coef(m)[2]), digits = 2),
-      r2 = format(summary(m)$r.squared, digits = 3));
+```{r fig.width = 10, fig.height = 10}
 
-  if (coef(m)[2] >= 0)  {
-    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,l)
-  } else {
-    eq <- substitute(italic(y) == a - b %.% italic(x)*","~~italic(r)^2~"="~r2,l)    
-  }
 
-  as.character(as.expression(eq));                 
-}
-ggplot(beer_clean, aes(x=abv, y=ibu)) +
-  geom_point() +
-  geom_smooth(method = "lm") +
-  geom_text(aes(x = .02, y = 100, label = lm_eqn(lm(abv ~ ibu ,beer_clean))), parse = TRUE, color = "red")
+#A distinct list of beer styles, as classified by a unique style Name, IBU, ABV, and Ounces values.
 
-# Yes, there is a positive relationship between ABV and IBU. #TODO:Add explanation
-
+styles <- beer_clean %>% 
+              distinct(Beer_ID, Style, IBU, ABV, Ounces) %>% 
+              arrange(Style) %>% 
+              na.omit(IBU, ABV)
 
 ```
 
+
+* Plot ABV v. IBU
+
+```{r fig.width= 10, fig.height = 10}
+
+ggplot(styles, aes(x=ABV, y=IBU)) +
+  geom_point() +
+  scale_colour_brewer() +
+  ggtitle("ABV v. IBU") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+# Analysis using Spearman Rank-Order Correlation
+
+    + More info on Spearman test: https://statistics.laerd.com/statistical-guides/spearmans-rank-order-correlation-statistical-guide.php
+
+
+* Problem: We wish to test if there is a monotonic association between the alochol by volume (ABV) and international bitterness unit (IBU) rating of beers selected from domestic craft breweries.
+
+* Hypotheses:
+  + H~o~: $\rho= 0$
+  + H~A~: $\rho\neq 0$
+
+
+* Assumptions:
+    + Continuity of data: \cmark
+    + Paired observations: \cmark
+    + Data has linear relationship: \cmark
+    + No significant outliers: \xmark
+    + Normality: \xmark
+    
 ```{r}
 
+#Scatter plot of ABV v IBU
+ggplot(styles, aes(x=ABV, y=IBU)) +
+  geom_point() +
+  scale_colour_brewer() +
+  geom_smooth(method = "lm", se = FALSE, color="red") +
+  theme(legend.position="none") +
+  ggtitle("ABV v. IBU") +
+  theme_minimal()  +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
 
 
+  + Due to the lack of normality of the IBU variable and the presence of outliers in both variables, we will use the Spearman Rank-Correlation test as an alternative to the preferred Pearson Correlation.
+
+  
 
 
 
 
+```{r fig.width= 10, fig.height=10}
+
+# QQ Plots of IBU and ABV
+
+
+#calulate line fit
+y <- quantile((styles$IBU %>% na.omit()), c(0.25, 0.75))
+x <- qnorm(c(0.25, 0.75))
+slope <- diff(y)/diff(x)
+y_int <- y[1] - slope * x[1]
+
+qq_ibu <- ggplot(styles, aes(sample = styles$IBU)) + 
+              geom_qq(shape = 16, size = 2, alpha = 0.5) +
+              geom_abline(slope = slope, intercept = y_int, colour ='red', size = 1) +
+              ggtitle("QQ-plot of IBU") +
+              theme_minimal()  +
+              theme(plot.title = element_text(hjust = 0.5))
+
+
+#calulate line fit
+y <- quantile((styles$ABV %>% na.omit()), c(0.25, 0.75))
+x <- qnorm(c(0.25, 0.75))
+slope <- diff(y)/diff(x)
+y_int <- y[1] - slope * x[1]  
+
+qq_abv <- ggplot(styles, aes(sample = styles$ABV)) + 
+            geom_qq(shape = 16, size = 2, alpha = 0.5) +
+            geom_abline(slope = slope, intercept = y_int, colour ='red', size = 1) +
+            ggtitle("QQ-plot of ABV") +
+            theme_minimal() +
+            theme(plot.title = element_text(hjust = 0.5))
 
 
 
+# Histograms
+hist_ibu <- ggplot(styles) +
+              geom_histogram(aes(x=IBU)) +
+              theme(text = element_text(size=10),
+                  axis.text.x = element_text(angle=90, hjust=1)) 
+
+hist_abv <- ggplot(styles) +
+              geom_histogram(aes(x=ABV)) +
+              theme(text = element_text(size=10),
+                  axis.text.x = element_text(angle=90, hjust=1)) 
+
+
+
+grid.arrange(qq_abv, qq_ibu)
+
+
+```
 
 
 

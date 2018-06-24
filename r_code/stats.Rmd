@@ -22,6 +22,7 @@ require(ggplot2)
 require(maps)
 require(RColorBrewer)
 require(summarytools)
+require(gridExtra)
 
 sessionInfo()
 
@@ -35,29 +36,14 @@ sessionInfo()
 
 ```{r}
 
-beer_data <- read.csv("../data/Beers.csv", header=TRUE)
-head(beer_data)
-
-
-#beer_data$Brewery_id[(beer_data$Brewery_id %in% breweries_sk$Brew_ID)]  <- breweries_sk$Brew_SK # update brewery_ids from brewery_sk data
-
-
-beer_clean <- distinct(beer_data) %>% rename(Brew_ID = Brewery_id, Beer_Name = Name) 
-
-notnull <- beer_data %>% filter(is.na(IBU)) %>% distinct(Style)
-
-
-isnull <- beer_data %>% filter(!is.na(IBU)) %>% distinct(Beer_ID, Style, IBU, ABV, Ounces) %>% arrange(Style)
-
-
 #A distinct list of beer styles. A distinct beer style is noted as having a unique style name, IBU, ABV, and Ounces values.
-styles <- notnull %>% 
-          full_join(isnull, by = "Style") %>% arrange(Style) #%>%
-          #mutate_each(funs(as.character), Style)
 
-styles <- styles %>% na.omit(IBU, ABV) #omit any record with missing ABV or IBU
+styles <- beer_clean %>% 
+              distinct(Beer_ID, Style, IBU, ABV, Ounces) %>% 
+              arrange(Style) %>% 
+              na.omit(IBU, ABV)
 
-ss <- sample_n(styles, size = 30) #sample data frame rows so IBU and ABV remain paired
+
 
 ```
 
@@ -79,11 +65,6 @@ lm_eqn = function(m) {
   as.character(as.expression(eq));                 
 }
 
-ggplot(ss, aes(x=ABV, y=IBU)) +
-  geom_point() +
-  geom_smooth(method = "lm") +
-  geom_text(aes(x = .06, y = 100, label = lm_eqn(lm(ABV ~ IBU ,ss))), parse = TRUE, color = "red")
-
 ggplot(styles, aes(x=ABV, y=IBU)) +
   geom_point(aes(colour=as.factor(Ounces))) +
   scale_colour_brewer() +
@@ -101,28 +82,48 @@ ggplot(styles, aes(x=ABV, y=IBU)) +
 # Check for Outliers in IBU
 ```{r fig.height = 3, fig.width = 14}
 
+
+
 ibu_outliers <- boxplot(styles$IBU, plot = FALSE)[["out"]]
 
-ggplot((styles %>% drop_na(IBU)), aes(x="", y=IBU)) +
-      geom_point(aes(fill = ifelse((IBU %in% ibu_outliers),"Outlier","Valid")), size = 5, shape = 21, position = position_jitter())+
+abv_outliers <- boxplot(styles$ABV, plot = FALSE)[["out"]]
+
+
+x<-boxplot(styles$IBU, plot = FALSE)
+
+bp_abv <- ggplot((styles %>% drop_na(ABV)), aes(x="", y=ABV)) +
+      geom_point(aes(fill = ifelse((ABV %in% abv_outliers),"Outlier","Valid")), size = 5, shape = 21, position = position_jitter())+
       stat_boxplot(geom ='errorbar') +
-      geom_boxplot(alpha=.5, outlier.shape = NA) +#, outlier.colour = "red") +
-      stat_summary(fun.y=mean, geom="point", shape=5, size=4) +
+      geom_boxplot(alpha=.5, outlier.shape = NA) +
+      stat_summary(fun.y=mean, geom="point", shape=5, size=4) + 
       coord_flip()
-      #geom_text(aes(label=ifelse((x>4*IQR(x)|y>4*IQR(y)),label,"")), hjust=1.1)
 
 
+bp_ibu <- ggplot((styles %>% drop_na(IBU)), aes(x="", y=IBU)) +
+      geom_point(aes(fill = ifelse((IBU %in% ibu_outliers),"Outlier","Valid")),
+                 size = 5, 
+                 shape = 21, 
+                 position = position_jitter())+
+      stat_boxplot(geom ='errorbar') +
+      geom_boxplot(alpha=.5, outlier.shape = NA) +
+      
+      coord_flip()
 
-ibu_outliers
+grid.arrange(bp_abv, bp_ibu)
+
+
 
 ```
 
 # Check for Outliers in ABV
 ```{r fig.height = 3, fig.width = 14}
 
-abv_outliers <- boxplot(styles$ABV, plot = FALSE)[["out"]]
+abv_bp_stats <- boxplot(styles$ABV, plot = FALSE)
 
-abv_outliers
+abv_outliers <- abv_bp_stats[["out"]]
+abv_bp_UIF <- abv_bp_stats[["stats"]]
+
+
 
 ggplot((styles %>% drop_na(ABV)), aes(x="", y=ABV)) +
       #geom_point(aes(fill = ifelse((ABV>3.29*IQR(ABV)),"Outlier","Valid")), size = 5, shape = 21, position = position_jitter())+#= position_jitterdodge()) +
