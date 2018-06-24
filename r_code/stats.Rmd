@@ -28,23 +28,14 @@ sessionInfo()
 ```
 
 
-### Stats
-
-Assumptions
-
-For the Pearson r correlation, both variables should be normally distributed (normally distributed variables have a bell-shaped curve).  Other assumptions include linearity and homoscedasticity.  Linearity assumes a straight line relationship between each of the two variables and homoscedasticity assumes that data is equally distributed about the regression line.
-(http://www.statisticssolutions.com/correlation-pearson-kendall-spearman/) 
 
 
 
-H~o~: $\rho$~ABV~=$\rho$~IBU~
-H~A~: $\rho$~ABV~=$\rho$~IBU~
+
 
 ```{r}
 
 beer_data <- read.csv("../data/Beers.csv", header=TRUE)
-
-
 head(beer_data)
 
 
@@ -64,44 +55,9 @@ styles <- notnull %>%
           full_join(isnull, by = "Style") %>% arrange(Style) #%>%
           #mutate_each(funs(as.character), Style)
 
-
-
-#TODO: Readdress pearson vs spearman
-
-a=1-.05/2
+styles <- styles %>% na.omit(IBU, ABV) #omit any record with missing ABV or IBU
 
 ss <- sample_n(styles, size = 30) #sample data frame rows so IBU and ABV remain paired
-ss
-
-m = "spearman" # ABV and IBU are both ordinal
-
-plot(styles$IBU, styles$ABV)
-results <- cor.test(styles$IBU, styles$ABV, method = m, conf.level = a)
-
-results
-
-r_sq <- results[["estimate"]][["rho"]]^2
-r_sq
-
-#qt(a, results[["parameter"]][["df"]])
-
-
-
-results <- cor.test(ss$IBU, ss$ABV, method = m, conf.level = a)
-
-results
-
-
-r_sq <- results[["estimate"]][["rho"]]^2
-r_sq
-
-#qt(a, results[["parameter"]][["df"]])
-
-plot(select(ss, IBU, ABV))
-
-print("There is strong evidence that the ABV and IBU are correlated (p-value > 0.001)") #TODO: calculate conf int
-
-#TODO: check number of ties
 
 ```
 
@@ -173,7 +129,7 @@ ggplot((styles %>% drop_na(ABV)), aes(x="", y=ABV)) +
       coord_flip()
       #geom_text(aes(label=ifelse((x>4*IQR(x)|y>4*IQR(y)),label,"")), hjust=1.1)
 
-boxplot(styles$ABV, plot = TRUE)
+#boxplot(styles$ABV, plot = TRUE)
 
 
 
@@ -181,15 +137,16 @@ boxplot(styles$ABV, plot = TRUE)
 
 
 
-#check normality of sample
+#check normality of full dataset and sample
 ```{r}
 
-ggplot(ss) +
+#full dataaset
+ggplot(styles) +
     geom_histogram(aes(x=IBU)) +
     theme(text = element_text(size=10),
         axis.text.x = element_text(angle=90, hjust=1)) 
 
-ggplot(ss) +
+ggplot(styles) +
     geom_histogram(aes(x=ABV)) +
     theme(text = element_text(size=10),
         axis.text.x = element_text(angle=90, hjust=1)) 
@@ -199,28 +156,151 @@ ggplot(ss) +
 
 
 
+# #sample
+# ggplot(ss) +
+#     geom_histogram(aes(x=IBU)) +
+#     theme(text = element_text(size=10),
+#         axis.text.x = element_text(angle=90, hjust=1)) 
+# 
+# ggplot(ss) +
+#     geom_histogram(aes(x=ABV)) +
+#     theme(text = element_text(size=10),
+#         axis.text.x = element_text(angle=90, hjust=1)) 
+# 
+# 
+
+
+
+
 ```
 
 # Check normality of log sample
 ```{r}
 
-ss$IBU_log <- log(ss$IBU)
-ss$ABV_log <- log(ss$ABV)
 
-ggplot(ss) +
+styles$IBU_log <- log(styles$IBU)
+styles$ABV_log <- log(styles$ABV)
+
+ggplot(styles) +
     geom_histogram(aes(x=IBU_log)) +
     theme(text = element_text(size=10),
         axis.text.x = element_text(angle=90, hjust=1)) 
 
-ggplot(ss) +
+ggplot(styles) +
     geom_histogram(aes(x=ABV_log)) +
+    geom_density() +
     theme(text = element_text(size=10),
         axis.text.x = element_text(angle=90, hjust=1)) 
+
+
+
+
+
+
+# ss$IBU_log <- log(ss$IBU)
+# ss$ABV_log <- log(ss$ABV)
+# 
+# ggplot(ss) +
+#     geom_histogram(aes(x=IBU_log)) +
+#     theme(text = element_text(size=10),
+#         axis.text.x = element_text(angle=90, hjust=1)) 
+# 
+# ggplot(ss) +
+#     geom_histogram(aes(x=ABV_log)) +
+#     theme(text = element_text(size=10),
+#         axis.text.x = element_text(angle=90, hjust=1)) 
 
 
 # log plots seem to also suggest spearman over pearson
 
 ```
 
+# QQ Plots of full and sample datasets
 
 
+```{r fig.width= 10, fig.height=10}
+
+
+
+
+  #calulate line fit
+  y <- quantile((styles$IBU %>% na.omit()), c(0.25, 0.75))
+  x <- qnorm(c(0.25, 0.75))
+  slope <- diff(y)/diff(x)
+  y_int <- y[1] - slope * x[1]
+
+  ggplot(styles, aes(sample = styles$IBU)) + 
+    geom_qq(shape = 16, size = 2, alpha = 0.5) +
+    geom_abline(slope = slope, intercept = y_int, colour ='red', size = 1) +
+    ggtitle("QQplot of IBU") +
+    theme_minimal()
+
+  
+  #calulate line fit
+  y <- quantile((styles$ABV %>% na.omit()), c(0.25, 0.75))
+  x <- qnorm(c(0.25, 0.75))
+  slope <- diff(y)/diff(x)
+  y_int <- y[1] - slope * x[1]  
+  
+  ggplot(styles, aes(sample = styles$ABV)) + 
+    geom_qq(shape = 16, size = 2, alpha = 0.5) +
+    geom_abline(slope = slope, intercept = y_int, colour ='red', size = 1) +
+    ggtitle("QQplot of ABV") +
+    theme_minimal()  
+  
+
+
+```
+
+
+# Analysis using Spearman Rank-Order Correlation
+
+    + More info on Spearman test: https://statistics.laerd.com/statistical-guides/spearmans-rank-order-correlation-statistical-guide.php
+
++ H~o~: $\rho= 0$
++ H~A~: $\rho\neq 0$
+
+```{r}
+
+
+
+a=1-.05/2
+
+
+ss
+
+m = "spearman" # ABV and IBU are both ordinal
+
+#plot(styles$IBU, styles$ABV)
+results <- cor.test(styles$IBU, styles$ABV, method = m, conf.level = a)
+
+results
+
+r_sq <- results[["estimate"]][["rho"]]^2
+r_sq
+
+#qt(a, results[["parameter"]][["df"]])
+
+
+
+results <- cor.test(ss$IBU, ss$ABV, method = m, conf.level = a)
+
+results
+
+
+r_sq <- results[["estimate"]][["rho"]]^2
+r_sq
+
+#qt(a, results[["parameter"]][["df"]])
+
+#plot(select(ss, IBU, ABV))
+
+#print("There is strong evidence that the ABV and IBU are correlated (p-value < 0.001).  The IBU rating accounts for 40.7% of the variation in the ABV.  While IBU and ABV certainly have a correlation, that correlation is not very strong.") #TODO: calculate conf int
+
+#TODO: check number of ties
+```
+
+There is strong evidence that the ABV and IBU are correlated (p-value < 0.001).  At a 95% confidence level, the IBU rating accounts for 31.5% of the variation in the ABV.  While IBU and ABV certainly have a correlation, that correlation is not very strong.  We can conclude that IBU rating and ABV are associated, but only that there is an association.  No causality or extrapolation can be applied to these conclusions."
+
+Alternative questions to ask:
++ Does the mean/median ABV of a brewery 
