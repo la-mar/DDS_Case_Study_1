@@ -15,8 +15,14 @@ header-includes:
 - \newcommand{\xmark}{\Large\textcolor{red}{\ding{55}}}
 ---
 
+##Introduction
+It goes without saying that entering the craft beer market, in pretty much any state, is a monstrous task. The explosion of micro-breweries has spread expeditiously in nearly every rapidly-growing urban environment. Luckily for you, the explosion is not in isolation. Demand has never been higher for unique and complex alcoholic libations. Where once the thought process was "the simpler the better," newer generations are constantly on the hunt for a drinking experience that fits their lifestyle and temperament. Although the market may seem saturated in many areas, it is, in reality, a rich field filled with almost never-ending demand ready to be tapped by the right combination of ingenuity, experimentation and a knowledge of what sells.
 
-
+##Purpose of this study
+Purpose of this study
+•	To organize and analyze a list of 2410 craft beers from the United States and a list of 558 breweries.
+•	To help you identify trends within this data to help narrow your focus for production. Manufacturing a beer that will outsell your competitors is more than just a quality product, it's knowing what quality is proven to sell.
+•	To provide you with a functional list of each beer's alcohol content, bitterness level, style and other information to help you decide which direction to take your production facilities and supply chain.
 
 
 ## Loading required libraries
