@@ -423,8 +423,9 @@ summarytools::dfSummary(breweries_by_state, transpose = TRUE)
 breweries_geo <- breweries_by_state %>%
                   inner_join(states, by = c("name" = "name"))
 
-# the color scales REFUSE to work
-ggplot(data = breweries_geo, aes(group = state, stat="identity")) +
+# map chart of brweeries_by_state
+ggplot((breweries_geo %>% arrange(desc(brewery_count))), 
+       aes(group = state, stat="identity")) +
   geom_polygon(aes(x = long, 
                    y = lat, 
                    group=group, 
@@ -434,16 +435,23 @@ ggplot(data = breweries_geo, aes(group = state, stat="identity")) +
                     filter(!(state %in% c("AK", "DC", "HI")))), #filter to continental 50 states
             aes(x = lon_center, 
                 y = lat_center, 
-                label = as.character(brewery_count), 
-                size = 7)
+                label = as.character(brewery_count)),
+            color = 'white'
             ) +
-  coord_fixed(1.3) 
+  guides(fill=guide_legend(title= "Brewery Count")) +
+  scale_fill_continuous(breaks = seq(0,50, by = 5)) +
+  coord_fixed(1.3) + # fix lat/long display ratio
+  ggtitle("Breweries by State") + # set plot title
+  theme(plot.title = element_text(hjust = 0.5)) + # center plot title
+  theme(legend.position = "right",
+        axis.title.x=element_blank(), # hide x axis title
+        axis.text.x=element_blank(),  # hide x axis text
+        axis.ticks.x=element_blank(), # hide x axis ticks
+        axis.title.y=element_blank(), # hide y axis title
+        axis.text.y=element_blank(),  # hide y axis text
+        axis.ticks.y=element_blank()) # hide y axis ticks
 
 
-
-# TODO: Overlay frequencies on states
-# TODO: fix color scale
-# TODO: high level summary table
 
 ```
 
@@ -466,7 +474,43 @@ merged_data <- breweries_clean %>%
                full_join(beer_clean, by="brewery_id")
 
 
+
+x <- select(merged_data, brewery_name, state) %>%
+    group_by(state) %>% 
+    summarise_all(funs(brews=n(), breweries = n_distinct(brewery_name))) %>%
+                  inner_join(state_ll, by = c("state" = "Abbr"))
+
+
 #TODO: Plot -> brews by brewery
+
+ggplot((breweries_geo %>% arrange(desc(brewery_count))), 
+       aes(group = state, stat="identity")) +
+  geom_polygon(aes(x = long, 
+                   y = lat, 
+                   group=group, 
+                   fill=brewery_count), 
+               color = "black") + 
+  geom_text(data = x, 
+            aes(x = lon_center, 
+                y = lat_center, 
+                label = as.character(round((brews/breweries),2))),
+            color = 'white'
+            ) +
+  guides(fill=guide_legend(title= "Mean Brews per Brewery by State")) +
+  scale_fill_continuous(breaks = seq(0,50, by = 5)) +
+  coord_fixed(1.3) + # fix lat/long display ratio
+  ggtitle("Breweries by State") + # set plot title
+  theme(plot.title = element_text(hjust = 0.5)) + # center plot title
+  theme(legend.position = "right",
+        axis.title.x=element_blank(), # hide x axis title
+        axis.text.x=element_blank(),  # hide x axis text
+        axis.ticks.x=element_blank(), # hide x axis ticks
+        axis.title.y=element_blank(), # hide y axis title
+        axis.text.y=element_blank(),  # hide y axis text
+        axis.ticks.y=element_blank()) # hide y axis ticks
+
+
+
 
 ```
 
