@@ -272,8 +272,13 @@ beer_clean <- distinct(beer_data)#%>% rename(Brew_ID = Brewery_id, Beer_Name = N
 
 
 
-To determine the number breweries in each state we simply count the number of times
-each state appears in the table.  
+To determine the number breweries in each state we simply count the number of times each state appears in the table. 
+
+The prominent brewing states with twenty or more breweries include: Colorado 47, California 39, Michigan 32, Oregon 29, Texas 28, Pennsylvania 25, Massachusetts 23, Washington 23, Indiana 22, Wisconsin 20. 
+
+These prominent brewing states are important to the beer market, because of their distinct beer types and styles that are produced in state and consumed nationally. 
+
+What kinds of beers and their characteristics will be of great interest for the analysis.  
 
 
 
@@ -369,10 +374,11 @@ ggplot(data = breweries_geo, aes(group = state, stat="identity")) +
 
 
 
-In data science, like in life, sometimes less is more.  Instead of maintaining
-separate tables for breweries and beers, it's helpful to merge the two datasets
-into a single combined dataset.  We do this by joining the two tables by the
-Brew_ID variable.
+In data science, like in life, sometimes less is more.  Instead of maintaining separate tables for breweries and beers, it's helpful to merge the two datasets into a single combined dataset.  
+
+We do this by joining the two tables by the Brew_ID variable to create a new object variable named merged_data, which allows us to view the desired characteristics of beers produced by the prominent breweries. 
+
+Those characteristics will be of high importance for the analysis of most deisired beers, and we can begin to get clues of the prominent beers when we programmatically arrange these data by the most frequent style name variable sorted by every brewery.
 
 
 
@@ -393,9 +399,9 @@ merged_data <- breweries_clean %>%
 
 
 
-Sometimes data are not available.  This analysis is no exception.  To better
-understand how our analysis could be impacted by missing values we first have to
-identify and county them.
+Sometimes data are not available.  This analysis is no exception.  To better understand how our analysis could be impacted by missing values we first have to identify and county them. 
+
+These missing values would interfere with our analysis of center for the numeric variables and frequency of our factor and character variables. Once the missing values are removed, we can use the clean data to conduct the descriptive and quantitative analysis.
 
 Below is a count missing values by variable.
 
@@ -419,7 +425,11 @@ merged_data %>% filter(state == 'CA')
 
 
 
-Computing the median is straightforward.  We simply...
+Computing the median is straightforward.  We simply merge all of the cleaned data by state, and calculate the median ABV and IBU for each state, which is summarized into a table and plotted as bar charts recording the median values across each state side by side. 
+
+This plot is benificial to the analysis, because it gives insight into the beer characteristics of the prominent brewing states and the other states with less than twenty breweries. The prominent brewing states all share high ABV and IBU values, which brings more evidence to investigate for the analysis.
+
+Are high ABV and IBU values always a characteristic of highly demanded beers in the respective market? We will have to produce a plausable claim and conduct a hypothesis test of that claim after further investigation.
 
 
 
@@ -470,6 +480,14 @@ This is relatively simple.  We can determine this visually using boxplots and
 confirm programmatically by sorting the tables in descending order based on the
 values of interest.
 
+The state with the highest ABV value is Colorado with a 0.128 ABV value for the Lee Hill Series Vol. 5 - Belgian Style Quadrupel Ale beer that is a Quadrupel (Quad) style of beer brewed by the Upslope Brewing Company in Boulder, CO.
+
+The state with the highest IBU value is Oregon with a 138 IBU value for the Bitter Bitch Imperial IPA beer that is a American Double / Imperial IPA style of beer brewed by the Astoria Brewing Company in Astoria, OR.
+
+The states with the highest ABV and IBU values are found to be comprised of a majority of the prominent brewing states including the folling values State(maxABV, maxIBU): 
+
+Colorado(.128, 104), California(.099, 115), Michigan(.099, 115), Oregon(.082, 138), Texas(.099, 118), Pennsylvania(.099, 113), Massachusetts(.099, 130), Washington(.084, 83), Indiana(.120, 115), Wisconsin(.099, 80). 
+
 
 ```{r}
 
@@ -512,8 +530,19 @@ max_ibu
 ## Question 6
 
 
+The amount of alcohol by volume ABV is a good representation of the beer market, where consumer demand is infered from the geographical spread and number of breweries produce a certain style of beer. The certain style of a beer is controlled in-part by the ABV content. From the ABV five number summary we can better describe the use of the ABV variable as a controlling factor in the consumer market of beer. 
 
-Summarizing the statistics for ABV can be accomplished in a signle commande.
+The minimum ABV value of 0.001 is represented only one style of beer -Low Alcohol Beer produced by 1 brewery in CA:1. From these data we can infer the lack of consumer demand by the geographical spread of the style and by the lack of 0.001 ABV variability. 
+
+The first quartile(Q1) is represented by beers with a 0.050 ABV value represented by the -American -IPA and -Ale styles of beer that ranges from 5-100 in IBU. There are 38 different styles of beers with this ABV, that are produced by 141 different breweries in 46 different states AK:3, AL:1, AR:1, AZ:3, CA:10, CO:12, CT:3, DC:1, FL:5, GA:1, HI:1, IA:3, ID:2, IL:4, IN:3, KS:2, KY:1, LA:3, MA:4, MD:2, ME:2, MI:8, MN:3, MO:3, MS:1, MT:3, NC:4, ND:1, NE:1, NH:1, NJ:1, NV:1,  NY:1, OH:6, Ok:1, OR:8, PA:5, RI:1, SC:1, TN:1, TX:5, UT:2, VA:2, WA:2, WI:7, WY:2. The use of a 0.050 ABV for a beer will allow for a large amount of variation with respect to the IBU of a beer style. The use of an ABV of 0.050 with any IBU between 5-100 will likely be a higly demanded beer by the consumer market.   
+
+The median ABV value of 0.056 represents the -American Ale and -Pale Ale styles of beer that ranges from 4-70 in IBU. There are 21 different styles of beers with this ABV, that are produced by 49 different breweries in 25 different states AK:1, AL:1, CA:5, CO:6, FL:1, IA:1, ID:1, IL:2, IN:2, KS:1, MA:3, MI:4, MN:2, MO:1, MT:1, NC:1, NE:1, NH:1, NY:1, OR:1, PA:4, TX:3, VA:2, WA:1, WI:2. 
+
+The third quartile(Q3) is represented by beers with a 0.067 ABV value represented by the -IPA and -Ale styles of beer that ranges from 33-85 in IBU. There are 10 different styles of beers with this ABV, that are produced by 22 different breweries in 15 different states AZ:1, CA:2, CO:3, MA:1, ME:1, MI:4, MN:2, NC:1, ND:1, NY:1, OH:1, OR:4, PA:1, WA:1, WV:1.  
+
+The maximum ABV value of 0.128 is represented only one style of beer -Quadrupel (Quad) that is produce by 3 breweries from 3 different states CO:1, IN:1, MI:1, and we can infer the demand of the consumer as a moderate demand by the breweries producing these beer being spread out geographically across the nation even though the style variability is very-low for the 0.128 ABV.
+
+Summarizing the statistics for ABV can be accomplished in a signle command.
 
 
 ```{r}
