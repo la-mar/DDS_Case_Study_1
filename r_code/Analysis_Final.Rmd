@@ -2,10 +2,10 @@
 title: "Analysis of "
 date: "June 23, 2018"
 output:
-  html_document:
-    df_print: paged
   pdf_document: 
     keep_tex: true
+  html_document:
+    df_print: paged
 header-includes:
 - \usepackage{amsmath}
 - \usepackage{mathtools}
