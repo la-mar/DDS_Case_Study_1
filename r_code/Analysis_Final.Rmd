@@ -20,9 +20,9 @@ It goes without saying that entering the craft beer market, in pretty much any s
 
 ##Purpose of this study
 Purpose of this study
-•	To organize and analyze a list of 2410 craft beers from the United States and a list of 558 breweries.
-•	To help you identify trends within this data to help narrow your focus for production. Manufacturing a beer that will outsell your competitors is more than just a quality product, it's knowing what quality is proven to sell.
-•	To provide you with a functional list of each beer's alcohol content, bitterness level, style and other information to help you decide which direction to take your production facilities and supply chain.
+  * To organize and analyze a list of 2410 craft beers from the United States and a list of 558 breweries.
+  * To help you identify trends within this data to help narrow your focus for production. Manufacturing a beer that will outsell your competitors is more than just a quality product, it's knowing what quality is proven to sell.
+  * To provide you with a functional list of each beer's alcohol content, bitterness level, style and other information to help you decide which direction to take your production facilities and supply chain.
 
 
 ## Loading required libraries
@@ -66,14 +66,12 @@ misc_warm = '#e8702a'
 
 ```
 
-
 ## Breweries Data
 
 ### Import Breweries
 
 In this section we load and begin cleaning the data in order to aid our
-exploratory analysis.  Column names are set to lowercase for ease of reading and
-we begin to summarize the data.
+exploratory analysis.  Column names are set to lowercase for ease of reading and we begin to summarize the data.
 
 ```{r}
 
@@ -124,22 +122,15 @@ ggplot(brewery_summary_raw) +
             axis.text.x = element_text(angle=90, hjust=1)) # rotate x-axis labels
 ```
 
-
 ### Clean Breweries Data
 
 Before we can confidently proceed with our analysis it's important to ensure
-we have scrubbed the data, removed duplicates, and decide how we will deal with
-errors and missing values.
+we have scrubbed the data, removed duplicates, and decide how we will deal with errors and missing values.
 
-We start this process by removing punctuation and whitespace from columns.  Humans
-are fallible and typos are easy to make.  Without knowing the origin of the data
-in the files provided, its prudent to assume that mistakes have been made and 
-take measures to correct them.
+We start this process by removing punctuation and whitespace from columns.  Humans are fallible and typos are easy to make.  Without knowing the origin of the data in the files provided, its prudent to assume that mistakes have been made and take measures to correct them.
 
 Remvoing punctuation allows us to mitigate the possibility of commas being
-erroneously typed as periods.  "Detroit, MI", for example, would be identified
-as a different city than "Detroit. MI"  Removing punctuation resolves this issue.  
-Both city/state combinations simply become "Detroit MI."
+erroneously typed as periods.  "Detroit, MI", for example, would be identified as a different city than "Detroit. MI"  Removing punctuation resolves this issue. Both city/state combinations simply become "Detroit MI."
 
 Likewise, it's helpful to remove whitespace.  Although whitespace can appear
 "invisible" to the human eye, computers can "see" this space as if it were a
@@ -147,22 +138,13 @@ number or a letter.
 
 We use the apply function to make these changes to every row in the dataframe.
 
-Removing duplicates is more of a challenge.  Before we can remove duplicates we
-need to confirm whether or not two rows are the same.  We identify duplicates by
-creating a unique key for each brewery that's a combination of the brewery ID,
-city, and state.  
+Removing duplicates is more of a challenge.  Before we can remove duplicates we need to confirm whether or not two rows are the same.  We identify duplicates by creating a unique key for each brewery that's a combination of the brewery ID, city, and state.  
 
-De-duplicating in this case is a multi-step process.  We start by identifying
-brewery ids that show up more than once which indicate possible duplicates.  
-Further investigation determines whether or not they are actually duplicates.
+De-duplicating in this case is a multi-step process.  We start by identifying brewery ids that show up more than once which indicate possible duplicates. Further investigation determines whether or not they are actually duplicates.
 
-In addition to removing identifying and removing duplicates programatically, we
-also need to correct a few entries manually.  There are some entries that are 
-clearly mis-spelled and need to be addressed.
+In addition to removing identifying and removing duplicates programatically, we also need to correct a few entries manually. There are some entries that are clearly mis-spelled and need to be addressed.
 
-Once potential duplicates are identified and assigned temporary keys, they are
-evaluated apart from the main dataset and returned to the main dataset once 
-duplicates have been removed.
+Once potential duplicates are identified and assigned temporary keys, they are evaluated apart from the main dataset and returned to the main dataset once duplicates have been removed.
 
 
 1) Remove punctuation and trim whitespace
@@ -192,7 +174,6 @@ breweries_data$brewery_id <- as.integer(breweries_data$brewery_id) # convert Bre
 
 
 ```
-
 
 3) Identify and capture potential duplicate records
 
@@ -258,8 +239,6 @@ breweries_dups <- breweries_dups %>%
 
 ```
 
-
-
     * Create new brewery_id for corrected duplicates
 
 ```{r}
@@ -299,16 +278,9 @@ summarytools::dfSummary(breweries_clean)
 
 ```
 
-
-
-
 ## Clean Beer Data
 
-
-
 A similar process is used to remove duplicates from the Beers dataset.
-
-
 
 ```{r}
 
@@ -340,14 +312,7 @@ kable(summarytools::dfSummary(beer_clean))
 ```
 
 
-
-
-
 ## Question 1
-
-
-
-
 
 To determine the number breweries in each state we simply count the number of times each state appears in the table. 
 
@@ -356,8 +321,6 @@ The prominent brewing states with twenty or more breweries include: Colorado 47,
 These prominent brewing states are important to the beer market, because of their distinct beer types and styles that are produced in state and consumed nationally. 
 
 What kinds of beers and their characteristics will be of great interest for the analysis.  
-
-
 
 ```{r}
 
@@ -413,9 +376,6 @@ summarytools::dfSummary(breweries_by_state, transpose = TRUE)
 
 
 
-
-
-
 ```{r}
 #map of breweries by state
 
@@ -450,15 +410,11 @@ ggplot(data = breweries_geo, aes(group = state, stat="identity")) +
 
 ## Question 2
 
-
-
 In data science, like in life, sometimes less is more.  Instead of maintaining separate tables for breweries and beers, it's helpful to merge the two datasets into a single combined dataset.  
 
 We do this by joining the two tables by the Brew_ID variable to create a new object variable named merged_data, which allows us to view the desired characteristics of beers produced by the prominent breweries. 
 
 Those characteristics will be of high importance for the analysis of most deisired beers, and we can begin to get clues of the prominent beers when we programmatically arrange these data by the most frequent style name variable sorted by every brewery.
-
-
 
 ```{r}
 # merge beer and breweries
@@ -471,18 +427,13 @@ merged_data <- breweries_clean %>%
 ```
 
 
-
-
 ## Question 3
-
-
 
 Sometimes data are not available.  This analysis is no exception.  To better understand how our analysis could be impacted by missing values we first have to identify and county them. 
 
 These missing values would interfere with our analysis of center for the numeric variables and frequency of our factor and character variables. Once the missing values are removed, we can use the clean data to conduct the descriptive and quantitative analysis.
 
 Below is a count missing values by variable.
-
 
 ```{r}
 
@@ -496,15 +447,11 @@ merged_data %>%
 
 ## Question 4
 
-
-
 Computing the median is straightforward.  We simply merge all of the cleaned data by state, and calculate the median ABV and IBU for each state, which is summarized into a table and plotted as bar charts recording the median values across each state side by side. 
 
 This plot is benificial to the analysis, because it gives insight into the beer characteristics of the prominent brewing states and the other states with less than twenty breweries. The prominent brewing states all share high ABV and IBU values, which brings more evidence to investigate for the analysis.
 
 Are high ABV and IBU values always a characteristic of highly demanded beers in the respective market? We will have to produce a plausable claim and conduct a hypothesis test of that claim after further investigation.
-
-
 
 ```{r fig.height = 12, fig.width = 12} 
 
@@ -540,10 +487,7 @@ ggplot(merged_by_state, aes(x=state, y=ibu)) +
 ```
 
 
-
 ## Question 5
-
-
 
 Before you can "push the limits" you have to know what the limits are.  We want
 to determine which state has the most alcoholic beer and which state has the most
@@ -560,7 +504,6 @@ The state with the highest IBU value is Oregon with a 138 IBU value for the Bitt
 The states with the highest ABV and IBU values are found to be comprised of a majority of the prominent brewing states including the folling values State(maxABV, maxIBU): 
 
 Colorado(.128, 104), California(.099, 115), Michigan(.099, 115), Oregon(.082, 138), Texas(.099, 118), Pennsylvania(.099, 113), Massachusetts(.099, 130), Washington(.084, 83), Indiana(.120, 115), Wisconsin(.099, 80). 
-
 
 ```{r}
 
@@ -604,7 +547,6 @@ max_ibu
 
 ## Question 6
 
-
 The amount of alcohol by volume ABV is a good representation of the beer market, where consumer demand is infered from the geographical spread and number of breweries produce a certain style of beer. The certain style of a beer is controlled in-part by the ABV content. From the ABV five number summary we can better describe the use of the ABV variable as a controlling factor in the consumer market of beer. 
 
 The minimum ABV value of 0.001 is represented only one style of beer -Low Alcohol Beer produced by 1 brewery in CA:1. From these data we can infer the lack of consumer demand by the geographical spread of the style and by the lack of 0.001 ABV variability. 
@@ -618,7 +560,6 @@ The third quartile(Q3) is represented by beers with a 0.067 ABV value represente
 The maximum ABV value of 0.128 is represented only one style of beer -Quadrupel (Quad) that is produce by 3 breweries from 3 different states CO:1, IN:1, MI:1, and we can infer the demand of the consumer as a moderate demand by the breweries producing these beer being spread out geographically across the nation even though the style variability is very-low for the 0.128 ABV.
 
 Summarizing the statistics for ABV can be accomplished in a signle command.
-
 
 ```{r}
 
@@ -645,8 +586,6 @@ abv_stats #TODO: Add IQR, stdev    #TODO: Compare to quinton's summary
 
 ## Question 7
 
-
-
 To determine the relationship between ABV and IBU it's helpful to see all values
 for both variables at the same time.  This is most easily accomplished using
 a scatterplot.
@@ -655,7 +594,6 @@ With ABV on one axis and IBU on the other we start to see what appears to be a
 linear correlation between the values.
 
 Adding a trendline allows us to determine a formula that specifies this correlation.
-
 
 ```{r fig.width = 10, fig.height = 10}
 
@@ -668,7 +606,6 @@ styles <- beer_clean %>%
               na.omit(ibu, abv)
 
 ```
-
 
 * Plot ABV v. IBU
 
@@ -713,7 +650,6 @@ ggplot(styles, aes(x=abv, y=ibu)) +
   theme(plot.title = element_text(hjust = 0.5))
 
 ```
-
 
 #### QQ-Plot - Check for Normality
 
@@ -779,7 +715,6 @@ grid.arrange(hist_abv, hist_ibu)
 
 ```
 
-
 #### Boxplot - Check for Outliers
 
 ```{r fig.height = 3, fig.width = 10}
@@ -832,18 +767,12 @@ grid.arrange(bp_abv, bp_ibu)
 
 ```
 
-
-
-
   + Due to the lack of normality of the IBU variable and the presence of outliers in both variables, we will use the Spearman Rank-Correlation test as an alternative to the preferred Pearson Correlation.
 
-  
 
 #### Spearman Rank-Order Correlation
 
     + More info on Spearman test: https://statistics.laerd.com/statistical-guides/spearmans-rank-order-correlation-statistical-guide.php
-
-
 
 * Hypotheses:
     + H~o~: $\rho = 0$
