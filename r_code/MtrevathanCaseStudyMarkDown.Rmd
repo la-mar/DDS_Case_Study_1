@@ -1,0 +1,73 @@
+---
+title: "Matthew Trevathan Case Study 1"
+author: "Matthew Trevathan"
+date: "June 25, 2018"
+output: html_document
+---
+##Introduction
+This file is for first case study for Doing Data Science MSDS 6306
+
+##Project Directory
+GitHub cloud directory: https://github.com/la-mar/DDS_Case_Study_1.git.
+
+##Libraries Used
+magrittr, dplyr, plyr
+
+##Data Read-in
+```{r, ECHO=TRUE}
+beers <- read.csv("Beers.csv", header = TRUE, as.is=TRUE)
+brewery <- read.csv("Breweries.csv", header = TRUE, as.is=TRUE)
+```
+
+```{r, echo=FALSE}
+library(magrittr)
+library(dplyr)
+library(plyr)
+```
+
+#Question 1. How many breweries are present in each state?
+```{r, ECHO=TRUE}
+
+by_state <- count(brewery, "State")
+```
+
+#Question 2. Merge beer data with breweries data. Print the first 6 observations and the last six observations to check the merged file.
+```{r, ECHO=TRUE}
+brewery_beers <- merge(beers, brewery, by.x = "Brewery_id", by.y = "Brew_ID")
+colnames(brewery_beers) <- c("Brewery ID", "Beer Name", "Beer ID", "ABV", "IBU", "Style", "Ounces", "Brewery Name", "City", "State")
+head(brewery_beers)
+tail(brewery_beers)
+```
+
+#Question 3. Report the number of NA's in each column.
+```{r, ECHO=TRUE}
+na_count <- colSums(is.na(brewery_beers))
+na_count
+```
+
+#Question 4. Compute the median alcohol content and international bitterness unit for each state. Plot a bar chart to compare.
+barplot(medians_IBU$median_ibu, horiz = TRUE, cex.names=0.2, names.arg = medians_IBU$State, xlim = c(0, 70))
+
+barplot(medians_ABV$median_abv, horiz = TRUE, cex.names=0.2, names.arg = medians_ABV$State, xlim = c(0, .075))
+```{r, ECHO=TRUE}
+medians_ABV <- brewery_beers %>% group_by(State) %>% summarise(median_abv = median(ABV, na.rm = TRUE)) 
+medians_IBU <- brewery_beers %>% group_by(State) %>% summarise(median_ibu = median(IBU, na.rm = TRUE))
+```
+
+#Question 5. Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer?
+```{r, ECHO=TRUE}
+ABV_state <- brewery_beers %>% group_by(State) %>% summarise(max(ABV, na.rm = TRUE))
+ABV_state[which.max(ABV_state$`max(ABV, na.rm = TRUE)`),]
+
+IBU_state <- brewery_beers %>% group_by(State) %>% summarise(max(IBU, na.rm = TRUE))
+IBU_state[which.max(IBU_state$`max(IBU, na.rm = TRUE)`),]
+```
+
+#Question 6. Summary statistics for the ABV variable.
+```{r, ECHO=TRUE}
+ABV_summary <- summary(brewery_beers$ABV)
+ABV_summary
+```
+
+#Is there an apparent relationship between the bitterness of the beer and its alcoholic content? Draw a scatter plot.
+plot(brewery_beers$IBU, brewery_beers$ABV)
