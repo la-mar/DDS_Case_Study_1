@@ -465,7 +465,7 @@ ggplot((breweries_geo %>% arrange(desc(brewery_count))),
         axis.text.y=element_blank(),  # hide y axis text
         axis.ticks.y=element_blank()) # hide y axis ticks
 
-
+#TODO: FILTER to contiguous 50 states
 
 
 ```
