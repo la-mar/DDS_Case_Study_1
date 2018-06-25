@@ -270,8 +270,6 @@ ggplot(styles) +
 a=1-.05/2
 
 
-ss
-
 m = "spearman" # ABV and IBU are both ordinal
 
 #plot(styles$IBU, styles$ABV)

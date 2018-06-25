@@ -2,10 +2,10 @@
 title: "Analysis of "
 date: "June 23, 2018"
 output:
-  pdf_document: 
-    keep_tex: true
   html_document:
     df_print: paged
+  pdf_document: 
+    keep_tex: true
 header-includes:
 - \usepackage{amsmath}
 - \usepackage{mathtools}
@@ -13,9 +13,6 @@ header-includes:
 - \usepackage{xcolor,pifont}
 - \newcommand{\cmark}{\Large\textcolor{green}{\ding{52}}}
 - \newcommand{\xmark}{\Large\textcolor{red}{\ding{55}}}
-
-
-
 ---
 
 
@@ -39,11 +36,24 @@ require(maps)
 require(RColorBrewer)
 require(summarytools)
 require(magrittr) 
+require(gridExtra)
 #automatically set working directory to the directory containing this R script
 
-opts_chunk$set(results='asis') #table format option
+opts_chunk$set(results = 'asis') # table format option
+opts_chunk$set(fig.align = 'center') # plot align option
+opts_chunk$set(fig.width = 10) # plot width
+opts_chunk$set(fig.height = 10) # plot height
+opts_chunk$set(message = FALSE) # output messages
+opts_chunk$set(warning = FALSE) # output warnings
+opts_chunk$set(error = FALSE) # output errors
 
+ggplot2::theme_set(ggplot2::theme_bw())
 
+abv_fill <- '#ffbe4f'
+avb_outline <- '#cc983f'
+
+ibu_fill <- '#6bd2db'
+ibu_outline <- '#55a8af'
 
 ```
 
@@ -313,7 +323,6 @@ breweries_by_state <- select(breweries_clean, brewery_id, state) %>%
 
 kable(as.data.frame(summarytools::descr(breweries_by_state, transpose = TRUE)),digits = 2)
 
-# freq(breweries_clean$state, order = "freq")
 
 
 
@@ -550,9 +559,9 @@ Adding a trendline allows us to determine a formula that specifies this correlat
 #A distinct list of beer styles, as classified by a unique style Name, IBU, ABV, and Ounces values.
 
 styles <- beer_clean %>% 
-              distinct(Beer_ID, Style, IBU, ABV, Ounces) %>% 
-              arrange(Style) %>% 
-              na.omit(IBU, ABV)
+              distinct(beer_id, style, ibu, abv, ounces) %>% 
+              arrange(style) %>% 
+              na.omit(ibu, abv)
 
 ```
 
@@ -561,7 +570,7 @@ styles <- beer_clean %>%
 
 ```{r fig.width= 10, fig.height = 10}
 
-ggplot(styles, aes(x=ABV, y=IBU)) +
+ggplot(styles, aes(x=abv, y=ibu)) +
   geom_point() +
   scale_colour_brewer() +
   ggtitle("ABV v. IBU") +
@@ -569,7 +578,7 @@ ggplot(styles, aes(x=ABV, y=IBU)) +
 
 ```
 
-# Analysis using Spearman Rank-Order Correlation
+### Analysis of ABV and IBU
 
     + More info on Spearman test: https://statistics.laerd.com/statistical-guides/spearmans-rank-order-correlation-statistical-guide.php
 
@@ -591,7 +600,7 @@ ggplot(styles, aes(x=ABV, y=IBU)) +
 ```{r}
 
 #Scatter plot of ABV v IBU
-ggplot(styles, aes(x=ABV, y=IBU)) +
+ggplot(styles, aes(x=abv, y=ibu)) +
   geom_point() +
   scale_colour_brewer() +
   geom_smooth(method = "lm", se = FALSE, color="red") +
@@ -599,16 +608,11 @@ ggplot(styles, aes(x=ABV, y=IBU)) +
   ggtitle("ABV v. IBU") +
   theme_minimal()  +
   theme(plot.title = element_text(hjust = 0.5))
+
 ```
 
 
-
-  + Due to the lack of normality of the IBU variable and the presence of outliers in both variables, we will use the Spearman Rank-Correlation test as an alternative to the preferred Pearson Correlation.
-
-  
-
-
-
+#### QQ-Plot - Check for Normality
 
 ```{r fig.width= 10, fig.height=10}
 
@@ -616,48 +620,111 @@ ggplot(styles, aes(x=ABV, y=IBU)) +
 
 
 #calulate line fit
-y <- quantile((styles$IBU %>% na.omit()), c(0.25, 0.75))
+y <- quantile((styles$ibu %>% na.omit()), c(0.25, 0.75))
 x <- qnorm(c(0.25, 0.75))
 slope <- diff(y)/diff(x)
 y_int <- y[1] - slope * x[1]
 
-qq_ibu <- ggplot(styles, aes(sample = styles$IBU)) + 
+qq_ibu <- ggplot(styles, aes(sample = styles$ibu)) + 
               geom_qq(shape = 16, size = 2, alpha = 0.5) +
               geom_abline(slope = slope, intercept = y_int, colour ='red', size = 1) +
-              ggtitle("QQ-plot of IBU") +
-              theme_minimal()  +
+              ggtitle("QQ-Plot of IBU") +
+              theme_bw()  +
               theme(plot.title = element_text(hjust = 0.5))
 
 
 #calulate line fit
-y <- quantile((styles$ABV %>% na.omit()), c(0.25, 0.75))
+y <- quantile((styles$abv %>% na.omit()), c(0.25, 0.75))
 x <- qnorm(c(0.25, 0.75))
 slope <- diff(y)/diff(x)
 y_int <- y[1] - slope * x[1]  
 
-qq_abv <- ggplot(styles, aes(sample = styles$ABV)) + 
+qq_abv <- ggplot(styles, aes(sample = styles$abv)) + 
             geom_qq(shape = 16, size = 2, alpha = 0.5) +
             geom_abline(slope = slope, intercept = y_int, colour ='red', size = 1) +
-            ggtitle("QQ-plot of ABV") +
-            theme_minimal() +
+            ggtitle("QQ-Plot of ABV") +
+            theme_bw() +
             theme(plot.title = element_text(hjust = 0.5))
 
 
+grid.arrange(qq_abv, qq_ibu)
 
-# Histograms
+
+
+```
+
+#### Histogram - Check for Normality
+
+```{r}
+
+
+# Histograms of IBU and ABV
+
 hist_ibu <- ggplot(styles) +
-              geom_histogram(aes(x=IBU)) +
+              geom_histogram(aes(x=ibu)) +
               theme(text = element_text(size=10),
                   axis.text.x = element_text(angle=90, hjust=1)) 
 
 hist_abv <- ggplot(styles) +
-              geom_histogram(aes(x=ABV)) +
+              geom_histogram(aes(x=abv)) +
               theme(text = element_text(size=10),
                   axis.text.x = element_text(angle=90, hjust=1)) 
 
 
+grid.arrange(hist_abv, hist_ibu)
 
-grid.arrange(qq_abv, qq_ibu)
+
+```
+
+
+#### Boxplot - Check for Outliers
+
+```{r fig.height = 3, fig.width = 10}
+
+# Boxplots of IBU and ABV
+
+
+ibu_outliers <- boxplot(styles$ibu, plot = FALSE)[["out"]]
+
+abv_outliers <- boxplot(styles$abv, plot = FALSE)[["out"]]
+
+
+x<-boxplot(styles$ibu, plot = FALSE)
+
+bp_abv <- ggplot((styles %>% drop_na(abv)), aes(x="", y=abv)) +
+      geom_point(aes(fill = ifelse((abv %in% abv_outliers),"Outlier","Valid")), 
+                 size = 4, 
+                 shape = 21, 
+                 position = position_jitter())+
+      stat_boxplot(geom ='errorbar') +
+      geom_boxplot(alpha=.5, 
+                   outlier.shape = NA) +
+      guides(fill=guide_legend(title= NULL)) +
+      xlab("Beer Styles") +
+      ylab("Alcohol by Volume (ABV)") +
+      scale_y_continuous(position = "right", 
+                         breaks = c(.025, .05, .075, .1, .125), 
+                         limits = c(0.025, .125)) +
+      coord_flip()
+
+
+bp_ibu <- ggplot((styles %>% drop_na(ibu)), aes(x="", y=ibu)) +
+      geom_point(aes(fill = ifelse((ibu %in% ibu_outliers),"Outlier","Valid")),
+                 size = 4, 
+                 shape = 21, 
+                 position = position_jitter())+
+      stat_boxplot(geom ='errorbar') +
+      geom_boxplot(alpha = .75, 
+                   outlier.shape = NA) +
+      guides(fill=guide_legend(title= NULL)) +
+      xlab("Beer Styles") +
+      ylab("International Bitterness Units (IBU)") +
+      scale_y_continuous(breaks = c(0, 25, 50, 75, 100, 125, 150), 
+                         limits = c(0, 150)) +
+      coord_flip()
+
+grid.arrange(bp_abv, bp_ibu)
+
 
 
 ```
@@ -665,15 +732,65 @@ grid.arrange(qq_abv, qq_ibu)
 
 
 
+  + Due to the lack of normality of the IBU variable and the presence of outliers in both variables, we will use the Spearman Rank-Correlation test as an alternative to the preferred Pearson Correlation.
+
+  
+
+#### Spearman Rank-Order Correlation
+
+    + More info on Spearman test: https://statistics.laerd.com/statistical-guides/spearmans-rank-order-correlation-statistical-guide.php
+
+
+
+* Hypotheses:
+    + H~o~: $\rho = 0$
+    + H~A~: $\rho \neq 0$
+
+```{r results='markup'}
+
+# Significance test
+spear_test_result <- cor.test(styles$ibu, styles$abv, method = "spearman", conf.level = .05, exact=FALSE)
+
+spear_test_result
+
+r_sq <- spear_test_result[["estimate"]][["rho"]]^2 # capture r-squared
+
+r_sq
+
+
+```
+
+
+#### Conclusion
+
+There is strong evidence that the ABV and IBU are positively associated (p-value < 0.001 from a Spearman Rank-Order Correlation).  At a 95% confidence level, the IBU rating accounts for `r round(r_sq*100, 2)`% of the variation in the ABV .  While IBU and ABV certainly have a correlation, the correlation is weak ($r^2 =$ `r round(r_sq, 2)`).  Thus, we reject the null hypothesis that IBU rating and ABV are un-corrolated across the beer styles in our sample.  Beer styles were not randomly assigned to any treatment and we do not know if the beer data were randomly selected, so we must limit our results to indicating an association between IBU rating an ABV.  No causality or inferences to larger populations can be drawn.   
+
+## Write datasets to file
+
+```{r}
+
+write.csv( beer_clean,file = '../data/beer_clean.csv', row.names = FALSE)
+write.csv( breweries_clean,file = '../data/breweries_clean.csv', row.names = FALSE)
+
+
+```
+
 
 ## Appendex
 
+```{r}
+
+
+
+```
 
 
 #### Session Info
 
 ```{r}
+
 sessionInfo()
+
 ```
 
 
