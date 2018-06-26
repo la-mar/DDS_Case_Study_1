@@ -5,7 +5,7 @@ output: html_document
 
 
 
-
+Generate high-res plot images for presentation.
 
 
 ```{r}
@@ -113,9 +113,11 @@ ggplot(merged_by_state,
         axis.text.x = element_text(angle=90, hjust=0, vjust = .3))  +
   theme(legend.position="none") +
   ggtitle("Median Alcohol Content by State") +
-  xlab("Alcohol Content (%)") +
-  ylab("International Bitterness Units (IBU)") +
-  theme(plot.title = element_text(hjust = 0.5, size = 18))
+  xlab("States") +
+  ylab("Alcohol by Volume (%)") +
+  scale_y_continuous(position = "right") +
+  theme(plot.title = element_text(hjust = 0.5, size = 18),
+        axis.title.y = element_text(size = 18))
   
   ggsave("../figure/abv_bar.tiff", units="in", width=11, height=6, dpi=400, compression = 'lzw')
 
@@ -133,9 +135,10 @@ ggplot(merged_by_state,
         axis.text.x = element_text(angle=90, hjust=1)) +
   theme(legend.position="none") +
   ggtitle("Median Bitterness by State") +
-  xlab("Alcohol Content (%)") +
+  xlab("States") +
   ylab("International Bitterness Units (IBU)") +
-  theme(plot.title = element_text(hjust = 0.5, size = 18))
+  theme(plot.title = element_text(hjust = 0.5, size = 18),
+        axis.title.y = element_text(size = 18))
 
   ggsave("../figure/ibu_bar.tiff", units="in", width=11, height=6, dpi=400, compression = 'lzw')
 

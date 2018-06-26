@@ -445,26 +445,31 @@ dataset once duplicates have been removed.
 \CommentTok{# rejoin potential dups to original dataset}
 \NormalTok{breweries_dups <-}\StringTok{ }\KeywordTok{select}\NormalTok{(breweries_dups }\OperatorTok{%>%}\StringTok{ }\KeywordTok{inner_join}\NormalTok{(breweries_data, }\DataTypeTok{by=}\StringTok{"name"}\NormalTok{), }\OperatorTok{-}\KeywordTok{ends_with}\NormalTok{(}\StringTok{"_count"}\NormalTok{))}
 
-\NormalTok{breweries_dups}
+\KeywordTok{kable}\NormalTok{(breweries_dups)}
 \end{Highlighting}
 \end{Shaded}
 
-\section{A tibble: 14 x 4}\label{a-tibble-14-x-4}
-
-name brewery\_id city state 1 Blackrocks Brewery 13 Marquette MI\\
-2 Blackrocks Brewery 96 Marquette MA\\
-3 Blue Mountain Brewery 383 Afton VA\\
-4 Blue Mountain Brewery 415 Arrington VA\\
-5 Lucette Brewing Company 378 Menominee WI\\
-6 Lucette Brewing Company 457 Menominie WI\\
-7 Oskar Blues Brewery 167 Longmont CO\\
-8 Oskar Blues Brewery 504 Lyons CO\\
-9 Otter Creek Brewing 262 Waterbury VT\\
-10 Otter Creek Brewing 276 Middlebury VT\\
-11 Sly Fox Brewing Company 164 Phoenixville PA\\
-12 Sly Fox Brewing Company 372 Pottstown PA\\
-13 Summit Brewing Company 59 St Paul MN\\
-14 Summit Brewing Company 139 St Paul MN
+\begin{longtable}[]{@{}lrll@{}}
+\toprule
+name & brewery\_id & city & state\tabularnewline
+\midrule
+\endhead
+Blackrocks Brewery & 13 & Marquette & MI\tabularnewline
+Blackrocks Brewery & 96 & Marquette & MA\tabularnewline
+Blue Mountain Brewery & 383 & Afton & VA\tabularnewline
+Blue Mountain Brewery & 415 & Arrington & VA\tabularnewline
+Lucette Brewing Company & 378 & Menominee & WI\tabularnewline
+Lucette Brewing Company & 457 & Menominie & WI\tabularnewline
+Oskar Blues Brewery & 167 & Longmont & CO\tabularnewline
+Oskar Blues Brewery & 504 & Lyons & CO\tabularnewline
+Otter Creek Brewing & 262 & Waterbury & VT\tabularnewline
+Otter Creek Brewing & 276 & Middlebury & VT\tabularnewline
+Sly Fox Brewing Company & 164 & Phoenixville & PA\tabularnewline
+Sly Fox Brewing Company & 372 & Pottstown & PA\tabularnewline
+Summit Brewing Company & 59 & St Paul & MN\tabularnewline
+Summit Brewing Company & 139 & St Paul & MN\tabularnewline
+\bottomrule
+\end{longtable}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi})}
@@ -489,7 +494,7 @@ name brewery\_id city state 1 Blackrocks Brewery 13 Marquette MI\\
 \end{Shaded}
 
 \begin{verbatim}
-* Marquette is not a city name in Massachusetts. Changed to Michigan based on other records existing for Marquette, MI, in addition to validating the location of the city on Google Maps.
++ Marquette is not a city name in Massachusetts. Changed to Michigan based on other records existing for Marquette, MI, in addition to validating the location of the city on Google Maps.
 \end{verbatim}
 
 \begin{Shaded}
@@ -502,7 +507,7 @@ name brewery\_id city state 1 Blackrocks Brewery 13 Marquette MI\\
 \end{Shaded}
 
 \begin{verbatim}
-* Merge duplicates into single records on name + city + state
++ Merge duplicates into single records on name + city + state
 \end{verbatim}
 
 \begin{Shaded}
@@ -515,7 +520,7 @@ name brewery\_id city state 1 Blackrocks Brewery 13 Marquette MI\\
 \end{Shaded}
 
 \begin{verbatim}
-* Create new brewery_id for corrected duplicates
++ Create new brewery_id for corrected duplicates
 \end{verbatim}
 
 \begin{Shaded}
@@ -532,22 +537,29 @@ name brewery\_id city state 1 Blackrocks Brewery 13 Marquette MI\\
 \StringTok{                    }\KeywordTok{rename}\NormalTok{(}\DataTypeTok{old_brewery_id=}\NormalTok{brewery_id, }\DataTypeTok{new_brewery_id=}\NormalTok{brew_sk)}
               
   
-\NormalTok{breweries_sk}
+\KeywordTok{kable}\NormalTok{(breweries_sk)}
 \end{Highlighting}
 \end{Shaded}
 
-\section{A tibble: 6 x 6}\label{a-tibble-6-x-6}
-
-name city state new\_brewery\_id count old\_brewery\_id 1 Blackrocks
-Brewery Marqu\textasciitilde{} MI 11881 2 13 2 Blackrocks Brewery
-Marqu\textasciitilde{} MI 11881 2 96 3 Lucette Brewing Company
-Menom\textasciitilde{} WI 697225 2 378 4 Lucette Brewing Company
-Menom\textasciitilde{} WI 697225 2 457 5 Summit Brewing Company St
-Pa\textasciitilde{} MN 39204 2 59 6 Summit Brewing Company St
-Pa\textasciitilde{} MN 39204 2 139
+\begin{longtable}[]{@{}lllrrr@{}}
+\toprule
+name & city & state & new\_brewery\_id & count &
+old\_brewery\_id\tabularnewline
+\midrule
+\endhead
+Blackrocks Brewery & Marquette & MI & 11881 & 2 & 13\tabularnewline
+Blackrocks Brewery & Marquette & MI & 11881 & 2 & 96\tabularnewline
+Lucette Brewing Company & Menominie & WI & 697225 & 2 &
+378\tabularnewline
+Lucette Brewing Company & Menominie & WI & 697225 & 2 &
+457\tabularnewline
+Summit Brewing Company & St Paul & MN & 39204 & 2 & 59\tabularnewline
+Summit Brewing Company & St Paul & MN & 39204 & 2 & 139\tabularnewline
+\bottomrule
+\end{longtable}
 
 \begin{verbatim}
-* Update original breweries dataset with corrections and de-duped records
++ Update original breweries dataset with corrections and de-duped records
 \end{verbatim}
 
 \begin{Shaded}
@@ -563,60 +575,174 @@ Pa\textasciitilde{} MN 39204 2 139
 \StringTok{                          }\KeywordTok{rename}\NormalTok{(}\DataTypeTok{brewery_name =}\NormalTok{ name) }\OperatorTok{%>%}\StringTok{ }\CommentTok{#change column name "name" to "brewery_name"}
 \StringTok{                          }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{state =} \KeywordTok{as.factor}\NormalTok{(state))}
 
-\NormalTok{summarytools}\OperatorTok{::}\KeywordTok{dfSummary}\NormalTok{(breweries_clean)}
+\KeywordTok{print}\NormalTok{(summarytools}\OperatorTok{::}\KeywordTok{dfSummary}\NormalTok{(breweries_clean), }\DataTypeTok{method =} \StringTok{'render'}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-Data Frame Summary\\
-breweries\_clean\\
-N: 558\\
------------------------------------------------------------------------------------------------------------------
-No Variable Stats / Values Freqs (\% of Valid) Text Graph Valid
-Missing\\
----- --------------- ---------------------------------
--------------------- ------------------ -------- --------- 1 brewery\_id
-mean (sd) : 2959.57 (41747.55) 555 distinct val. : 558 0\\
-{[}integer{]} min \textless{} med \textless{} max : : (100\%) (0\%)\\
-1 \textless{} 283.5 \textless{} 697225 :\\
-IQR (CV) : 279.5 (14.11) :\\
-:
+Data Frame Summary
 
-2 brewery\_name 1. 10 Barrel Brewing Company 1 ( 0.2\%) 558 0\\
-{[}factor{]} 2. 18th Street Brewery 1 ( 0.2\%) (100\%) (0\%)\\
-3. 2 Towns Ciderhouse 1 ( 0.2\%)\\
-4. 21st Amendment Brewery 1 ( 0.2\%)\\
-5. 3 Daughters Brewing 1 ( 0.2\%)\\
-6. 4 Hands Brewing Company 1 ( 0.2\%)\\
-7. 450 North Brewing Company 1 ( 0.2\%)\\
-8. 7 Seas Brewing Company 1 ( 0.2\%)\\
-9. 7venth Sun 1 ( 0.2\%)\\
-10. Abita Brewing Company 1 ( 0.2\%)\\
-{[} 541 others {]} 548 (98.6\%) IIIIIIIIIIIIIIII
+breweries\_clean
 
-3 city 1. Portland 17 ( 3.0\%) 558 0\\
-{[}character{]} 2. Boulder 9 ( 1.6\%) (100\%) (0\%)\\
-3. Chicago 9 ( 1.6\%)\\
-4. Seattle 9 ( 1.6\%)\\
-5. Austin 8 ( 1.4\%)\\
-6. Denver 8 ( 1.4\%)\\
-7. San Diego 8 ( 1.4\%)\\
-8. Bend 6 ( 1.1\%)\\
-9. San Francisco 5 ( 0.9\%)\\
-10. Anchorage 4 ( 0.7\%)\\
-{[} 372 others {]} 475 (85.5\%) IIIIIIIIIIIIIIII
+N: 558
 
-4 state 1. AK 7 ( 1.2\%) 558 0\\
-{[}factor{]} 2. AL 3 ( 0.5\%) (100\%) (0\%)\\
-3. AR 2 ( 0.4\%)\\
-4. AZ 11 ( 2.0\%)\\
-5. CA 39 ( 7.0\%) I\\
-6. CO 47 ( 8.4\%) I\\
-7. CT 8 ( 1.4\%)\\
-8. DC 1 ( 0.2\%)\\
-9. DE 2 ( 0.4\%)\\
-10. FL 15 ( 2.7\%)\\
-{[} 41 others {]} 423 (75.8\%) IIIIIIIIIIIIIIII\\
------------------------------------------------------------------------------------------------------------------
+\begin{verbatim}
+<tr>
+  <th align="center"><strong>No</strong></th>
+  <th align="center"><strong>Variable</strong></th>
+  <th align="center"><strong>Stats / Values</strong></th>
+  <th align="center"><strong>Freqs (% of Valid)</strong></th>
+  <th align="center"><strong>Graph</strong></th>
+  <th align="center"><strong>Valid</strong></th>
+  <th align="center"><strong>Missing</strong></th>
+</tr>
+\end{verbatim}
+
+\begin{verbatim}
+<tr>
+  <td align="center">1</td>
+  <td align="left">brewery_id
+\end{verbatim}
+
+{[}integer{]}
+
+\begin{verbatim}
+  <td align="left">mean (sd) : 2959.57 (41747.55)
+\end{verbatim}
+
+min \textless{} med \textless{} max : 1 \textless{} 283.5 \textless{}
+697225 IQR (CV) : 279.5 (14.11)
+
+\begin{verbatim}
+  <td align="left">555 distinct val.</td>
+  <td align="center" border="0"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAABkCAMAAABThTnCAAAADFBMVEX9/v2mpqby8vL9/v28xacEAAAABHRSTlP///8AQCqp9AAAAJNJREFUaIHt27ENgzAAAEET9t+ZIiAiBSF9ZRd3E/wCP/YljdkBz2QV36ztNrnndGZ9LrLeyCpkFbIKWYWsQlYhq5BVyCpkFbIKWYWsQlYhq5BVyCpkFbIKWYWsQlYhq5BVyCpkFbIKWYWsQlYhq5BVyCpkFbIKWYWsQlYhq5BVyCpkFbIKWcXfrDXdT9ZyZBWLZh3aJKoJ7TmyggAAAABJRU5ErkJggg=="></td>
+  <td align="center">558
+\end{verbatim}
+
+(100\%)
+
+\begin{verbatim}
+  <td align="center">0
+\end{verbatim}
+
+(0\%)
+
+\begin{verbatim}
+</tr>
+<tr>
+  <td align="center">2</td>
+  <td align="left">brewery_name
+\end{verbatim}
+
+{[}factor{]}
+
+\begin{verbatim}
+  <td align="left">1. 10 Barrel Brewing Company
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  18th Street Brewery
+\item
+  2 Towns Ciderhouse
+\item
+  21st Amendment Brewery
+\item
+  3 Daughters Brewing
+\item
+  4 Hands Brewing Company
+\item
+  450 North Brewing Company
+\item
+  7 Seas Brewing Company
+\item
+  7venth Sun
+\item
+  Abita Brewing Company {[} 541 others {]}
+
+  1 (0.2\%) 1 (0.2\%) 1 (0.2\%) 1 (0.2\%) 1 (0.2\%) 1 (0.2\%) 1 (0.2\%)
+  1 (0.2\%) 1 (0.2\%) 1 (0.2\%) 548 (98.6\%)
+
+  558 (100\%)
+
+  0 (0\%)
+
+  3
+
+  city {[}character{]}
+
+  \begin{enumerate}
+  \def\labelenumii{\arabic{enumii}.}
+  \tightlist
+  \item
+    Portland
+  \end{enumerate}
+\item
+  Boulder
+\item
+  Chicago
+\item
+  Seattle
+\item
+  Austin
+\item
+  Denver
+\item
+  San Diego
+\item
+  Bend
+\item
+  San Francisco
+\item
+  Anchorage {[} 372 others {]}
+
+  17 (3.0\%) 9 (1.6\%) 9 (1.6\%) 9 (1.6\%) 8 (1.4\%) 8 (1.4\%) 8 (1.4\%)
+  6 (1.1\%) 5 (0.9\%) 4 (0.7\%) 475 (85.5\%)
+
+  558 (100\%)
+
+  0 (0\%)
+
+  4
+
+  state {[}factor{]}
+
+  \begin{enumerate}
+  \def\labelenumii{\arabic{enumii}.}
+  \tightlist
+  \item
+    AK
+  \end{enumerate}
+\item
+  AL
+\item
+  AR
+\item
+  AZ
+\item
+  CA
+\item
+  CO
+\item
+  CT
+\item
+  DC
+\item
+  DE
+\item
+  FL {[} 41 others {]}
+
+  7 (1.2\%) 3 (0.5\%) 2 (0.4\%) 11 (2.0\%) 39 (7.0\%) 47 (8.4\%) 8
+  (1.4\%) 1 (0.2\%) 2 (0.4\%) 15 (2.7\%) 423 (75.8\%)
+
+  558 (100\%)
+
+  0 (0\%)
+
+  Generated by summarytools 0.8.5 (R version 3.5.0)2018-06-26
+\end{enumerate}
 
 \subsection{Clean Beer Data}\label{clean-beer-data}
 
@@ -666,80 +792,188 @@ American Double / Imperial IPA 12 5 American IPA 12 6 Oatmeal Stout 12
 \StringTok{       }\KeywordTok{rename}\NormalTok{(}\DataTypeTok{beer_name =}\NormalTok{ name)}
 
 
-\NormalTok{summarytools}\OperatorTok{::}\KeywordTok{dfSummary}\NormalTok{(beer_clean)}
+\KeywordTok{print}\NormalTok{(summarytools}\OperatorTok{::}\KeywordTok{dfSummary}\NormalTok{(beer_clean), }\DataTypeTok{method =} \StringTok{'render'}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-Data Frame Summary\\
-beer\_clean\\
-N: 2410\\
-----------------------------------------------------------------------------------------------------------------------------
-No Variable Stats / Values Freqs (\% of Valid) Text Graph Valid
-Missing\\
----- ------------- ---------------------------------
------------------------ -------------------------- ---------- ---------
-1 brewery\_id mean (sd) : 1488.62 (28425.37) 555 distinct val. : 2410
-0\\
-{[}integer{]} min \textless{} med \textless{} max : : (100\%) (0\%)\\
-1 \textless{} 207 \textless{} 697225 :\\
-IQR (CV) : 273.5 (19.1) :\\
-:
+Data Frame Summary
 
-2 beer\_name 1. \#001 Golden Amber Lager 1 ( 0.0\%) 2410 0\\
-{[}factor{]} 2. \#002 American I.P.A. 1 ( 0.0\%) (100\%) (0\%)\\
-3. \#003 Brown \& Robust Porte 1 ( 0.0\%)\\
-4. \#004 Session I.P.A. 1 ( 0.0\%)\\
-5. \#9 2 ( 0.1\%)\\
-6. 077XX 1 ( 0.0\%)\\
-7. 10 Degrees of Separation 1 ( 0.0\%)\\
-8. 10 Ton 1 ( 0.0\%)\\
-9. 113 IPA 1 ( 0.0\%)\\
-10. 11th Hour IPA 1 ( 0.0\%)\\
-{[} 2295 others {]} 2399 (96.0\%) IIIIIIIIIIIIIIII
+beer\_clean
 
-3 beer\_id mean (sd) : 1431.11 (752.46) 2410 distinct val. . . : : : : :
-: 2410 0\\
-{[}integer{]} min \textless{} med \textless{} max : . : : : : : : : :
-(100\%) (0\%)\\
-1 \textless{} 1453.5 \textless{} 2692 : : : : : : : : : :\\
-IQR (CV) : 1267.5 (0.53) : : : : : : : : : :\\
-: : : : : : : : : :
+N: 2410
 
-4 abv mean (sd) : 0.06 (0.01) 74 distinct val. : 2348 62\\
-{[}numeric{]} min \textless{} med \textless{} max : : : (97.43\%)
-(2.57\%)\\
-0 \textless{} 0.06 \textless{} 0.13 : : :\\
-IQR (CV) : 0.02 (0.23) : : :\\
-: : : : .
+\begin{verbatim}
+<tr>
+  <th align="center"><strong>No</strong></th>
+  <th align="center"><strong>Variable</strong></th>
+  <th align="center"><strong>Stats / Values</strong></th>
+  <th align="center"><strong>Freqs (% of Valid)</strong></th>
+  <th align="center"><strong>Graph</strong></th>
+  <th align="center"><strong>Valid</strong></th>
+  <th align="center"><strong>Missing</strong></th>
+</tr>
+\end{verbatim}
 
-5 ibu mean (sd) : 42.71 (25.95) 107 distinct val. : 1405 1005\\
-{[}integer{]} min \textless{} med \textless{} max : : (58.3\%)
-(41.7\%)\\
-4 \textless{} 35 \textless{} 138 . : : .\\
-IQR (CV) : 43 (0.61) : : : . :\\
-: : : : : : : .
+\begin{verbatim}
+<tr>
+  <td align="center">1</td>
+  <td align="left">brewery_id
+\end{verbatim}
 
-6 style 1. 5 ( 0.2\%) 2410 0\\
-{[}factor{]} 2. Abbey Single Ale 2 ( 0.1\%) (100\%) (0\%)\\
-3. Altbier 13 ( 0.5\%)\\
-4. American Adjunct Lager 18 ( 0.8\%)\\
-5. American Amber / Red Ale 133 ( 5.5\%) I\\
-6. American Amber / Red Lage 29 ( 1.2\%)\\
-7. American Barleywine 3 ( 0.1\%)\\
-8. American Black Ale 36 ( 1.5\%)\\
-9. American Blonde Ale 108 ( 4.5\%)\\
-10. American Brown Ale 70 ( 2.9\%)\\
-{[} 90 others {]} 1993 (82.7\%) IIIIIIIIIIIIIIII
+{[}integer{]}
 
-7 ounces mean (sd) : 13.59 (2.35) 8.40 : 1 ( 0.0\%) 2410 0\\
-{[}numeric{]} min \textless{} med \textless{} max : 12.00 : 1525
-(63.3\%) IIIIIIIIIIIIIIII (100\%) (0\%)\\
-8.4 \textless{} 12 \textless{} 32 16.00 : 841 (34.9\%) IIIIIIII\\
-IQR (CV) : 4 (0.17) 16.90 : 1 ( 0.0\%)\\
-19.20 : 15 ( 0.6\%)\\
-24.00 : 22 ( 0.9\%)\\
-32.00 : 5 ( 0.2\%)\\
-----------------------------------------------------------------------------------------------------------------------------
+\begin{verbatim}
+  <td align="left">mean (sd) : 1488.62 (28425.37)
+\end{verbatim}
+
+min \textless{} med \textless{} max : 1 \textless{} 207 \textless{}
+697225 IQR (CV) : 273.5 (19.1)
+
+\begin{verbatim}
+  <td align="left">555 distinct val.</td>
+  <td align="center" border="0"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAABkCAMAAABThTnCAAAADFBMVEX9/v2mpqby8vL9/v28xacEAAAABHRSTlP///8AQCqp9AAAAJNJREFUaIHt27ENgzAAAEET9t+ZIiAiBSF9ZRd3E/wCP/YljdkBz2QV36ztNrnndGZ9LrLeyCpkFbIKWYWsQlYhq5BVyCpkFbIKWYWsQlYhq5BVyCpkFbIKWYWsQlYhq5BVyCpkFbIKWYWsQlYhq5BVyCpkFbIKWYWsQlYhq5BVyCpkFbIKWcXfrDXdT9ZyZBWLZh3aJKoJ7TmyggAAAABJRU5ErkJggg=="></td>
+  <td align="center">2410
+\end{verbatim}
+
+(100\%)
+
+\begin{verbatim}
+  <td align="center">0
+\end{verbatim}
+
+(0\%)
+
+\begin{verbatim}
+</tr>
+<tr>
+  <td align="center">2</td>
+  <td align="left">beer_name
+\end{verbatim}
+
+{[}factor{]}
+
+\begin{verbatim}
+  <td align="left">1. #001 Golden Amber Lager
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\item ~
+  \section{002 American I.P.A.}\label{american-i.p.a.}
+\item ~
+  \section{003 Brown \& Robust Porte}\label{brown-robust-porte}
+\item ~
+  \section{004 Session I.P.A.}\label{session-i.p.a.}
+\item ~
+  \section{9}\label{section}
+\item
+  077XX
+\item
+  10 Degrees of Separation
+\item
+  10 Ton
+\item
+  113 IPA
+\item
+  11th Hour IPA {[} 2295 others {]}
+
+  1 (0.0\%) 1 (0.0\%) 1 (0.0\%) 1 (0.0\%) 2 (0.1\%) 1 (0.0\%) 1 (0.0\%)
+  1 (0.0\%) 1 (0.0\%) 1 (0.0\%) 2399 (96.0\%)
+
+  2410 (100\%)
+
+  0 (0\%)
+
+  3
+
+  beer\_id {[}integer{]}
+
+  mean (sd) : 1431.11 (752.46) min \textless{} med \textless{} max : 1
+  \textless{} 1453.5 \textless{} 2692 IQR (CV) : 1267.5 (0.53)
+
+  2410 distinct val.
+
+  2410 (100\%)
+
+  0 (0\%)
+
+  4
+
+  abv {[}numeric{]}
+
+  mean (sd) : 0.06 (0.01) min \textless{} med \textless{} max : 0
+  \textless{} 0.06 \textless{} 0.13 IQR (CV) : 0.02 (0.23)
+
+  74 distinct val.
+
+  2348 (97.43\%)
+
+  62 (2.57\%)
+
+  5
+
+  ibu {[}integer{]}
+
+  mean (sd) : 42.71 (25.95) min \textless{} med \textless{} max : 4
+  \textless{} 35 \textless{} 138 IQR (CV) : 43 (0.61)
+
+  107 distinct val.
+
+  1405 (58.3\%)
+
+  1005 (41.7\%)
+
+  6
+
+  style {[}factor{]}
+
+  \begin{enumerate}
+  \def\labelenumii{\arabic{enumii}.}
+  \item
+  \end{enumerate}
+\item
+  Abbey Single Ale
+\item
+  Altbier
+\item
+  American Adjunct Lager
+\item
+  American Amber / Red Ale
+\item
+  American Amber / Red Lage
+\item
+  American Barleywine
+\item
+  American Black Ale
+\item
+  American Blonde Ale
+\item
+  American Brown Ale {[} 90 others {]}
+
+  5 (0.2\%) 2 (0.1\%) 13 (0.5\%) 18 (0.8\%) 133 (5.5\%) 29 (1.2\%) 3
+  (0.1\%) 36 (1.5\%) 108 (4.5\%) 70 (2.9\%) 1993 (82.7\%)
+
+  2410 (100\%)
+
+  0 (0\%)
+
+  7
+
+  ounces {[}numeric{]}
+
+  mean (sd) : 13.59 (2.35) min \textless{} med \textless{} max : 8.4
+  \textless{} 12 \textless{} 32 IQR (CV) : 4 (0.17)
+
+  8.40 : 1 (0.0\%) 12.00 : 1525 (63.3\%) 16.00 : 841 (34.9\%) 16.90 : 1
+  (0.0\%) 19.20 : 15 (0.6\%) 24.00 : 22 (0.9\%) 32.00 : 5 (0.2\%)
+
+  2410 (100\%)
+
+  0 (0\%)
+
+  Generated by summarytools 0.8.5 (R version 3.5.0)2018-06-26
+\end{enumerate}
 
 \subsection{Question 1}\label{question-1}
 
@@ -886,7 +1120,7 @@ IQR (CV) : 23.84 (-0.21) : : : : : :\\
 \StringTok{  }
 \StringTok{  }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Breweries by State"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# set plot title}
 \StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\CommentTok{# center plot title}
-\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"right"}\NormalTok{,}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"left"}\NormalTok{,}
         \DataTypeTok{axis.title.x=}\KeywordTok{element_blank}\NormalTok{(), }\CommentTok{# hide x axis title}
         \DataTypeTok{axis.text.x=}\KeywordTok{element_blank}\NormalTok{(),  }\CommentTok{# hide x axis text}
         \DataTypeTok{axis.ticks.x=}\KeywordTok{element_blank}\NormalTok{(), }\CommentTok{# hide x axis ticks}
@@ -1073,7 +1307,9 @@ investigation.
 
 \NormalTok{merged_by_state <-}\StringTok{ }\KeywordTok{select}\NormalTok{(merged_data, state, abv, ibu) }\OperatorTok{%>%}
 \StringTok{                   }\KeywordTok{group_by}\NormalTok{(state) }\OperatorTok{%>%}
-\StringTok{                   }\KeywordTok{summarise_all}\NormalTok{(median, }\DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{)}\CommentTok{#funs(median(!is.na(.)))) #TODO: Double check this is calculating correctly}
+\StringTok{                   }\KeywordTok{summarise_all}\NormalTok{(median, }\DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{                   }\KeywordTok{na.omit}\NormalTok{()}
+                    
 
 \NormalTok{merged_by_state}\OperatorTok{$}\NormalTok{state <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(merged_by_state}\OperatorTok{$}\NormalTok{state)  }
 
@@ -1082,12 +1318,19 @@ investigation.
 
 \CommentTok{#TODO: facet by state}
 
-\KeywordTok{ggplot}\NormalTok{(merged_by_state, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{state, }\DataTypeTok{y=}\NormalTok{abv)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{"identity"}\NormalTok{, }\DataTypeTok{position =} \StringTok{"dodge"}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{ylim}\NormalTok{(}\DecValTok{0}\NormalTok{, .}\DecValTok{075}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\CommentTok{#facet_grid(state ~ .) +}
+\KeywordTok{ggplot}\NormalTok{(merged_by_state, }
+       \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{state, }\DataTypeTok{y=}\NormalTok{abv)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{"identity"}\NormalTok{,  }
+           \DataTypeTok{fill =}\NormalTok{ abv_fill, }
+           \DataTypeTok{color =}\NormalTok{ abv_outline, }
+           \DataTypeTok{width=}\DecValTok{1}\NormalTok{) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{text =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{10}\NormalTok{),}
-        \DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle=}\DecValTok{90}\NormalTok{, }\DataTypeTok{hjust=}\DecValTok{1}\NormalTok{)) }
+        \DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle=}\DecValTok{90}\NormalTok{, }\DataTypeTok{hjust=}\DecValTok{0}\NormalTok{, }\DataTypeTok{vjust =}\NormalTok{ .}\DecValTok{3}\NormalTok{))  }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position=}\StringTok{"none"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Median Alcohol Content by State"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Alcohol Content (%)"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{ylab}\NormalTok{(}\StringTok{"International Bitterness Units (IBU)"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1095,12 +1338,19 @@ investigation.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{ggplot}\NormalTok{(merged_by_state, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{state, }\DataTypeTok{y=}\NormalTok{ibu)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{"identity"}\NormalTok{, }\DataTypeTok{position =} \StringTok{"dodge"}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\CommentTok{#ylim(0, .075) +}
-\StringTok{  }\CommentTok{#facet_grid(state ~ .) +}
+\KeywordTok{ggplot}\NormalTok{(merged_by_state, }
+       \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{state, }\DataTypeTok{y=}\NormalTok{ibu)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{stat =} \StringTok{"identity"}\NormalTok{,  }
+           \DataTypeTok{fill =}\NormalTok{ ibu_fill, }
+           \DataTypeTok{color =}\NormalTok{ ibu_outline, }
+           \DataTypeTok{width=}\DecValTok{1}\NormalTok{) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{text =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{size=}\DecValTok{10}\NormalTok{),}
-        \DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle=}\DecValTok{90}\NormalTok{, }\DataTypeTok{hjust=}\DecValTok{1}\NormalTok{)) }
+        \DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle=}\DecValTok{90}\NormalTok{, }\DataTypeTok{hjust=}\DecValTok{1}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position=}\StringTok{"none"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Median Bitterness by State"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Alcohol Content (%)"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{ylab}\NormalTok{(}\StringTok{"International Bitterness Units (IBU)"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1164,7 +1414,6 @@ Wisconsin(.099, 80).
 \begin{Highlighting}[]
 \NormalTok{max_abv <-}\StringTok{  }\NormalTok{(}\KeywordTok{select}\NormalTok{(merged_data, state, abv) }\OperatorTok{%>%}
 \StringTok{                   }\KeywordTok{group_by}\NormalTok{(state) }\OperatorTok{%>%}
-\StringTok{                   }\CommentTok{#filter(ABV == max(ABV)) %>%}
 \StringTok{                   }\KeywordTok{arrange}\NormalTok{(}\KeywordTok{desc}\NormalTok{(abv))  }\OperatorTok{%>%}\StringTok{ }\CommentTok{#sort by ABV}
 \StringTok{                   }\KeywordTok{filter}\NormalTok{(}\KeywordTok{row_number}\NormalTok{() }\OperatorTok{==}\StringTok{ }\DecValTok{1}\NormalTok{))[}\DecValTok{1}\NormalTok{,] }\CommentTok{#get first row}
           
@@ -1182,7 +1431,6 @@ state abv 1 CO 0.128
 \begin{Highlighting}[]
 \NormalTok{max_ibu <-}\StringTok{  }\NormalTok{(}\KeywordTok{select}\NormalTok{(merged_data, state, ibu) }\OperatorTok{%>%}
 \StringTok{                   }\KeywordTok{group_by}\NormalTok{(state) }\OperatorTok{%>%}
-\StringTok{                   }\CommentTok{#filter(ABV == max(ABV)) %>%}
 \StringTok{                   }\KeywordTok{arrange}\NormalTok{(}\KeywordTok{desc}\NormalTok{(ibu))  }\OperatorTok{%>%}\StringTok{ }\CommentTok{#sort by ABV}
 \StringTok{                   }\KeywordTok{filter}\NormalTok{(}\KeywordTok{row_number}\NormalTok{() }\OperatorTok{==}\StringTok{ }\DecValTok{1}\NormalTok{))[}\DecValTok{1}\NormalTok{,] }\CommentTok{#get first row}
           
@@ -1251,23 +1499,28 @@ command.
 \begin{Highlighting}[]
 \CommentTok{#summaryize ABV}
 
-\CommentTok{# tidy_summary <- tidy(summary(merged_data$ABV)) #For some reason this line wont knit}
+
+\NormalTok{abv_stats <-}\StringTok{ }\KeywordTok{select}\NormalTok{(merged_data, abv) }\OperatorTok{%>%}\StringTok{ }\CommentTok{#select columns}
+\StringTok{                   }\KeywordTok{na.omit}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\CommentTok{# omit nulls}
+\StringTok{                   }\NormalTok{dplyr}\OperatorTok{::}\KeywordTok{summarize_all}\NormalTok{(}\KeywordTok{funs}\NormalTok{(}\DataTypeTok{count=}\KeywordTok{n}\NormalTok{(), }\KeywordTok{min}\NormalTok{(abv), }\KeywordTok{max}\NormalTok{(abv), }\KeywordTok{mean}\NormalTok{(abv), }\KeywordTok{median}\NormalTok{(abv), }\KeywordTok{sd}\NormalTok{(abv)))}
+
+\NormalTok{ibu_stats <-}\StringTok{ }\KeywordTok{select}\NormalTok{(merged_data, ibu) }\OperatorTok{%>%}\StringTok{ }\CommentTok{#select columns}
+\StringTok{                   }\KeywordTok{na.omit}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\CommentTok{# omit nulls}
+\StringTok{                   }\NormalTok{dplyr}\OperatorTok{::}\KeywordTok{summarize_all}\NormalTok{(}\KeywordTok{funs}\NormalTok{(}\DataTypeTok{count=}\KeywordTok{n}\NormalTok{(), }\KeywordTok{min}\NormalTok{(ibu), }\KeywordTok{max}\NormalTok{(ibu), }\KeywordTok{mean}\NormalTok{(ibu), }\KeywordTok{median}\NormalTok{(ibu), }\KeywordTok{sd}\NormalTok{(ibu)))}
 
 
-\NormalTok{abv_stats <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{t}\NormalTok{(}\KeywordTok{summary}\NormalTok{(merged_data}\OperatorTok{$}\NormalTok{abv))) }\OperatorTok{%>%}\StringTok{ }\CommentTok{#summarize and transpose}
-\StringTok{             }\KeywordTok{rename}\NormalTok{(}\StringTok{"abv"}\NormalTok{=Freq, }\DataTypeTok{Statistic=}\NormalTok{Var2) }\OperatorTok{%>%}
-\StringTok{             }\KeywordTok{select}\NormalTok{(Statistic, abv)}
-
-
-\NormalTok{abv_stats}\OperatorTok{$}\NormalTok{abv <-}\StringTok{ }\KeywordTok{round}\NormalTok{(abv_stats}\OperatorTok{$}\NormalTok{abv, }\DataTypeTok{digits =} \DecValTok{3}\NormalTok{)}
-  
-
-\NormalTok{abv_stats }\CommentTok{#TODO: Add IQR, stdev    #TODO: Compare to quinton's summary}
+\KeywordTok{kable}\NormalTok{(abv_stats)}
 \end{Highlighting}
 \end{Shaded}
 
-Statistic abv 1 Min. 0.001 2 1st Qu. 0.050 3 Median 0.056 4 Mean 0.060 5
-3rd Qu. 0.067 6 Max. 0.128 7 NA's 62.000
+\begin{longtable}[]{@{}rrrrrr@{}}
+\toprule
+count & min & max & mean & median & sd\tabularnewline
+\midrule
+\endhead
+2363 & 0.001 & 0.128 & 0.0597647 & 0.056 & 0.0135242\tabularnewline
+\bottomrule
+\end{longtable}
 
 \subsection{Question 7}\label{question-7}
 
@@ -1349,9 +1602,12 @@ rho}\label{spearmans-rank-correlation-results-for-rho}
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{ggplot}\NormalTok{(styles, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{abv, }\DataTypeTok{y=}\NormalTok{ibu)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
-\StringTok{  }\KeywordTok{scale_colour_brewer}\NormalTok{() }\OperatorTok{+}
-\StringTok{  }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"ABV v. IBU"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{color =}\NormalTok{ misc_cool,}
+             \DataTypeTok{size =} \DecValTok{3}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position=}\StringTok{"none"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Alcohol Content v Bitterness"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Alcohol Content (%)"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{ylab}\NormalTok{(}\StringTok{"International Bitterness Units (IBU)"}\NormalTok{) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
@@ -1405,11 +1661,15 @@ rho}\label{spearmans-rank-correlation-results-for-rho}
 \begin{Highlighting}[]
 \CommentTok{#Scatter plot of ABV v IBU}
 \KeywordTok{ggplot}\NormalTok{(styles, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{abv, }\DataTypeTok{y=}\NormalTok{ibu)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_smooth}\NormalTok{(}\DataTypeTok{method =} \StringTok{"lm"}\NormalTok{, }\DataTypeTok{se =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{color=}\StringTok{"red"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{color =}\NormalTok{ misc_cool,}
+             \DataTypeTok{size =} \DecValTok{3}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_smooth}\NormalTok{(}\DataTypeTok{method =} \StringTok{"lm"}\NormalTok{, }
+              \DataTypeTok{se =} \OtherTok{FALSE}\NormalTok{, }
+              \DataTypeTok{color=}\NormalTok{misc_warm) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position=}\StringTok{"none"}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"ABV v. IBU"}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{theme_minimal}\NormalTok{()  }\OperatorTok{+}
+\StringTok{  }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Alcohol Content v Bitterness"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Alcohol Content (%)"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{ylab}\NormalTok{(}\StringTok{"International Bitterness Units (IBU)"}\NormalTok{) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
@@ -1497,6 +1757,7 @@ Outliers}\label{boxplot---check-for-outliers}
 
 \NormalTok{x<-}\KeywordTok{boxplot}\NormalTok{(styles}\OperatorTok{$}\NormalTok{ibu, }\DataTypeTok{plot =} \OtherTok{FALSE}\NormalTok{)}
 
+
 \NormalTok{bp_abv <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{((styles }\OperatorTok{%>%}\StringTok{ }\KeywordTok{drop_na}\NormalTok{(abv)), }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\StringTok{""}\NormalTok{, }\DataTypeTok{y=}\NormalTok{abv)) }\OperatorTok{+}
 \StringTok{      }\KeywordTok{geom_point}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{fill =} \KeywordTok{ifelse}\NormalTok{((abv }\OperatorTok{%in%}\StringTok{ }\NormalTok{abv_outliers),}\StringTok{"Outlier"}\NormalTok{,}\StringTok{"Valid"}\NormalTok{)), }
                  \DataTypeTok{size =} \DecValTok{4}\NormalTok{, }
@@ -1506,12 +1767,16 @@ Outliers}\label{boxplot---check-for-outliers}
 \StringTok{      }\KeywordTok{geom_boxplot}\NormalTok{(}\DataTypeTok{alpha=}\NormalTok{.}\DecValTok{5}\NormalTok{, }
                    \DataTypeTok{outlier.shape =} \OtherTok{NA}\NormalTok{) }\OperatorTok{+}
 \StringTok{      }\KeywordTok{guides}\NormalTok{(}\DataTypeTok{fill=}\KeywordTok{guide_legend}\NormalTok{(}\DataTypeTok{title=} \OtherTok{NULL}\NormalTok{)) }\OperatorTok{+}
-\StringTok{      }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Beer Styles"}\NormalTok{) }\OperatorTok{+}
-\StringTok{      }\KeywordTok{ylab}\NormalTok{(}\StringTok{"Alcohol by Volume (ABV)"}\NormalTok{) }\OperatorTok{+}
+\StringTok{      }\KeywordTok{xlab}\NormalTok{(}\OtherTok{NULL}\NormalTok{) }\OperatorTok{+}
+\StringTok{      }\KeywordTok{ylab}\NormalTok{(}\StringTok{"Alcohol by Volume (%)"}\NormalTok{) }\OperatorTok{+}
 \StringTok{      }\KeywordTok{scale_y_continuous}\NormalTok{(}\DataTypeTok{position =} \StringTok{"right"}\NormalTok{, }
                          \DataTypeTok{breaks =} \KeywordTok{c}\NormalTok{(.}\DecValTok{025}\NormalTok{, .}\DecValTok{05}\NormalTok{, .}\DecValTok{075}\NormalTok{, .}\DecValTok{1}\NormalTok{, .}\DecValTok{125}\NormalTok{), }
                          \DataTypeTok{limits =} \KeywordTok{c}\NormalTok{(}\FloatTok{0.025}\NormalTok{, .}\DecValTok{125}\NormalTok{)) }\OperatorTok{+}
+\StringTok{      }\KeywordTok{scale_fill_manual}\NormalTok{(}\DataTypeTok{values =} \KeywordTok{c}\NormalTok{(}\StringTok{'#cc0606'}\NormalTok{, abv_fill)) }\OperatorTok{+}
+\StringTok{      }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{size =} \DecValTok{22}\NormalTok{),}
+            \DataTypeTok{axis.title.y=}\KeywordTok{element_blank}\NormalTok{()) }\OperatorTok{+}
 \StringTok{      }\KeywordTok{coord_flip}\NormalTok{()}
+
 
 
 \NormalTok{bp_ibu <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{((styles }\OperatorTok{%>%}\StringTok{ }\KeywordTok{drop_na}\NormalTok{(ibu)), }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\StringTok{""}\NormalTok{, }\DataTypeTok{y=}\NormalTok{ibu)) }\OperatorTok{+}
@@ -1523,10 +1788,13 @@ Outliers}\label{boxplot---check-for-outliers}
 \StringTok{      }\KeywordTok{geom_boxplot}\NormalTok{(}\DataTypeTok{alpha =}\NormalTok{ .}\DecValTok{5}\NormalTok{, }
                    \DataTypeTok{outlier.shape =} \OtherTok{NA}\NormalTok{) }\OperatorTok{+}
 \StringTok{      }\KeywordTok{guides}\NormalTok{(}\DataTypeTok{fill=}\KeywordTok{guide_legend}\NormalTok{(}\DataTypeTok{title=} \OtherTok{NULL}\NormalTok{)) }\OperatorTok{+}
-\StringTok{      }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Beer Styles"}\NormalTok{) }\OperatorTok{+}
+\StringTok{      }\KeywordTok{xlab}\NormalTok{(}\OtherTok{NULL}\NormalTok{) }\OperatorTok{+}
 \StringTok{      }\KeywordTok{ylab}\NormalTok{(}\StringTok{"International Bitterness Units (IBU)"}\NormalTok{) }\OperatorTok{+}
 \StringTok{      }\KeywordTok{scale_y_continuous}\NormalTok{(}\DataTypeTok{breaks =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{25}\NormalTok{, }\DecValTok{50}\NormalTok{, }\DecValTok{75}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DecValTok{125}\NormalTok{, }\DecValTok{150}\NormalTok{), }
                          \DataTypeTok{limits =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{150}\NormalTok{)) }\OperatorTok{+}
+\StringTok{      }\KeywordTok{scale_fill_manual}\NormalTok{(}\DataTypeTok{values =} \KeywordTok{c}\NormalTok{(}\StringTok{'#cc0606'}\NormalTok{, ibu_fill)) }\OperatorTok{+}
+\StringTok{      }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{size =} \DecValTok{22}\NormalTok{),}
+            \DataTypeTok{axis.title.y=}\KeywordTok{element_blank}\NormalTok{()) }\OperatorTok{+}
 \StringTok{      }\KeywordTok{coord_flip}\NormalTok{()}
 
 \KeywordTok{grid.arrange}\NormalTok{(bp_abv, bp_ibu)}
@@ -1566,8 +1834,10 @@ Correlation}\label{significance-testing-spearman-rank-order-correlation}
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\NormalTok{alpha <-}\StringTok{ }\FloatTok{0.05}
+
 \CommentTok{# Significance test}
-\NormalTok{spear_test_result <-}\StringTok{ }\KeywordTok{cor.test}\NormalTok{(styles}\OperatorTok{$}\NormalTok{ibu, styles}\OperatorTok{$}\NormalTok{abv, }\DataTypeTok{method =} \StringTok{"spearman"}\NormalTok{, }\DataTypeTok{conf.level =}\NormalTok{ .}\DecValTok{05}\NormalTok{, }\DataTypeTok{exact=}\OtherTok{FALSE}\NormalTok{)}
+\NormalTok{spear_test_result <-}\StringTok{ }\KeywordTok{cor.test}\NormalTok{(styles}\OperatorTok{$}\NormalTok{ibu, styles}\OperatorTok{$}\NormalTok{abv, }\DataTypeTok{method =} \StringTok{"spearman"}\NormalTok{, }\DataTypeTok{conf.level =}\NormalTok{ alpha, }\DataTypeTok{exact=}\OtherTok{FALSE}\NormalTok{)}
 
 \NormalTok{spear_test_result}
 \end{Highlighting}
@@ -1597,7 +1867,7 @@ Correlation}\label{significance-testing-spearman-rank-order-correlation}
 ## [1] 0.4459299
 \end{verbatim}
 
-\paragraph{Conclusion}\label{conclusion}
+\paragraph{Test Conclusion}\label{test-conclusion}
 
 There is strong evidence that the ABV and IBU are positively associated
 (p-value \textless{} 0.001 from a Spearman Rank-Order Correlation). At a
@@ -1610,6 +1880,38 @@ treatment and we do not know if the beer data were randomly selected, so
 we must limit our results to indicating an association between IBU
 rating an ABV. No causality or inferences to larger populations can be
 drawn.
+
+\subsection{Conclusion}\label{conclusion}
+
+People all around the world have been drinking beef for centuries. Beer
+has been used for refreshment, for refueling, and even for remittance. A
+survey of craft brewers in the US shows that beer is still a favorite,
+mainstream beverage.
+
+We found that there is at least one craft brewery in every state with an
+average brewery to citizen ratio of 1:125,000. There are more than 91
+varieties of beer being brewed with a range of strength (alcohol content
+and bitterness). The most popular craft beer being brewed is Y with an
+ABV of Z and an IBU of AA which puts it at the BB percentile on both
+scales.
+
+We determined that there is a distinct positive correlation between
+alcohol content and bitterness.
+
+With so many breweries and so many styles of beer, one might expect that
+all of the beer bases are covered\ldots{}one would be wrong. There are a
+handful of beer types that are statistically under-represented. An
+enterprising brewer might want to consider exploiting these overlooked
+beers to become a major producer of a niche style.
+
+This investigation focused specifically on ``craft brewers.'' A more
+complete investigation could be undertaken to include all commercial
+breweries including brew-pub/micro-brewers as well as large, industrial
+brewers. Our hypothesis for a more complete investigation would be a
+``thickening'' of the middle of the beer type distribution. That is, big
+brewers tend to brew the most popular beers whereas craft and
+micro-brewers can afford to (or choose to) push the boundaries and
+``live in the tails'' of the distribution.
 
 \subsection{Appendex}\label{appendex}
 
@@ -1655,6 +1957,109 @@ highr\_0.7 pillar\_1.2.3\\
 assertthat\_0.2.0 colorspace\_1.3-2 labeling\_0.3\\
 {[}37{]} utf8\_1.1.4 stringi\_1.1.7 RCurl\_1.95-4.10\\
 {[}40{]} lazyeval\_0.2.1 munsell\_0.5.0 crayon\_1.3.4
+
+\paragraph{Map of Max ABV by State}\label{map-of-max-abv-by-state}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Map MAX ABV by STATE}
+
+\NormalTok{x <-}\StringTok{ }\KeywordTok{select}\NormalTok{(merged_data, state, abv) }\OperatorTok{%>%}
+\StringTok{                   }\KeywordTok{na.omit}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{                   }\KeywordTok{group_by}\NormalTok{(state) }\OperatorTok{%>%}
+\StringTok{                    }\KeywordTok{summarise_all}\NormalTok{(max) }\OperatorTok{%>%}
+\StringTok{                   }\KeywordTok{arrange}\NormalTok{(}\KeywordTok{desc}\NormalTok{(abv)) }\OperatorTok{%>%}
+\StringTok{                    }\KeywordTok{left_join}\NormalTok{(state_ll, }\DataTypeTok{by=}\KeywordTok{c}\NormalTok{(}\StringTok{"state"}\NormalTok{ =}\StringTok{ "Abbr"}\NormalTok{))}
+
+\NormalTok{breweries_geo2 <-}\StringTok{ }\NormalTok{x }\OperatorTok{%>%}
+\StringTok{                  }\KeywordTok{inner_join}\NormalTok{(states, }\DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"name"}\NormalTok{ =}\StringTok{ "name"}\NormalTok{)) }
+
+
+
+
+
+\KeywordTok{ggplot}\NormalTok{((breweries_geo2 }\OperatorTok{%>%}\StringTok{ }\KeywordTok{arrange}\NormalTok{(}\KeywordTok{desc}\NormalTok{(abv))), }
+       \KeywordTok{aes}\NormalTok{(}\DataTypeTok{group =}\NormalTok{ state, }\DataTypeTok{stat=}\StringTok{"identity"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_polygon}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ long, }
+                   \DataTypeTok{y =}\NormalTok{ lat, }
+                   \DataTypeTok{group=}\NormalTok{group, }
+                   \DataTypeTok{fill=}\NormalTok{abv), }
+               \DataTypeTok{color =} \StringTok{"black"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_text}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ (x }\OperatorTok{%>%}\StringTok{ }
+\StringTok{                    }\KeywordTok{filter}\NormalTok{(}\OperatorTok{!}\NormalTok{(state }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"AK"}\NormalTok{, }\StringTok{"DC"}\NormalTok{, }\StringTok{"HI"}\NormalTok{)))), }\CommentTok{#filter to continental 50 states}
+            \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ lon_center, }
+                \DataTypeTok{y =}\NormalTok{ lat_center, }
+                \DataTypeTok{label =} \KeywordTok{as.character}\NormalTok{(}\KeywordTok{round}\NormalTok{(abv, }\DecValTok{2}\NormalTok{))),}
+            \DataTypeTok{color =} \StringTok{'white'}\NormalTok{,}
+            \DataTypeTok{size =} \DecValTok{4}
+\NormalTok{            ) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_fill_gradient}\NormalTok{(}\DataTypeTok{low=}\NormalTok{abv_fill, }\DataTypeTok{high=}\StringTok{'#8E5C05'}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{guides}\NormalTok{(}\DataTypeTok{fill=}\KeywordTok{guide_legend}\NormalTok{(}\DataTypeTok{title=} \StringTok{"Max ABV"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{coord_fixed}\NormalTok{(}\FloatTok{1.3}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# fix lat/long display ratio}
+\StringTok{  }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Max ABV by State"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# set plot title}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\CommentTok{# center plot title}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"left"}\NormalTok{,}
+        \DataTypeTok{axis.title.x=}\KeywordTok{element_blank}\NormalTok{(), }\CommentTok{# hide x axis title}
+        \DataTypeTok{axis.text.x=}\KeywordTok{element_blank}\NormalTok{(),  }\CommentTok{# hide x axis text}
+        \DataTypeTok{axis.ticks.x=}\KeywordTok{element_blank}\NormalTok{(), }\CommentTok{# hide x axis ticks}
+        \DataTypeTok{axis.title.y=}\KeywordTok{element_blank}\NormalTok{(), }\CommentTok{# hide y axis title}
+        \DataTypeTok{axis.text.y=}\KeywordTok{element_blank}\NormalTok{(),  }\CommentTok{# hide y axis text}
+        \DataTypeTok{axis.ticks.y=}\KeywordTok{element_blank}\NormalTok{()) }\CommentTok{# hide y axis ticks}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Analysis_Final_files/figure-latex/unnamed-chunk-29-1} \end{center}
+
+\paragraph{Map of Max IBU by State}\label{map-of-max-ibu-by-state}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# MAX IBU by STATE}
+
+\NormalTok{x <-}\StringTok{ }\KeywordTok{select}\NormalTok{(merged_data, state, ibu) }\OperatorTok{%>%}
+\StringTok{                   }\KeywordTok{na.omit}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{                   }\KeywordTok{group_by}\NormalTok{(state) }\OperatorTok{%>%}
+\StringTok{                    }\KeywordTok{summarise_all}\NormalTok{(max) }\OperatorTok{%>%}
+\StringTok{                   }\KeywordTok{arrange}\NormalTok{(}\KeywordTok{desc}\NormalTok{(ibu)) }\OperatorTok{%>%}
+\StringTok{                    }\KeywordTok{full_join}\NormalTok{(state_ll, }\DataTypeTok{by=}\KeywordTok{c}\NormalTok{(}\StringTok{"state"}\NormalTok{ =}\StringTok{ "Abbr"}\NormalTok{))}
+
+\NormalTok{breweries_geo2 <-}\StringTok{ }\NormalTok{x }\OperatorTok{%>%}
+\StringTok{                  }\KeywordTok{inner_join}\NormalTok{(states, }\DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"name"}\NormalTok{ =}\StringTok{ "name"}\NormalTok{)) }
+
+
+
+
+
+\KeywordTok{ggplot}\NormalTok{((breweries_geo2 }\OperatorTok{%>%}\StringTok{ }\KeywordTok{arrange}\NormalTok{(}\KeywordTok{desc}\NormalTok{(ibu))), }
+       \KeywordTok{aes}\NormalTok{(}\DataTypeTok{group =}\NormalTok{ state, }\DataTypeTok{stat=}\StringTok{"identity"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_polygon}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ long, }
+                   \DataTypeTok{y =}\NormalTok{ lat, }
+                   \DataTypeTok{group=}\NormalTok{group, }
+                   \DataTypeTok{fill=}\NormalTok{ibu), }
+               \DataTypeTok{color =} \StringTok{"black"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_text}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ (x }\OperatorTok{%>%}\StringTok{ }
+\StringTok{                    }\KeywordTok{filter}\NormalTok{(}\OperatorTok{!}\NormalTok{(state }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"AK"}\NormalTok{, }\StringTok{"DC"}\NormalTok{, }\StringTok{"HI"}\NormalTok{)))), }\CommentTok{#filter to continental 50 states}
+            \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ lon_center, }
+                \DataTypeTok{y =}\NormalTok{ lat_center, }
+                \DataTypeTok{label =} \KeywordTok{as.character}\NormalTok{(ibu)),}
+            \DataTypeTok{color =} \StringTok{'white'}
+\NormalTok{            ) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_fill_gradient}\NormalTok{(}\DataTypeTok{low=}\NormalTok{ibu_fill, }\DataTypeTok{high=}\StringTok{'#035C64'}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{guides}\NormalTok{(}\DataTypeTok{fill=}\KeywordTok{guide_legend}\NormalTok{(}\DataTypeTok{title=} \StringTok{"Max IBU"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{coord_fixed}\NormalTok{(}\FloatTok{1.3}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# fix lat/long display ratio}
+\StringTok{  }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Max IBU by State"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# set plot title}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\CommentTok{# center plot title}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"left"}\NormalTok{,}
+        \DataTypeTok{axis.title.x=}\KeywordTok{element_blank}\NormalTok{(), }\CommentTok{# hide x axis title}
+        \DataTypeTok{axis.text.x=}\KeywordTok{element_blank}\NormalTok{(),  }\CommentTok{# hide x axis text}
+        \DataTypeTok{axis.ticks.x=}\KeywordTok{element_blank}\NormalTok{(), }\CommentTok{# hide x axis ticks}
+        \DataTypeTok{axis.title.y=}\KeywordTok{element_blank}\NormalTok{(), }\CommentTok{# hide y axis title}
+        \DataTypeTok{axis.text.y=}\KeywordTok{element_blank}\NormalTok{(),  }\CommentTok{# hide y axis text}
+        \DataTypeTok{axis.ticks.y=}\KeywordTok{element_blank}\NormalTok{()) }\CommentTok{# hide y axis ticks}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Analysis_Final_files/figure-latex/unnamed-chunk-30-1} \end{center}
 
 
 \end{document}

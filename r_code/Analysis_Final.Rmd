@@ -3,10 +3,10 @@ title: "Buzz vs. Bite"
 subtitle: "An Analysis of Alcohol Content and Bitterness in American Craft Beers"
 date: "June 26, 2018"
 output:
-  pdf_document: 
-    keep_tex: true
   html_document:
     df_print: paged
+  pdf_document: 
+    keep_tex: true
 header-includes:
 - \usepackage{amsmath}
 - \usepackage{mathtools}
@@ -29,17 +29,28 @@ header-includes:
 <!-- \author{Quinton Nixon} -->
 <!-- \author{Brock Friedrich} -->
 
+
+<hr />
+
+Authors: <strong> Peter Flaming </strong> | <strong> Matthew Trevathan </strong> | <strong> Quinton Nixon </strong> | <strong> Brock Friedrich </strong>
+<hr />
+
+
 ##Introduction
+<hr />
+
 It goes without saying that entering the craft beer market, in pretty much any state, is a monstrous task. The explosion of micro-breweries has spread expeditiously in nearly every rapidly-growing urban environment. Luckily for you, the explosion is not in isolation. Demand has never been higher for unique and complex alcoholic libations. Where once the thought process was "the simpler the better," newer generations are constantly on the hunt for a drinking experience that fits their lifestyle and temperament. Although the market may seem saturated in many areas, it is, in reality, a rich field filled with almost never-ending demand ready to be tapped by the right combination of ingenuity, experimentation and a knowledge of what sells.
 
 ##Purpose of this study
-Purpose of this study
-  * To organize and analyze a list of 2410 craft beers from the United States and a list of 558 breweries.
-  * To help you identify trends within this data to help narrow your focus for production. Manufacturing a beer that will outsell your competitors is more than just a quality product, it's knowing what quality is proven to sell.
-  * To provide you with a functional list of each beer's alcohol content, bitterness level, style and other information to help you decide which direction to take your production facilities and supply chain.
+<hr />
+
+* To organize and analyze a list of 2410 craft beers from the United States and a list of 558 breweries.
+* To help you identify trends within this data to help narrow your focus for production. Manufacturing a beer that will outsell your competitors is more than just a quality product, it's knowing what quality is proven to sell.
+* To provide you with a functional list of each beer's alcohol content, bitterness level, style and other information to help you decide which direction to take your production facilities and supply chain.
 
 
 ## Loading required libraries
+<hr />
 
 The following code loads useful libraries that aren't included in base R.  The
 of these libraries come from the "tidyverse" including dplyr for manipulating
@@ -48,19 +59,11 @@ ggplot2 for plots, maps for help with geographic plots, RColorBrewer for improve
 map graphics, summarytools for summarizing data, magrittr for better code, and
 gridExtra to assist with plots
 
+```{r}
 
-```{r echo = FALSE, output = FALSE}
-
-require(dplyr)
-require(tidyr)
 require(knitr)
-require(ggplot2)
-require(maps)
-require(RColorBrewer)
-require(summarytools)
-require(magrittr) 
-require(gridExtra)
-#automatically set working directory to the directory containing this R script
+
+# set global chunk options
 
 opts_chunk$set(results = 'asis') # table format option
 opts_chunk$set(fig.align = 'center') # plot align option
@@ -70,7 +73,27 @@ opts_chunk$set(message = FALSE) # output messages
 opts_chunk$set(warning = FALSE) # output warnings
 opts_chunk$set(error = FALSE) # output errors
 
-ggplot2::theme_set(ggplot2::theme_bw())
+```
+
+
+
+```{r echo = TRUE}
+
+
+require(dplyr)
+require(tidyr)
+require(ggplot2)
+require(maps)
+require(RColorBrewer)
+require(summarytools)
+require(magrittr) 
+require(gridExtra)
+#automatically set working directory to the directory containing this R script
+
+
+ggplot2::theme_set(ggplot2::theme_bw()) # set global ggplot theme
+
+# define colors for plot themes
 
 abv_fill <- '#ffbe4f'
 abv_outline <- '#cc983f'
@@ -84,6 +107,7 @@ misc_warm = '#e8702a'
 ```
 
 ## Breweries Data
+<hr />
 
 ### Import Breweries
 
@@ -136,7 +160,7 @@ ggplot(brewery_summary_raw) +
       ggtitle("Count of Beer Styles by State") +
       theme(plot.title = element_text(hjust = 0.5)) + # center plot title
       theme(text = element_text(size=10),
-            axis.text.x = element_text(angle=90, hjust=1)) # rotate x-axis labels
+            axis.text.x = element_text(angle=90, vjust=0.5)) # rotate x-axis labels
 ```
 
 ### Clean Breweries Data
@@ -212,13 +236,13 @@ breweries_dups <- filter(breweries_summary, brewery_id_count > 1) # if Brew_ID_c
 # rejoin potential dups to original dataset
 breweries_dups <- select(breweries_dups %>% inner_join(breweries_data, by="name"), -ends_with("_count"))
 
-breweries_dups
+kable(breweries_dups)
 
 ```
 
 4) Correct duplicates
 
-    * City name "Menominie" misspelled as "Menominee"
+    a) City name "Menominie" misspelled as "Menominee"
 
 ```{r}
 
@@ -230,7 +254,7 @@ breweries_dups <- breweries_dups %>%
 
 ```
 
-    * Marquette is not a city name in Massachusetts. Changed to Michigan based on other records existing for Marquette, MI, in addition to validating the location of the city on Google Maps.
+    b) Marquette is not a city name in Massachusetts. Changed to Michigan based on other records existing for Marquette, MI, in addition to validating the location of the city on Google Maps.
 
 
 ```{r}
@@ -244,7 +268,7 @@ breweries_dups <- breweries_dups %>%
 
 ```
 
-    * Merge duplicates into single records on name + city + state
+    c) Merge duplicates into single records on name + city + state
 
 ```{r}
 
@@ -256,7 +280,7 @@ breweries_dups <- breweries_dups %>%
 
 ```
 
-    * Create new brewery_id for corrected duplicates
+    d) Create new brewery_id for corrected duplicates
 
 ```{r}
 
@@ -272,11 +296,11 @@ breweries_sk <- breweries_dups %>%
                     rename(old_brewery_id=brewery_id, new_brewery_id=brew_sk)
               
   
-breweries_sk
+kable(breweries_sk)
 
 ```
 
-    * Update original breweries dataset with corrections and de-duped records
+    e) Update original breweries dataset with corrections and de-duped records
 
 ```{r}
 
@@ -291,11 +315,12 @@ breweries_clean <- dplyr::bind_rows( # append rows of dataframes together
                           rename(brewery_name = name) %>% #change column name "name" to "brewery_name"
                           mutate(state = as.factor(state))
 
-summarytools::dfSummary(breweries_clean)
+print(summarytools::dfSummary(breweries_clean), method = 'render')
 
 ```
 
 ## Clean Beer Data
+<hr />
 
 A similar process is used to remove duplicates from the Beers dataset.
 
@@ -322,7 +347,7 @@ beer_clean <- merge(beer_data, # first data frame
        rename(beer_name = name)
 
 
-summarytools::dfSummary(beer_clean)
+print(summarytools::dfSummary(beer_clean), method = 'render')
 
 
 
@@ -330,6 +355,7 @@ summarytools::dfSummary(beer_clean)
 
 
 ## Question 1
+<hr />
 
 To determine the number breweries in each state we simply count the number of times each state appears in the table. 
 
@@ -435,6 +461,7 @@ ggplot((breweries_geo %>% arrange(desc(brewery_count))),
 
 
 ## Question 2
+<hr />
 
 In data science, like in life, sometimes less is more.  Instead of maintaining separate tables for breweries and beers, it's helpful to merge the two datasets into a single combined dataset.  
 
@@ -503,6 +530,7 @@ ggplot((breweries_geo %>% arrange(desc(brewery_count))),
 
 
 ## Question 3
+<hr />
 
 Sometimes data are not available.  This analysis is no exception.  To better understand how our analysis could be impacted by missing values we first have to identify and county them. 
 
@@ -522,6 +550,7 @@ kable(merged_data %>%
 
 
 ## Question 4
+<hr />
 
 Computing the median is straightforward.  We simply merge all of the cleaned data by state, and calculate the median ABV and IBU for each state, which is summarized into a table and plotted as bar charts recording the median values across each state side by side. 
 
@@ -580,6 +609,7 @@ ggplot(merged_by_state,
 
 
 ## Question 5
+<hr />
 
 Before you can "push the limits" you have to know what the limits are.  We want
 to determine which state has the most alcoholic beer and which state has the most
@@ -603,17 +633,24 @@ Colorado(.128, 104), California(.099, 115), Michigan(.099, 115), Oregon(.082, 13
 
 ggplot((merged_data %>% na.omit(abv)), 
        aes(x=state , y=abv)) +  #TODO: Move to Appendix
-  geom_boxplot() +
-  #ylim(0, .075) +
+  geom_boxplot(fill = abv_fill) +
+  ggtitle("IBU by State") +
+  xlab("States") +
+  ylab("International Bitterness Units (IBU)") +
   theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=90, hjust=1)) 
- 
+        axis.text.x = element_text(angle=90, vjust=0.5),
+        plot.title = element_text(hjust = 0.5, size = 16))
+
+
 ggplot((merged_data %>% na.omit(ibu)), 
        aes(x=state , y=ibu)) +  #TODO: Move to Appendix
-  geom_boxplot() +
-  #ylim(0, .075) +
+  geom_boxplot(fill = ibu_fill) +
+  ggtitle("ABV by State") +
+  xlab("States") +
+  ylab("Alcohol by Volume (%)") +
   theme(text = element_text(size=10),
-        axis.text.x = element_text(angle=90, hjust=1)) 
+        axis.text.x = element_text(angle=90, vjust=0.5),
+        plot.title = element_text(hjust = 0.5, size = 16))
  
 max_abv <-  (select(merged_data, state, abv) %>%
                    group_by(state) %>%
@@ -635,6 +672,7 @@ max_ibu
 
 
 ## Question 6
+<hr />
 
 The amount of alcohol by volume ABV is a good representation of the beer market, where consumer demand is infered from the geographical spread and number of breweries produce a certain style of beer. The certain style of a beer is controlled in-part by the ABV content. From the ABV five number summary we can better describe the use of the ABV variable as a controlling factor in the consumer market of beer. 
 
@@ -657,11 +695,21 @@ Summarizing the statistics for ABV can be accomplished in a signle command.
 
 abv_stats <- select(merged_data, abv) %>% #select columns
                    na.omit() %>% # omit nulls
-                   dplyr::summarize_all(funs(count=n(), min(abv), max(abv), mean(abv), median(abv), sd(abv)))
+                   dplyr::summarize_all(funs(count=n(), 
+                                             min(abv), 
+                                             max(abv), 
+                                             mean(abv), 
+                                             median(abv), 
+                                             sd(abv)))
 
 ibu_stats <- select(merged_data, ibu) %>% #select columns
                    na.omit() %>% # omit nulls
-                   dplyr::summarize_all(funs(count=n(), min(ibu), max(ibu), mean(ibu), median(ibu), sd(ibu)))
+                   dplyr::summarize_all(funs(count=n(), 
+                                             min(ibu), 
+                                             max(ibu), 
+                                             mean(ibu), 
+                                             median(ibu), 
+                                             sd(ibu)))
 
 
 kable(abv_stats)
@@ -670,6 +718,7 @@ kable(abv_stats)
 
 
 ## Question 7
+<hr />
 
 To determine the relationship between ABV and IBU it's helpful to see all values
 for both variables at the same time.  This is most easily accomplished using
@@ -747,28 +796,13 @@ ggplot(styles, aes(x=abv, y=ibu)) +
 <!-- <font color="green"> &#x2713; </font> -->
 
 * Assumptions:
-    + Continuity of data:\cmark
-    + Paired observations: \cmark
-    + Data has linear relationship: \cmark 
-    + No significant outliers:  \xmark
-    + Normality: \xmark
+    + Continuity of data: <font color="green"> &#x2713; </font>
+    + Paired observations: <font color="green"> &#x2713; </font>
+    + Data has linear relationship: <font color="green"> &#x2713; </font> 
+    + No significant outliers:  <font color="red"> &#x2717; </font>
+    + Normality:<font color="red"> &#x2717; </font>
     
 ```{r}
-
-m_eqn = function(m) {
-
-  l <- list(a = format(coef(m)[1], digits = 2),
-      b = format(abs(coef(m)[2]), digits = 2),
-      r2 = format(summary(m)$r.squared, digits = 3));
-
-  if (coef(m)[2] >= 0)  {
-    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,l)
-  } else {
-    eq <- substitute(italic(y) == a - b %.% italic(x)*","~~italic(r)^2~"="~r2,l)    
-  }
-
-  as.character(as.expression(eq));                 
-}
 
 #Scatter plot of ABV v IBU
 ggplot(styles, aes(x=abv, y=ibu)) +
@@ -777,11 +811,6 @@ ggplot(styles, aes(x=abv, y=ibu)) +
   geom_smooth(method = "lm", 
               se = FALSE, 
               color=misc_warm) +
-  geom_text(aes(x = .045, 
-                y = 125, 
-                label = lm_eqn(lm(abv ~ ibu ,styles))), 
-            parse = TRUE, 
-            color = misc_warm) +
   theme(legend.position="none") +
   ggtitle("Alcohol Content v Bitterness") +
   xlab("Alcohol Content (%)") +
@@ -797,7 +826,7 @@ ggplot(styles, aes(x=abv, y=ibu)) +
 # QQ Plots of IBU and ABV
 
 
-#calulate line fit
+# calulate line fit
 y <- quantile((styles$ibu %>% na.omit()), c(0.25, 0.75))
 x <- qnorm(c(0.25, 0.75))
 slope <- diff(y)/diff(x)
@@ -811,11 +840,12 @@ qq_ibu <- ggplot(styles, aes(sample = styles$ibu)) +
               theme(plot.title = element_text(hjust = 0.5))
 
 
-#calulate line fit
+# calulate line fit
 y <- quantile((styles$abv %>% na.omit()), c(0.25, 0.75))
 x <- qnorm(c(0.25, 0.75))
 slope <- diff(y)/diff(x)
 y_int <- y[1] - slope * x[1]  
+
 
 qq_abv <- ggplot(styles, aes(sample = styles$abv)) + 
             geom_qq(shape = 16, size = 2, alpha = 0.5) +
@@ -824,7 +854,7 @@ qq_abv <- ggplot(styles, aes(sample = styles$abv)) +
             theme_bw() +
             theme(plot.title = element_text(hjust = 0.5))
 
-
+# plot together
 grid.arrange(qq_abv, qq_ibu)
 
 
@@ -849,6 +879,7 @@ hist_abv <- ggplot(styles %>% na.omit(abv)) +
                   axis.text.x = element_text(angle=90, hjust=1)) 
 
 
+# plot together
 grid.arrange(hist_abv, hist_ibu)
 
 
@@ -868,6 +899,7 @@ abv_outliers <- boxplot(styles$abv, plot = FALSE)[["out"]]
 
 x<-boxplot(styles$ibu, plot = FALSE)
 
+
 bp_abv <- ggplot((styles %>% drop_na(abv)), aes(x="", y=abv)) +
       geom_point(aes(fill = ifelse((abv %in% abv_outliers),"Outlier","Valid")), 
                  size = 4, 
@@ -877,12 +909,16 @@ bp_abv <- ggplot((styles %>% drop_na(abv)), aes(x="", y=abv)) +
       geom_boxplot(alpha=.5, 
                    outlier.shape = NA) +
       guides(fill=guide_legend(title= NULL)) +
-      xlab("Beer Styles") +
+      xlab(NULL) +
       ylab("Alcohol by Volume (%)") +
       scale_y_continuous(position = "right", 
                          breaks = c(.025, .05, .075, .1, .125), 
                          limits = c(0.025, .125)) +
+      scale_fill_manual(values = c('#cc0606', abv_fill)) +
+      theme(plot.title = element_text(hjust = 0.5, size = 22),
+            axis.title.y=element_blank()) +
       coord_flip()
+
 
 
 bp_ibu <- ggplot((styles %>% drop_na(ibu)), aes(x="", y=ibu)) +
@@ -894,12 +930,16 @@ bp_ibu <- ggplot((styles %>% drop_na(ibu)), aes(x="", y=ibu)) +
       geom_boxplot(alpha = .5, 
                    outlier.shape = NA) +
       guides(fill=guide_legend(title= NULL)) +
-      xlab("Beer Styles") +
+      xlab(NULL) +
       ylab("International Bitterness Units (IBU)") +
       scale_y_continuous(breaks = c(0, 25, 50, 75, 100, 125, 150), 
                          limits = c(0, 150)) +
+      scale_fill_manual(values = c('#cc0606', ibu_fill)) +
+      theme(plot.title = element_text(hjust = 0.5, size = 22),
+            axis.title.y=element_blank()) +
       coord_flip()
 
+# plot together
 grid.arrange(bp_abv, bp_ibu)
 
 
@@ -934,11 +974,12 @@ r_sq
 
 #### Test Conclusion
 
-There is strong evidence that the ABV and IBU are positively associated (p-value < `r spear_test_result[["p.value"]]` from a Spearman Rank-Order Correlation).  At a `r (1-alpha)*100`% confidence level, the IBU rating accounts for `r round(r_sq*100, 2)`% of the variation in the ABV.  While IBU and ABV certainly have a correlation, the correlation is weak ($r^2 =$ `r round(r_sq, 2)`).  Thus, we reject the null hypothesis that IBU rating and ABV are un-corrolated across the beer styles in our sample.  Beer styles were not randomly assigned to any treatment and we do not know if the beer data were randomly selected, so we must limit our results to indicating an association between IBU rating an ABV.  No causality or inferences to larger populations can be drawn.   
+There is strong evidence that the ABV and IBU are positively associated (p-value < 0.001 from a Spearman Rank-Order Correlation).  At a `r (1-alpha)*100`% confidence level, the IBU rating accounts for `r round(r_sq*100, 2)`% of the variation in the ABV.  While IBU and ABV certainly have a correlation, the correlation is weak ($r^2 =$ `r round(r_sq, 2)`).  Thus, we reject the null hypothesis that IBU rating and ABV are un-corrolated across the beer styles in our sample.  Beer styles were not randomly assigned to any treatment and we do not know if the beer data were randomly selected, so we must limit our results to indicating an association between IBU rating an ABV.  No causality or inferences to larger populations can be drawn.   
 
 
 
 ## Conclusion
+<hr />
 
 People all around the world have been drinking beef for centuries.  Beer has been used for refreshment, for refueling, and even for remittance.  A survey of craft brewers in the US shows that beer is still a favorite, mainstream beverage.  
 
@@ -955,6 +996,7 @@ This investigation focused specifically on “craft brewers.”  A more complete
 
 
 ## Appendex
+<hr />
 
 #### Session Info
 
