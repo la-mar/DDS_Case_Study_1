@@ -1,0 +1,41 @@
+#Read in csvs and packages
+beers <- read.csv("Beers.csv", header = TRUE, as.is=TRUE)
+brewery <- read.csv("Breweries.csv", header = TRUE, as.is=TRUE)
+library(magrittr) #for %>% function
+library(dplyr) #for summary function
+library(plyr)
+
+
+#1. Use plyr package to create a data frame with the count by each state
+library(plyr)
+by_state <- count(brewery, "State")
+
+#2. Merge data sets and update the column names. Print out the first and last 6 observations
+brewery_beers <- merge(beers, brewery, by.x = "Brewery_id", by.y = "Brew_ID")
+colnames(brewery_beers) <- c("Brewery ID", "Beer Name", "Beer ID", "ABV", "IBU", "Style", "Ounces", "Brewery Name", "City", "State")
+head(brewery_beers)
+tail(brewery_beers)
+
+#3. Print out NAs in each column
+na_count <- colSums(is.na(brewery_beers))
+
+#4. Barplots for medians
+medians_ABV <- brewery_beers %>% group_by(State) %>% summarise(median_abv = median(ABV, na.rm = TRUE)) 
+barplot(medians_ABV$median_abv, horiz = TRUE, cex.names=0.2, names.arg = medians_ABV$State, xlim = c(0, .075))
+
+medians_IBU <- brewery_beers %>% group_by(State) %>% summarise(median_ibu = median(IBU, na.rm = TRUE))
+barplot(medians_IBU$median_ibu, horiz = TRUE, cex.names=0.2, names.arg = medians_IBU$State, xlim = c(0, 70))
+
+#5. Which state has the highest ABV and IBU
+ABV_state <- brewery_beers %>% group_by(State) %>% summarise(max(ABV, na.rm = TRUE))
+ABV_state[which.max(ABV_state$`max(ABV, na.rm = TRUE)`),]
+
+IBU_state <- brewery_beers %>% group_by(State) %>% summarise(max(IBU, na.rm = TRUE))
+IBU_state[which.max(IBU_state$`max(IBU, na.rm = TRUE)`),]
+
+#6. Summary of ABV variable
+ABV_summary <- summary(brewery_beers$ABV)
+ABV_summary
+
+#7. Bitterness vs. Alcohol content
+plot(brewery_beers$IBU, brewery_beers$ABV)
