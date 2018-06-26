@@ -634,11 +634,36 @@ To determine the relationship between ABV and IBU it's helpful to see all values
 for both variables at the same time.  This is most easily accomplished using
 a scatterplot.
 
-With ABV on one axis and IBU on the other we start to see what appears to be a 
-linear correlation between the values.
+Linear regression was used to model the relationship between ABV and IBU from a sample of cleaned data that was created in the previous questions above.
 
-Adding a trendline allows us to determine a formula that specifies this correlation.
+The equation:   
 
+       y-intercept = IBU - slope * ABV       
+
+was used to plot thw linear model for the ABV and IBU data in this study. 
+
+With ABV on the x-axis and IBU on the y-axis, we start to see that there is a positive 
+linear correlation between the ABV and IBU values, with R-squared = 0.44593.
+
+R-squared is a statistical measure of how close the data are to the fitted regression line. It is also known as the coefficient of determination, and the definition of R-squared is fairly straight-forward; it is the percentage of the response variable variation that is explained by the linear model.
+
+Since the creation, consumption, and  distribution of beer by methods of breweries is a human behavior, it is very important to note that it is common for studies to measure R-squared values less than 0.50. The reason is , that human behavior is harder to predict with linear models.
+
+The outcome of our study measured an R-squared value of 0.44593 which is an awesome fit, and much better than we expected for this study to produce, since the study is based on the human behavior of beer consumption with respect to the variation of ABV and IBU accross the United States of America. 
+
+Adding a trendline allows us to determine a formula that specifies this correlation. The regression is plotted and the results of the Spearman's Rank Correlation Test are in the following figures. 
+
+###Spearman's Rank Correlation Results for rho
+```r
+data:  styles$ibu and styles$abv
+S = 153570000, p-value < 2.2e-16
+alternative hypothesis: true rho is not equal to 0
+sample estimates:
+rho 
+0.6677798 
+
+[1] 0.4459299
+```
 ```{r fig.width = 10, fig.height = 10}
 
 
