@@ -30,7 +30,10 @@ Purpose of this study
 The following code loads useful libraries that aren't included in base R.  The
 of these libraries come from the "tidyverse" including dplyr for manipulating
 dataframes, tidyr for making data tidy, knitr for creating reproducible documents
-ggplot2 for plots, maps for help with geographic plots, RColorBrewer...
+ggplot2 for plots, maps for help with geographic plots, RColorBrewer for improved
+map graphics, summarytools for summarizing data, magrittr for better code, and
+gridExtra to assist with plots
+
 
 ```{r echo=FALSE, tidy=TRUE}
 
