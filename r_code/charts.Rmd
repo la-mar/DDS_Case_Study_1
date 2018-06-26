@@ -1,0 +1,32 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+```{r}
+require(dplyr)
+require(tidyr)
+require(knitr)
+require(ggplot2)
+require(maps)
+require(RColorBrewer)
+require(summarytools)
+require(magrittr) 
+
+```
+
+
+```{r echo=FALSE, tidy=TRUE}
+
+
+select(merged_data, style, ibu) %>%
+  group_by(style) %>%
+  # select_if(function(x) any(is.na(x))) %>% 
+  summarise_all(funs(sum(n(), is.na(.)))) 
+
+
+```
+
+
