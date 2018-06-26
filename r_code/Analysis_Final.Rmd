@@ -1,12 +1,12 @@
 ---
 title: "Buzz vs. Bite"
 subtitle: "An Analysis of Alcohol Content and Bitterness in American Craft Beers"
-date: "June 23, 2018"
+date: "June 26, 2018"
 output:
-  html_document:
-    df_print: paged
   pdf_document: 
     keep_tex: true
+  html_document:
+    df_print: paged
 header-includes:
 - \usepackage{amsmath}
 - \usepackage{mathtools}
@@ -14,7 +14,20 @@ header-includes:
 - \usepackage{xcolor,pifont}
 - \newcommand{\cmark}{\Large\textcolor{green}{\ding{52}}}
 - \newcommand{\xmark}{\Large\textcolor{red}{\ding{55}}}
+- \usepackage{blindtext}
+- \usepackage[utf8]{inputenc}
 ---
+
+<!-- \documentclass{article} -->
+<!-- \title{Buzz vs. Bite} -->
+<!-- \subtitle{An Analysis of Alcohol Content and Bitterness in American Craft Beers} -->
+<!-- \date{\today} -->
+
+
+<!-- \author{Peter Flaming} -->
+<!-- \author{Matthew Trevathan} -->
+<!-- \author{Quinton Nixon} -->
+<!-- \author{Brock Friedrich} -->
 
 ##Introduction
 It goes without saying that entering the craft beer market, in pretty much any state, is a monstrous task. The explosion of micro-breweries has spread expeditiously in nearly every rapidly-growing urban environment. Luckily for you, the explosion is not in isolation. Demand has never been higher for unique and complex alcoholic libations. Where once the thought process was "the simpler the better," newer generations are constantly on the hunt for a drinking experience that fits their lifestyle and temperament. Although the market may seem saturated in many areas, it is, in reality, a rich field filled with almost never-ending demand ready to be tapped by the right combination of ingenuity, experimentation and a knowledge of what sells.
@@ -217,7 +230,7 @@ breweries_dups <- breweries_dups %>%
 
 ```
 
-      * Marquette is not a city name in Massachusetts. Changed to Michigan based on other records existing for Marquette, MI, in addition to validating the location of the city on Google Maps.
+    * Marquette is not a city name in Massachusetts. Changed to Michigan based on other records existing for Marquette, MI, in addition to validating the location of the city on Google Maps.
 
 
 ```{r}
@@ -309,7 +322,7 @@ beer_clean <- merge(beer_data, # first data frame
        rename(beer_name = name)
 
 
-kable(summarytools::dfSummary(beer_clean))
+summarytools::dfSummary(beer_clean)
 
 
 
@@ -701,15 +714,17 @@ ggplot(styles, aes(x=abv, y=ibu)) +
 * Problem: We wish to test if there is a monotonic association between the alochol by volume (ABV) and international bitterness unit (IBU) rating of beers selected from domestic craft breweries.
 
 * Hypotheses:
-  + H~o~: $\rho= 0$
-  + H~A~: $\rho\neq 0$
+    + H~o~: $\rho= 0$
+    + H~A~: $\rho\neq 0$
 
+<!-- <font color="red"> &#x2717; </font> -->
+<!-- <font color="green"> &#x2713; </font> -->
 
 * Assumptions:
-    + Continuity of data: \cmark
+    + Continuity of data:\cmark
     + Paired observations: \cmark
-    + Data has linear relationship: \cmark
-    + No significant outliers: \xmark
+    + Data has linear relationship: \cmark 
+    + No significant outliers:  \xmark
     + Normality: \xmark
     
 ```{r}
@@ -826,7 +841,7 @@ bp_ibu <- ggplot((styles %>% drop_na(ibu)), aes(x="", y=ibu)) +
                  shape = 21, 
                  position = position_jitter())+
       stat_boxplot(geom ='errorbar') +
-      geom_boxplot(alpha = .75, 
+      geom_boxplot(alpha = .5, 
                    outlier.shape = NA) +
       guides(fill=guide_legend(title= NULL)) +
       xlab("Beer Styles") +
@@ -844,14 +859,13 @@ grid.arrange(bp_abv, bp_ibu)
   + Due to the lack of normality of the IBU variable and the presence of outliers in both variables, we will use the Spearman Rank-Correlation test as an alternative to the preferred Pearson Correlation.
 
 
-#### Spearman Rank-Order Correlation
+#### Significance Testing: Spearman Rank-Order Correlation
 
     + More info on Spearman test: https://statistics.laerd.com/statistical-guides/spearmans-rank-order-correlation-statistical-guide.php
 
-* Hypotheses:
-    + H~o~: $\rho = 0$
-    + H~A~: $\rho \neq 0$
-
+* Hypotheses: 
+    + H~o~: $\rho= 0$
+    + H~A~: $\rho\neq 0$
 ```{r results='markup'}
 
 # Significance test
@@ -869,17 +883,7 @@ r_sq
 
 #### Conclusion
 
-There is strong evidence that the ABV and IBU are positively associated (p-value < 0.001 from a Spearman Rank-Order Correlation).  At a 95% confidence level, the IBU rating accounts for `r round(r_sq*100, 2)`% of the variation in the ABV .  While IBU and ABV certainly have a correlation, the correlation is weak ($r^2 =$ `r round(r_sq, 2)`).  Thus, we reject the null hypothesis that IBU rating and ABV are un-corrolated across the beer styles in our sample.  Beer styles were not randomly assigned to any treatment and we do not know if the beer data were randomly selected, so we must limit our results to indicating an association between IBU rating an ABV.  No causality or inferences to larger populations can be drawn.   
-
-## Write datasets to file
-
-```{r}
-
-# write.csv( beer_clean,file = '../data/beer_clean.csv', row.names = FALSE)
-# write.csv( breweries_clean,file = '../data/breweries_clean.csv', row.names = FALSE)
-
-
-```
+There is strong evidence that the ABV and IBU are positively associated (p-value < 0.001 from a Spearman Rank-Order Correlation).  At a 95% confidence level, the IBU rating accounts for `r round(r_sq*100, 2)`% of the variation in the ABV.  While IBU and ABV certainly have a correlation, the correlation is weak ($r^2 =$ `r round(r_sq, 2)`).  Thus, we reject the null hypothesis that IBU rating and ABV are un-corrolated across the beer styles in our sample.  Beer styles were not randomly assigned to any treatment and we do not know if the beer data were randomly selected, so we must limit our results to indicating an association between IBU rating an ABV.  No causality or inferences to larger populations can be drawn.   
 
 
 ## Appendex

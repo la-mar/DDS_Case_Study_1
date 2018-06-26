@@ -24,7 +24,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{hyperref}
 \hypersetup{unicode=true,
-            pdftitle={Analysis of},
+            pdftitle={Buzz vs.~Bite},
             pdfborder={0 0 0},
             breaklinks=true}
 \urlstyle{same}  % don't use monospace font for urls
@@ -113,15 +113,15 @@
 }
 
 \setlength{\droptitle}{-2em}
-
-  \title{Analysis of}
-    \pretitle{\vspace{\droptitle}\centering\huge}
+  \title{Buzz vs.~Bite}
+  \pretitle{\vspace{\droptitle}\centering\huge}
   \posttitle{\par}
-    \author{}
-    \preauthor{}\postauthor{}
-      \predate{\centering\large\emph}
+\subtitle{An Analysis of Alcohol Content and Bitterness in American Craft Beers}
+  \author{}
+  \preauthor{}\postauthor{}
+  \predate{\centering\large\emph}
   \postdate{\par}
-    \date{June 23, 2018}
+  \date{June 26, 2018}
 
 \usepackage{amsmath}
 \usepackage{mathtools}
@@ -129,9 +129,37 @@
 \usepackage{xcolor,pifont}
 \newcommand{\cmark}{\Large\textcolor{green}{\ding{52}}}
 \newcommand{\xmark}{\Large\textcolor{red}{\ding{55}}}
+\usepackage{blindtext}
+\usepackage[utf8]{inputenc}
 
 \begin{document}
 \maketitle
+
+\subsection{Introduction}\label{introduction}
+
+It goes without saying that entering the craft beer market, in pretty
+much any state, is a monstrous task. The explosion of micro-breweries
+has spread expeditiously in nearly every rapidly-growing urban
+environment. Luckily for you, the explosion is not in isolation. Demand
+has never been higher for unique and complex alcoholic libations. Where
+once the thought process was ``the simpler the better,'' newer
+generations are constantly on the hunt for a drinking experience that
+fits their lifestyle and temperament. Although the market may seem
+saturated in many areas, it is, in reality, a rich field filled with
+almost never-ending demand ready to be tapped by the right combination
+of ingenuity, experimentation and a knowledge of what sells.
+
+\subsection{Purpose of this study}\label{purpose-of-this-study}
+
+Purpose of this study * To organize and analyze a list of 2410 craft
+beers from the United States and a list of 558 breweries. * To help you
+identify trends within this data to help narrow your focus for
+production. Manufacturing a beer that will outsell your competitors is
+more than just a quality product, it's knowing what quality is proven to
+sell. * To provide you with a functional list of each beer's alcohol
+content, bitterness level, style and other information to help you
+decide which direction to take your production facilities and supply
+chain.
 
 \subsection{Loading required
 libraries}\label{loading-required-libraries}
@@ -140,7 +168,9 @@ The following code loads useful libraries that aren't included in base
 R. The of these libraries come from the ``tidyverse'' including dplyr
 for manipulating dataframes, tidyr for making data tidy, knitr for
 creating reproducible documents ggplot2 for plots, maps for help with
-geographic plots, RColorBrewer\ldots{}
+geographic plots, RColorBrewer for improved map graphics, summarytools
+for summarizing data, magrittr for better code, and gridExtra to assist
+with plots
 
 \begin{verbatim}
 ## Loading required package: dplyr
@@ -324,8 +354,8 @@ mistakes have been made and take measures to correct them.
 Remvoing punctuation allows us to mitigate the possibility of commas
 being erroneously typed as periods. ``Detroit, MI'', for example, would
 be identified as a different city than ``Detroit. MI'' Removing
-punctuation resolves this issue.\\
-Both city/state combinations simply become ``Detroit MI.''
+punctuation resolves this issue. Both city/state combinations simply
+become ``Detroit MI.''
 
 Likewise, it's helpful to remove whitespace. Although whitespace can
 appear ``invisible'' to the human eye, computers can ``see'' this space
@@ -341,9 +371,8 @@ combination of the brewery ID, city, and state.
 
 De-duplicating in this case is a multi-step process. We start by
 identifying brewery ids that show up more than once which indicate
-possible duplicates.\\
-Further investigation determines whether or not they are actually
-duplicates.
+possible duplicates. Further investigation determines whether or not
+they are actually duplicates.
 
 In addition to removing identifying and removing duplicates
 programatically, we also need to correct a few entries manually. There
@@ -422,7 +451,7 @@ dataset once duplicates have been removed.
 \begin{verbatim}
 ## # A tibble: 14 x 4
 ##    name                    brewery_id city         state
-##    <fct>                        <int> <chr>        <chr>
+##    <fctr>                       <int> <chr>        <chr>
 ##  1 Blackrocks Brewery              13 Marquette    MI   
 ##  2 Blackrocks Brewery              96 Marquette    MA   
 ##  3 Blue Mountain Brewery          383 Afton        VA   
@@ -462,7 +491,7 @@ dataset once duplicates have been removed.
 \end{Shaded}
 
 \begin{verbatim}
-  * Marquette is not a city name in Massachusetts. Changed to Michigan based on other records existing for Marquette, MI, in addition to validating the location of the city on Google Maps.
+* Marquette is not a city name in Massachusetts. Changed to Michigan based on other records existing for Marquette, MI, in addition to validating the location of the city on Google Maps.
 \end{verbatim}
 
 \begin{Shaded}
@@ -511,14 +540,14 @@ dataset once duplicates have been removed.
 
 \begin{verbatim}
 ## # A tibble: 6 x 6
-##   name                    city   state new_brewery_id count old_brewery_id
-##   <fct>                   <chr>  <chr>          <int> <int>          <int>
-## 1 Blackrocks Brewery      Marqu~ MI             11881     2             13
-## 2 Blackrocks Brewery      Marqu~ MI             11881     2             96
-## 3 Lucette Brewing Company Menom~ WI            697225     2            378
-## 4 Lucette Brewing Company Menom~ WI            697225     2            457
-## 5 Summit Brewing Company  St Pa~ MN             39204     2             59
-## 6 Summit Brewing Company  St Pa~ MN             39204     2            139
+##   name                    city      state new_brewery_id count old_brewer~
+##   <fctr>                  <chr>     <chr>          <int> <int>       <int>
+## 1 Blackrocks Brewery      Marquette MI             11881     2          13
+## 2 Blackrocks Brewery      Marquette MI             11881     2          96
+## 3 Lucette Brewing Company Menominie WI            697225     2         378
+## 4 Lucette Brewing Company Menominie WI            697225     2         457
+## 5 Summit Brewing Company  St Paul   MN             39204     2          59
+## 6 Summit Brewing Company  St Paul   MN             39204     2         139
 \end{verbatim}
 
 \begin{verbatim}
@@ -544,53 +573,54 @@ dataset once duplicates have been removed.
 
 \begin{verbatim}
 ## Data Frame Summary   
-## breweries_clean     
+## breweries_clean   
 ## N: 558   
-## -----------------------------------------------------------------------------------------------------------------
-## No   Variable        Stats / Values                    Freqs (% of Valid)   Text Graph         Valid    Missing  
-## ---- --------------- --------------------------------- -------------------- ------------------ -------- ---------
-## 1    brewery_id      mean (sd) : 2959.57 (41747.55)    555 distinct val.    :                  558      0        
-##      [integer]       min < med < max :                                      :                  (100%)   (0%)     
-##                      1 < 283.5 < 697225                                     :                                    
-##                      IQR (CV) : 279.5 (14.11)                               :                                    
-##                                                                             :                                    
+## -------------------------------------------------------------------------------------------------------------------
+## No   Variable         Stats / Values                     Freqs (% of Valid)   Text Graph         Valid    Missing  
+## ---- ---------------- ---------------------------------- -------------------- ------------------ -------- ---------
+## 1    brewery_id       mean (sd) : 2959.57 (41747.55)     555 distinct val.    :                  558      0        
+##      [integer]        min < med < max :                                       :                  (100%)   (0%)     
+##                       1 < 283.5 < 697225                                      :                                    
+##                       IQR (CV) : 279.5 (14.11)                                :                                    
+##                                                                               :                                    
+##                                                                               :                                    
 ## 
-## 2    brewery_name    1. 10 Barrel Brewing Company        1 ( 0.2%)                             558      0        
-##      [factor]        2. 18th Street Brewery              1 ( 0.2%)                             (100%)   (0%)     
-##                      3. 2 Towns Ciderhouse               1 ( 0.2%)                                               
-##                      4. 21st Amendment Brewery           1 ( 0.2%)                                               
-##                      5. 3 Daughters Brewing              1 ( 0.2%)                                               
-##                      6. 4 Hands Brewing Company          1 ( 0.2%)                                               
-##                      7. 450 North Brewing Company        1 ( 0.2%)                                               
-##                      8. 7 Seas Brewing Company           1 ( 0.2%)                                               
-##                      9. 7venth Sun                       1 ( 0.2%)                                               
-##                      10. Abita Brewing Company           1 ( 0.2%)                                               
-##                      [ 541 others ]                    548 (98.6%)          IIIIIIIIIIIIIIII                     
+## 2    brewery_name     1. 10 Barrel Brewing Company       1 ( 0.2%)            IIIIIIIIIIIIIIII   558      0        
+##      [factor]         2. 18th Street Brewery             1 ( 0.2%)                               (100%)   (0%)     
+##                       3. 2 Towns Ciderhouse              1 ( 0.2%)                                                 
+##                       4. 21st Amendment Brewery          1 ( 0.2%)                                                 
+##                       5. 3 Daughters Brewing             1 ( 0.2%)                                                 
+##                       6. 4 Hands Brewing Company         1 ( 0.2%)                                                 
+##                       7. 450 North Brewing Company       1 ( 0.2%)                                                 
+##                       8. 7 Seas Brewing Company          1 ( 0.2%)                                                 
+##                       9. 7venth Sun                      1 ( 0.2%)                                                 
+##                       10. Abita Brewing Company          1 ( 0.2%)                                                 
+##                       [ 541 others ]                     548 (98.6%)                                               
 ## 
-## 3    city            1. Portland                       17 ( 3.0%)                              558      0        
-##      [character]     2. Boulder                        9 ( 1.6%)                               (100%)   (0%)     
-##                      3. Chicago                        9 ( 1.6%)                                                 
-##                      4. Seattle                        9 ( 1.6%)                                                 
-##                      5. Austin                         8 ( 1.4%)                                                 
-##                      6. Denver                         8 ( 1.4%)                                                 
-##                      7. San Diego                      8 ( 1.4%)                                                 
-##                      8. Bend                           6 ( 1.1%)                                                 
-##                      9. San Francisco                  5 ( 0.9%)                                                 
-##                      10. Anchorage                     4 ( 0.7%)                                                 
-##                      [ 372 others ]                    475 (85.5%)          IIIIIIIIIIIIIIII                     
+## 3    city             1. Portland                        17 ( 3.0%)           IIIIIIIIIIIIIIII   558      0        
+##      [character]      2. Boulder                         9 ( 1.6%)                               (100%)   (0%)     
+##                       3. Chicago                         9 ( 1.6%)                                                 
+##                       4. Seattle                         9 ( 1.6%)                                                 
+##                       5. Austin                          8 ( 1.4%)                                                 
+##                       6. Denver                          8 ( 1.4%)                                                 
+##                       7. San Diego                       8 ( 1.4%)                                                 
+##                       8. Bend                            6 ( 1.1%)                                                 
+##                       9. San Francisco                   5 ( 0.9%)                                                 
+##                       10. Anchorage                      4 ( 0.7%)                                                 
+##                       [ 372 others ]                     475 (85.5%)                                               
 ## 
-## 4    state           1. AK                               7 ( 1.2%)                             558      0        
-##      [factor]        2. AL                               3 ( 0.5%)                             (100%)   (0%)     
-##                      3. AR                               2 ( 0.4%)                                               
-##                      4. AZ                              11 ( 2.0%)                                               
-##                      5. CA                              39 ( 7.0%)          I                                    
-##                      6. CO                              47 ( 8.4%)          I                                    
-##                      7. CT                               8 ( 1.4%)                                               
-##                      8. DC                               1 ( 0.2%)                                               
-##                      9. DE                               2 ( 0.4%)                                               
-##                      10. FL                             15 ( 2.7%)                                               
-##                      [ 41 others ]                     423 (75.8%)          IIIIIIIIIIIIIIII                     
-## -----------------------------------------------------------------------------------------------------------------
+## 4    state            1. AK                              7 ( 1.2%)            I                  558      0        
+##      [factor]         2. AL                              3 ( 0.5%)            I                  (100%)   (0%)     
+##                       3. AR                              2 ( 0.4%)            IIIIIIIIIIIIIIII                     
+##                       4. AZ                              11 ( 2.0%)                                                
+##                       5. CA                              39 ( 7.0%)                                                
+##                       6. CO                              47 ( 8.4%)                                                
+##                       7. CT                              8 ( 1.4%)                                                 
+##                       8. DC                              1 ( 0.2%)                                                 
+##                       9. DE                              2 ( 0.4%)                                                 
+##                       10. FL                             15 ( 2.7%)                                                
+##                       [ 41 others ]                      423 (75.8%)                                               
+## -------------------------------------------------------------------------------------------------------------------
 \end{verbatim}
 
 \subsection{Clean Beer Data}\label{clean-beer-data}
@@ -650,188 +680,78 @@ A similar process is used to remove duplicates from the Beers dataset.
 \StringTok{       }\KeywordTok{rename}\NormalTok{(}\DataTypeTok{beer_name =}\NormalTok{ name)}
 
 
-\KeywordTok{kable}\NormalTok{(summarytools}\OperatorTok{::}\KeywordTok{dfSummary}\NormalTok{(beer_clean))}
+\NormalTok{summarytools}\OperatorTok{::}\KeywordTok{dfSummary}\NormalTok{(beer_clean)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{longtable}[]{@{}rlllllll@{}}
-\toprule
-No & Variable & Stats / Values & Freqs (\% of Valid) & Graph & Text
-Graph & Valid & Missing\tabularnewline
-\midrule
-\endhead
-1 & brewery\_id\ & & & & & &\tabularnewline
-{[}inte & ger{]} mean (sd) : 1488. & 62 (28425.37)\ & & & &
-&\tabularnewline
-min \textless{} & med \textless{} max :\ & & & & & &\tabularnewline
-1 \textless{} 2 & 07 \textless{} 697225\ & & & & & &\tabularnewline
-IQR ( & CV) : 273.5 (19.1) & 555 distinct val. & \textless{}img
-src=``\url{data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAABkCAMAAABThTnCAAAADFBMVEX9/v2mpqby8v}
-&
-L9/v28xacEAAAABHRSTlP///8AQCqp9AAAAJNJREFUaIHt27ENgzAAAEET9t+ZIiAiBSF9ZRd3E/wCP/YljdkBz2QV36ztNrnndGZ9LrLeyCpkFbIKWYWsQlYhq5BVyCpkFbIKWYWsQlYhq5BVyCpkFbIKWYWsQlYhq5BVyCpkFbIKWYWsQlYhq5BVyCpkFbIKWYWsQlYhq5BVyCpkFbIKWcXfrDXdT9ZyZBWLZh3aJKoJ7TmyggAAAABJRU5ErkJggg==``\textgreater{}
-\ & & &\tabularnewline
-:\ & & & & & & &\tabularnewline
-:\ & & & & & & &\tabularnewline
-:\ & & & & & & &\tabularnewline
-:\ & & & & & & &\tabularnewline
-: & & 2410\ & & & & &\tabularnewline
-(100\% & ) 0\ & & & & & &\tabularnewline
-(0\%) & & & & & & &\tabularnewline
-2 & beer\_name\ & & & & & &\tabularnewline
-{[}fact & or{]} 1. \#001 Golden & Amber Lager\ & & & & &\tabularnewline
-2. \# & 002 American I.P.A.\ & & & & & &\tabularnewline
-3. \# & 003 Brown \& Robust Porte & \ & & & & &\tabularnewline
-4. \# & 004 Session I.P.A.\ & & & & & &\tabularnewline
-5. \# & 9\ & & & & & &\tabularnewline
-6. 0 & 77XX\ & & & & & &\tabularnewline
-7. 1 & 0 Degrees of Separation\ & & & & & &\tabularnewline
-8. 1 & 0 Ton\ & & & & & &\tabularnewline
-9. 1 & 13 IPA\ & & & & & &\tabularnewline
-10. & 11th Hour IPA\ & & & & & &\tabularnewline
-{[} 229 & 5 others {]} & ~ 1 ( 0.0\%)\ & & & & &\tabularnewline
-~ 1 & ( 0.0\%)\ & & & & & &\tabularnewline
-~ 1 & ( 0.0\%)\ & & & & & &\tabularnewline
-~ 1 & ( 0.0\%)\ & & & & & &\tabularnewline
-~ 2 & ( 0.1\%)\ & & & & & &\tabularnewline
-~ 1 & ( 0.0\%)\ & & & & & &\tabularnewline
-~ 1 & ( 0.0\%)\ & & & & & &\tabularnewline
-~ 1 & ( 0.0\%)\ & & & & & &\tabularnewline
-~ 1 & ( 0.0\%)\ & & & & & &\tabularnewline
-~ 1 & ( 0.0\%)\ & & & & & &\tabularnewline
-\2399 & (96.0\%) \textless{}img src=``dat &
-a:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAEeCAMAAABfSxzRAAAADFBMVEX9/v2mpqb39/f9/v0TNkn1AAAABHRSTlP///8AQCqp9AAAAWNJREFUeJzt16kBAgAQA0Ge/nuGAhC3ioiZClbE5PGe9Ph3wG+yClmFrEJWMZv1/HfCL7IKWYWsQlYhq5BVyCpkFbIKWcXs85k0mzW6LVl3sgpZhaxCViGrkFXIKm
-&
-QVsorZ5zNpNmt0W7LuZBWyClmFrEJWIauQVcgqZBWzWZNkFbPbknUnq5BVyCpkFbIKWYWsQlYhq5h9PpNms0a3JetOViGrkFXIKmQVsgpZhaxCVjH7fCbNZo1uS9adrEJWIauQVcgqZBWyClmFrGI2a5KsYnZbsu5kFbIK
-&
-WYWsQlYhq5BVyCpkFbPPZ9Js1ui2ZN3JKmQVsgpZhaxCViGrkFXIKmafzyRZxezkZd3JKmQVsgpZhaxCViGrkFXIKmafz6TZrNFtybqTVcgqZBWyClmFrEJWIauQVcw+n0mzWc9F36zXHlmFrEJWIauQVcgqZBWyClnFcNai2UM2SVYhq5BVyCo+me/nBI30pk8AAAAASUVORK5CYII=``\textgreater{}
-\ & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-IIIII & IIIIIIIIIII & 2410\ & & & & &\tabularnewline
-(100\% & ) 0\ & & & & & &\tabularnewline
-(0\%) & & & & & & &\tabularnewline
-3 & beer\_id\ & & & & & &\tabularnewline
-{[}inte & ger{]} mean (sd) : 14 & 31.11 (752.46)\ & & & &
-&\tabularnewline
-min \textless{} & med \textless{} max :\ & & & & & &\tabularnewline
-1 \textless{} 1 & 453.5 \textless{} 2692\ & & & & & &\tabularnewline
-IQR ( & CV) : 1267.5 (0.53) & 2410 distinct val. & \textless{}img
-src=``\url{data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAABkCAMAAABThTnCAAAADFBMVEX9/v2mpqby8}
-&
-vL9/v28xacEAAAABHRSTlP///8AQCqp9AAAAMRJREFUaIHt2OEKgyAUBtDa3v+dB4PhsFvTYWp0vl8XbnUPJAouzymzjAbEwarJUNaaknVOYe2Py557fNKHtTvu3U1pzlqDlLJStz1r++2QdYzuwop+TgTszIrGlVZYJ7MK1213VvA21nVZR5vPQNZRdWvWj9OiB6v4RO3MCvpYWFhYWFhYWFhYWFhYWFhYWFhYF2dl15EbVu2NaSNWqmLW/xUWFhYWFhYWFhYWFhYWFhYWFhYWFtadWRPlizVdsGoyKesF6SJ+hYxvnLoAAAAASUVORK5CYII=``\textgreater{}
-\ & & &\tabularnewline
-~~\ & ~. . : : : : : :\ & & & & & &\tabularnewline
-~~. & : : : : : : : :\ & & & & & &\tabularnewline
-: : : & : : : : : : :\ & & & & & &\tabularnewline
-: : : & : : : : : : :\ & & & & & &\tabularnewline
-: : : & : : : : : : : 2410\ & & & & & &\tabularnewline
-(100\% & ) 0\ & & & & & &\tabularnewline
-(0\%) & & & & & & &\tabularnewline
-4 & abv\ & & & & & &\tabularnewline
-{[}nume & ric{]} mean (sd) & : 0.06 (0.01)\ & & & & &\tabularnewline
-min \textless{} & med \textless{} max :\ & & & & & &\tabularnewline
-0 \textless{} 0 & .06 \textless{} 0.13\ & & & & & &\tabularnewline
-IQR ( & CV) : 0.02 (0.23) & 74 distinct val. & \textless{}img
-src=``\url{data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAABkCAMAAABThTnCAAAADFBMVEX9/v}
-&
-2mpqby8vL9/v28xacEAAAABHRSTlP///8AQCqp9AAAAK5JREFUaIHt2jEOwyAQRUHbuf+d0yQyBZL9xSbBzryShtFSICGWx5Qtvwb0w0oaYa17ZZ5XQ6ztHdZxWElYSVhJWElYSVhJWElYSVjHlqaZWNuOwcLCwsLCwroIq/q9sojVLGJhYWFhYWFhYWFhYWFhYWFhzcYqeVKqZ5XMDQsLCwsL61asgVv7k6xmESthped5jtX9hpSw0sGdZPV3wMLC+gfWOlHBtL4eVtKkrCdTR6F3HzyshgAAAABJRU5ErkJggg==``\textgreater{}
-\ & & &\tabularnewline
-~~\ & ~~~~~:\ & & & & & &\tabularnewline
-~~\ & ~~~: :\ & & & & & &\tabularnewline
-~~\ & ~~~: : :\ & & & & & &\tabularnewline
-~~\ & ~~~: : :\ & & & & & &\tabularnewline
-~~\ & ~~~: : : : . & 2348\ & & & & &\tabularnewline
-(97.4 & 3\%) 62\ & & & & & &\tabularnewline
-(2.57 & \%) & & & & & &\tabularnewline
-5 & ibu\ & & & & & &\tabularnewline
-{[}inte & ger{]} mean (sd) & : 42.71 (25.95)\ & & & & &\tabularnewline
-min \textless{} & med \textless{} max :\ & & & & & &\tabularnewline
-4 \textless{} 3 & 5 \textless{} 138\ & & & & & &\tabularnewline
-IQR ( & CV) : 43 (0.61) & 107 distinct val. & \textless{}img
-src=``\url{data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAABkCAMAAABThTnCAAAADFBMVEX9/}
-&
-v2mpqby8vL9/v28xacEAAAABHRSTlP///8AQCqp9AAAAMBJREFUaIHt2EsOgkAQBUDU+9/ZhZox0hJxfq3UW3VYVV6azMBySZllNiAO1p68sk4lUzz3rFjnR7KyZva2wZrZGxYWFhYWFhYWFhYWFhYWVlfW+L8RH7HG94aFhYWFhbXF6nJgNmD1qBLreKxgvzOwgt6wsLCwsP6QVZKKtZ6wsLCw3rMafjG2ZJVHWFgHY1W/kzdWcE2pYlX3ttR2hNWQ9eWW9WaVCQsLCwsLazgrSgJWNP0oK1GeWOmCtSdJWVfIFppL761tAgAAAABJRU5ErkJggg==``\textgreater{}
-\ & & &\tabularnewline
-~~: & \ & & & & & &\tabularnewline
-~~: & \ & & & & & &\tabularnewline
-. : : & ~~.\ & & & & & &\tabularnewline
-: : : & . :\ & & & & & &\tabularnewline
-: : : & : : : : . & 1405\ & & & & &\tabularnewline
-(58.3 & \%) 1005\ & & & & & &\tabularnewline
-(41.7 & \%) & & & & & &\tabularnewline
-6 & style\ & & & & & &\tabularnewline
-{[}fact & or{]} 1. \ & & & & & &\tabularnewline
-2. A & bbey Single Ale\ & & & & & &\tabularnewline
-3. A & ltbier\ & & & & & &\tabularnewline
-4. A & merican Adjunct Lager\ & & & & & &\tabularnewline
-5. A & merican Amber / Red Ale\ & & & & & &\tabularnewline
-6. A & merican Amber / Red Lage & \ & & & & &\tabularnewline
-7. A & merican Barleywine\ & & & & & &\tabularnewline
-8. A & merican Black Ale\ & & & & & &\tabularnewline
-9. A & merican Blonde Ale\ & & & & & &\tabularnewline
-10. & American Brown Ale\ & & & & & &\tabularnewline
-{[} 90 & others {]} ~ 5 ( 0.2\%) & \ & & & & &\tabularnewline
-~ 2 & ( 0.1\%)\ & & & & & &\tabularnewline
-~ 13 & ( 0.5\%)\ & & & & & &\tabularnewline
-~ 18 & ( 0.8\%)\ & & & & & &\tabularnewline
-~133 & ( 5.5\%)\ & & & & & &\tabularnewline
-~ 29 & ( 1.2\%)\ & & & & & &\tabularnewline
-~ 3 & ( 0.1\%)\ & & & & & &\tabularnewline
-~ 36 & ( 1.5\%)\ & & & & & &\tabularnewline
-~108 & ( 4.5\%)\ & & & & & &\tabularnewline
-~ 70 & ( 2.9\%)\ & & & & & &\tabularnewline
-\1993 & (82.7\%) \textless{}img src=``dat &
-a:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAEeCAMAAABfSxzRAAAADFBMVEX9/v2mpqb39/f9/v0TNkn1AAAABHRSTlP///8AQCqp9AAAAZNJREFUeJzt3Eluw0AQBEHJ/v+fvUCC5AUQ88Q6RLwgD01gGhzy8j7pcnbA/2QVsgpZhaxiNut6dsJ/ZBWyClmFrEJWIauQVcgqZBWyitnNZ9Js1uhsyTpOViGrkF
-&
-XIKmQVsgpZhaxCVjG7+UyazbouDpesQlYhq5BVyCpkFbIKWYWsQlYxmzVJVjE7W7KOk1XIKmQVsgpZhaxCViGrkFXMbj6TZrOuD2fHPHxmvd3JekVWIauQVcgqZBWyClmFrGI3a/MsP0lW8T1bZ0f89fUkyjpKViGrkFXI
-&
-KmQVsgpZhaxCVjG7YkySVcx+KSzrOFmFrEJWIauQVcgqZBWyClnF7OYzaTZr6935zfeFA1kHySpkFbIKWYWsQlYhq5BV7GZtnuUnySpmswbvfz/fl5f1mqxCViGrkFXIKmQVsgpZxW7W5ll+kqziPltnd/xyexJlHSKrkFXIKmQVsgpZhaxCVrGbtXmWnySr+PFHqR3P/9/aIauQVcgqZBWyClmFrEJWIasYzlo0u5BNklXIKmQVsooPBgbjyEXEPFoAAAAASUVORK5CYII=``\textgreater{}
-\ & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-I \ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-IIIII & IIIIIIIIIII & 2410\ & & & & &\tabularnewline
-(100\% & ) 0\ & & & & & &\tabularnewline
-(0\%) & & & & & & &\tabularnewline
-7 & ounces\ & & & & & &\tabularnewline
-{[}nume & ric{]} mean (sd) : 1 & 3.59 (2.35)\ & & & & &\tabularnewline
-min \textless{} & med \textless{} max :\ & & & & & &\tabularnewline
-8.4 \textless{} & 12 \textless{} 32\ & & & & & &\tabularnewline
-IQR ( & CV) : 4 (0.17) & 8.40 : 1 ( 0.0\%)\ & & & & &\tabularnewline
-12.00 & : 1525 (63.3\%)\ & & & & & &\tabularnewline
-16.00 & : 841 (34.9\%)\ & & & & & &\tabularnewline
-16.90 & : 1 ( 0.0\%)\ & & & & & &\tabularnewline
-19.20 & : 15 ( 0.6\%)\ & & & & & &\tabularnewline
-24.00 & : 22 ( 0.9\%)\ & & & & & &\tabularnewline
-32.00 & : 5 ( 0.2\%) & \textless{}img
-src=``\url{data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAC2CAMAAAAMc4TmAAAADFBMVEX9/v2mpqb39/f9/v0TNkn1AAAABHRSTlP///8AQCqp9AAAAQdJREFUeJzt2UFuAjEQRUEg979zAltmMU8CzVdU7wS1aEtu+/Yz2e1qwHFYJazSLOt+NeEorBJWCauEVcIqYZWwSlglrBJWaXbzmWyWdV/}
-&
-sj/XYC6uEVcIqYZWwSlglrBJWCas0zFpsdiGbbJb1hcn4COvz5wgLCwsLCwsLCwvrn7E27/KTYZVmv9CxzodVwiphlbBKWCWsElYJq4RVmmVNhlV6PY1cjXjv+ZCEdTasElYJq4RVwiphlbBKWKVd1uZdfjKs0uxsrZ5Er
-&
-NNhlbBKWCWsElYJq4RVwirtsjZXjMmwSs/ZutpwEFYJq4RVwiphlbBKWCWsElYJqzS7+UyGVcIqjbJ+AVIFKLyIK4qQAAAAAElFTkSuQmCC``\textgreater{}
-\ & & &\tabularnewline
-IIIII & IIIIIIIIIII \ & & & & & &\tabularnewline
-IIIII & III \ & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & & & & & &\tabularnewline
-\ & & 2410\ & & & & &\tabularnewline
-(100\% & ) 0\ & & & & & &\tabularnewline
-(0\%) & & & & & & &\tabularnewline
-\bottomrule
-\end{longtable}
+\begin{verbatim}
+## Data Frame Summary   
+## beer_clean   
+## N: 2410   
+## -------------------------------------------------------------------------------------------------------------------------------------
+## No   Variable       Stats / Values                     Freqs (% of Valid)      Text Graph                        Valid      Missing  
+## ---- -------------- ---------------------------------- ----------------------- --------------------------------- ---------- ---------
+## 1    brewery_id     mean (sd) : 1488.62 (28425.37)     555 distinct val.       :                                 2410       0        
+##      [integer]      min < med < max :                                          :                                 (100%)     (0%)     
+##                     1 < 207 < 697225                                           :                                                     
+##                     IQR (CV) : 273.5 (19.1)                                    :                                                     
+##                                                                                :                                                     
+##                                                                                :                                                     
+## 
+## 2    beer_name      1. #001 Golden Amber Lager         1 ( 0.0%)               IIIIIIIIIIIIIIII                  2410       0        
+##      [factor]       2. #002 American I.P.A.            1 ( 0.0%)                                                 (100%)     (0%)     
+##                     3. #003 Brown & Robust Porter      1 ( 0.0%)                                                                     
+##                     4. #004 Session I.P.A.             1 ( 0.0%)                                                                     
+##                     5. #9                              2 ( 0.1%)                                                                     
+##                     6. 077XX                           1 ( 0.0%)                                                                     
+##                     7. 10 Degrees of Separation        1 ( 0.0%)                                                                     
+##                     8. 10 Ton                          1 ( 0.0%)                                                                     
+##                     9. 113 IPA                         1 ( 0.0%)                                                                     
+##                     10. 11th Hour IPA                  1 ( 0.0%)                                                                     
+##                     [ 2295 others ]                    2399 (96.0%)                                                                  
+## 
+## 3    beer_id        mean (sd) : 1431.11 (752.46)       2410 distinct val.              : : . : : . : :           2410       0        
+##      [integer]      min < med < max :                                          .   : : : : : : : : : :           (100%)     (0%)     
+##                     1 < 1453.5 < 2692                                          : . : : : : : : : : : :                               
+##                     IQR (CV) : 1267.5 (0.53)                                   : : : : : : : : : : : :                               
+##                                                                                : : : : : : : : : : : :                               
+##                                                                                : : : : : : : : : : : :                               
+## 
+## 4    abv            mean (sd) : 0.06 (0.01)            74 distinct val.                : .                       2348       62       
+##      [numeric]      min < med < max :                                                  : :                       (97.43%)   (2.57%)  
+##                     0 < 0.06 < 0.13                                                    : : .                                         
+##                     IQR (CV) : 0.02 (0.23)                                             : : :                                         
+##                                                                                        : : :                                         
+##                                                                                      : : : : : . .                                   
+## 
+## 5    ibu            mean (sd) : 42.71 (25.95)          107 distinct val.         :                               1405       1005     
+##      [integer]      min < med < max :                                            :                               (58.3%)    (41.7%)  
+##                     4 < 35 < 138                                                 : :     .                                           
+##                     IQR (CV) : 43 (0.61)                                       . : : .   :                                           
+##                                                                                : : : : . : .                                         
+##                                                                                : : : : : : : : :                                     
+## 
+## 6    style          1.                                 5 ( 0.2%)               I                                 2410       0        
+##      [factor]       2. Abbey Single Ale                2 ( 0.1%)               IIIIIIIIIIIIIIII                  (100%)     (0%)     
+##                     3. Altbier                         13 ( 0.5%)                                                                    
+##                     4. American Adjunct Lager          18 ( 0.8%)                                                                    
+##                     5. American Amber / Red Ale        133 ( 5.5%)                                                                   
+##                     6. American Amber / Red Lager      29 ( 1.2%)                                                                    
+##                     7. American Barleywine             3 ( 0.1%)                                                                     
+##                     8. American Black Ale              36 ( 1.5%)                                                                    
+##                     9. American Blonde Ale             108 ( 4.5%)                                                                   
+##                     10. American Brown Ale             70 ( 2.9%)                                                                    
+##                     [ 90 others ]                      1993 (82.7%)                                                                  
+## 
+## 7    ounces         mean (sd) : 13.59 (2.35)           8.4 :    1 ( 0.0%)      IIIIIIIIIIIIIIII                  2410       0        
+##      [numeric]      min < med < max :                  12 : 1525 (63.3%)       IIIIIIII                          (100%)     (0%)     
+##                     8.4 < 12 < 32                      16 :  841 (34.9%)                                                             
+##                     IQR (CV) : 4 (0.17)                16.9 :    1 ( 0.0%)                                                           
+##                                                        19.2 :   15 ( 0.6%)                                                           
+##                                                        24 :   22 ( 0.9%)                                                             
+##                                                        32 :    5 ( 0.2%)                                                             
+## -------------------------------------------------------------------------------------------------------------------------------------
+\end{verbatim}
 
 \subsection{Question 1}\label{question-1}
 
@@ -898,53 +818,56 @@ for the analysis.
 
 \begin{verbatim}
 ## Data Frame Summary   
-## breweries_by_state     
+## breweries_by_state   
 ## N: 51   
-## ------------------------------------------------------------------------------------------------------------------------------------
-## No   Variable         Stats / Values                Freqs (% of Valid)   Text Graph                             Valid      Missing  
-## ---- ---------------- ----------------------------- -------------------- -------------------------------------- ---------- ---------
-## 1    state            1. AK                         1 ( 2.0%)                                                   51         0        
-##      [character]      2. AL                         1 ( 2.0%)                                                   (100%)     (0%)     
-##                       3. AR                         1 ( 2.0%)                                                                       
-##                       4. AZ                         1 ( 2.0%)                                                                       
-##                       5. CA                         1 ( 2.0%)                                                                       
-##                       6. CO                         1 ( 2.0%)                                                                       
-##                       7. CT                         1 ( 2.0%)                                                                       
-##                       8. DC                         1 ( 2.0%)                                                                       
-##                       9. DE                         1 ( 2.0%)                                                                       
-##                       10. FL                        1 ( 2.0%)                                                                       
-##                       [ 41 others ]                 41 (80.4%)           IIIIIIIIIIIIIIII                                           
+## ---------------------------------------------------------------------------------------------------------------------------------
+## No   Variable          Stats / Values                 Freqs (% of Valid)   Text Graph                        Valid      Missing  
+## ---- ----------------- ------------------------------ -------------------- --------------------------------- ---------- ---------
+## 1    state             1. AK                          1 ( 2.0%)            IIIIIIIIIIIIIIII                  51         0        
+##      [character]       2. AL                          1 ( 2.0%)                                              (100%)     (0%)     
+##                        3. AR                          1 ( 2.0%)                                                                  
+##                        4. AZ                          1 ( 2.0%)                                                                  
+##                        5. CA                          1 ( 2.0%)                                                                  
+##                        6. CO                          1 ( 2.0%)                                                                  
+##                        7. CT                          1 ( 2.0%)                                                                  
+##                        8. DC                          1 ( 2.0%)                                                                  
+##                        9. DE                          1 ( 2.0%)                                                                  
+##                        10. FL                         1 ( 2.0%)                                                                  
+##                        [ 41 others ]                  41 (80.4%)                                                                 
 ## 
-## 2    brewery_count    mean (sd) : 10.94 (10.63)     25 distinct val.     :                                      51         0        
-##      [integer]        min < med < max :                                  :                                      (100%)     (0%)     
-##                       1 < 7 < 47                                         :                                                          
-##                       IQR (CV) : 12.5 (0.97)                             : :                                                        
-##                                                                          : : . : : . .                                              
+## 2    brewery_count     mean (sd) : 10.94 (10.63)      25 distinct val.     :                                 51         0        
+##      [integer]         min < med < max :                                   :                                 (100%)     (0%)     
+##                        1 < 7 < 47                                          :                                                     
+##                        IQR (CV) : 12.5 (0.97)                              :                                                     
+##                                                                            : :                                                   
+##                                                                            : : : : : .                                           
 ## 
-## 3    name             1. ALABAMA                    1 ( 2.0%)                                                   50         1        
-##      [character]      2. ALASKA                     1 ( 2.0%)                                                   (98.04%)   (1.96%)  
-##                       3. ARIZONA                    1 ( 2.0%)                                                                       
-##                       4. ARKANSAS                   1 ( 2.0%)                                                                       
-##                       5. CALIFORNIA                 1 ( 2.0%)                                                                       
-##                       6. COLORADO                   1 ( 2.0%)                                                                       
-##                       7. CONNECTICUT                1 ( 2.0%)                                                                       
-##                       8. DELAWARE                   1 ( 2.0%)                                                                       
-##                       9. FLORIDA                    1 ( 2.0%)                                                                       
-##                       10. GEORGIA                   1 ( 2.0%)                                                                       
-##                       [ 40 others ]                 40 (80.0%)           IIIIIIIIIIIIIIII                                           
+## 3    name              1. ALABAMA                     1 ( 2.0%)            IIIIIIIIIIIIIIII                  50         1        
+##      [character]       2. ALASKA                      1 ( 2.0%)                                              (98.04%)   (1.96%)  
+##                        3. ARIZONA                     1 ( 2.0%)                                                                  
+##                        4. ARKANSAS                    1 ( 2.0%)                                                                  
+##                        5. CALIFORNIA                  1 ( 2.0%)                                                                  
+##                        6. COLORADO                    1 ( 2.0%)                                                                  
+##                        7. CONNECTICUT                 1 ( 2.0%)                                                                  
+##                        8. DELAWARE                    1 ( 2.0%)                                                                  
+##                        9. FLORIDA                     1 ( 2.0%)                                                                  
+##                        10. GEORGIA                    1 ( 2.0%)                                                                  
+##                        [ 40 others ]                  40 (80.0%)                                                                 
 ## 
-## 4    lat_center       mean (sd) : 39.48 (6.13)      50 distinct val.             :                              50         1        
-##      [numeric]        min < med < max :                                        . :                              (98.04%)   (1.96%)  
-##                       21.09 < 40 < 61.37                                       : :                                                  
-##                       IQR (CV) : 7.52 (0.16)                                 : : :                                                  
-##                                                                              : : : :                                                
+## 4    lat_center        mean (sd) : 39.48 (6.13)       50 distinct val.             :                         50         1        
+##      [numeric]         min < med < max :                                           :                         (98.04%)   (1.96%)  
+##                        21.09 < 40 < 61.37                                        : :                                             
+##                        IQR (CV) : 7.52 (0.16)                                  . : :                                             
+##                                                                                : : :                                             
+##                                                                            . . : : : :     .                                     
 ## 
-## 5    lon_center       mean (sd) : -93.67 (19.34)    50 distinct val.                     . :                    50         1        
-##      [numeric]        min < med < max :                                                . : :                    (98.04%)   (1.96%)  
-##                       -157.5 < -89.65 < -69.38                                     . . : : :                                        
-##                       IQR (CV) : 23.84 (-0.21)                                   : : : : : :                                        
-##                                                                          :       : : : : : :                                        
-## ------------------------------------------------------------------------------------------------------------------------------------
+## 5    lon_center        mean (sd) : -93.67 (19.34)     50 distinct val.                   : .                 50         1        
+##      [numeric]         min < med < max :                                               : : :                 (98.04%)   (1.96%)  
+##                        -157.5 < -89.65 < -69.38                                        : : :                                     
+##                        IQR (CV) : 23.84 (-0.21)                                    :   : : :                                     
+##                                                                                    : . : : :                                     
+##                                                                            :     : : : : : : .                                   
+## ---------------------------------------------------------------------------------------------------------------------------------
 \end{verbatim}
 
 \begin{Shaded}
@@ -955,8 +878,9 @@ for the analysis.
 \NormalTok{breweries_geo <-}\StringTok{ }\NormalTok{breweries_by_state }\OperatorTok{%>%}
 \StringTok{                  }\KeywordTok{inner_join}\NormalTok{(states, }\DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"name"}\NormalTok{ =}\StringTok{ "name"}\NormalTok{))}
 
-\CommentTok{# the color scales REFUSE to work}
-\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ breweries_geo, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{group =}\NormalTok{ state, }\DataTypeTok{stat=}\StringTok{"identity"}\NormalTok{)) }\OperatorTok{+}
+\CommentTok{# map chart of brweeries_by_state}
+\KeywordTok{ggplot}\NormalTok{((breweries_geo }\OperatorTok{%>%}\StringTok{ }\KeywordTok{arrange}\NormalTok{(}\KeywordTok{desc}\NormalTok{(brewery_count))), }
+       \KeywordTok{aes}\NormalTok{(}\DataTypeTok{group =}\NormalTok{ state, }\DataTypeTok{stat=}\StringTok{"identity"}\NormalTok{)) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{geom_polygon}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ long, }
                    \DataTypeTok{y =}\NormalTok{ lat, }
                    \DataTypeTok{group=}\NormalTok{group, }
@@ -966,22 +890,26 @@ for the analysis.
 \StringTok{                    }\KeywordTok{filter}\NormalTok{(}\OperatorTok{!}\NormalTok{(state }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"AK"}\NormalTok{, }\StringTok{"DC"}\NormalTok{, }\StringTok{"HI"}\NormalTok{)))), }\CommentTok{#filter to continental 50 states}
             \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ lon_center, }
                 \DataTypeTok{y =}\NormalTok{ lat_center, }
-                \DataTypeTok{label =} \KeywordTok{as.character}\NormalTok{(brewery_count), }
-                \DataTypeTok{size =} \DecValTok{7}\NormalTok{)}
+                \DataTypeTok{label =} \KeywordTok{as.character}\NormalTok{(brewery_count)),}
+            \DataTypeTok{color =} \StringTok{'white'}
 \NormalTok{            ) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{coord_fixed}\NormalTok{(}\FloatTok{1.3}\NormalTok{) }
+\StringTok{  }\KeywordTok{guides}\NormalTok{(}\DataTypeTok{fill=}\KeywordTok{guide_legend}\NormalTok{(}\DataTypeTok{title=} \StringTok{"Brewery Count"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_fill_continuous}\NormalTok{(}\DataTypeTok{breaks =} \KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{50}\NormalTok{, }\DataTypeTok{by =} \DecValTok{5}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{coord_fixed}\NormalTok{(}\FloatTok{1.3}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# fix lat/long display ratio}
+\StringTok{  }
+\StringTok{  }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Breweries by State"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# set plot title}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\CommentTok{# center plot title}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"right"}\NormalTok{,}
+        \DataTypeTok{axis.title.x=}\KeywordTok{element_blank}\NormalTok{(), }\CommentTok{# hide x axis title}
+        \DataTypeTok{axis.text.x=}\KeywordTok{element_blank}\NormalTok{(),  }\CommentTok{# hide x axis text}
+        \DataTypeTok{axis.ticks.x=}\KeywordTok{element_blank}\NormalTok{(), }\CommentTok{# hide x axis ticks}
+        \DataTypeTok{axis.title.y=}\KeywordTok{element_blank}\NormalTok{(), }\CommentTok{# hide y axis title}
+        \DataTypeTok{axis.text.y=}\KeywordTok{element_blank}\NormalTok{(),  }\CommentTok{# hide y axis text}
+        \DataTypeTok{axis.ticks.y=}\KeywordTok{element_blank}\NormalTok{()) }\CommentTok{# hide y axis ticks}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{center}\includegraphics{Analysis_Final_files/figure-latex/unnamed-chunk-14-1} \end{center}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# }\AlertTok{TODO}\CommentTok{: Overlay frequencies on states}
-\CommentTok{# }\AlertTok{TODO}\CommentTok{: fix color scale}
-\CommentTok{# }\AlertTok{TODO}\CommentTok{: high level summary table}
-\end{Highlighting}
-\end{Shaded}
 
 \subsection{Question 2}\label{question-2}
 
@@ -1005,7 +933,48 @@ style name variable sorted by every brewery.
 \StringTok{               }\KeywordTok{full_join}\NormalTok{(beer_clean, }\DataTypeTok{by=}\StringTok{"brewery_id"}\NormalTok{)}
 
 
+
+\NormalTok{x <-}\StringTok{ }\KeywordTok{select}\NormalTok{(merged_data, brewery_name, state) }\OperatorTok{%>%}
+\StringTok{    }\KeywordTok{group_by}\NormalTok{(state) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{summarise_all}\NormalTok{(}\KeywordTok{funs}\NormalTok{(}\DataTypeTok{brews=}\KeywordTok{n}\NormalTok{(), }\DataTypeTok{breweries =} \KeywordTok{n_distinct}\NormalTok{(brewery_name))) }\OperatorTok{%>%}
+\StringTok{                  }\KeywordTok{inner_join}\NormalTok{(state_ll, }\DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"state"}\NormalTok{ =}\StringTok{ "Abbr"}\NormalTok{))}
+
+
 \CommentTok{#TODO: Plot -> brews by brewery}
+
+\KeywordTok{ggplot}\NormalTok{((breweries_geo }\OperatorTok{%>%}\StringTok{ }\KeywordTok{arrange}\NormalTok{(}\KeywordTok{desc}\NormalTok{(brewery_count))), }
+       \KeywordTok{aes}\NormalTok{(}\DataTypeTok{group =}\NormalTok{ state, }\DataTypeTok{stat=}\StringTok{"identity"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_polygon}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ long, }
+                   \DataTypeTok{y =}\NormalTok{ lat, }
+                   \DataTypeTok{group=}\NormalTok{group, }
+                   \DataTypeTok{fill=}\NormalTok{brewery_count), }
+               \DataTypeTok{color =} \StringTok{"black"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_text}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ x, }
+            \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ lon_center, }
+                \DataTypeTok{y =}\NormalTok{ lat_center, }
+                \DataTypeTok{label =} \KeywordTok{as.character}\NormalTok{(}\KeywordTok{round}\NormalTok{((brews}\OperatorTok{/}\NormalTok{breweries),}\DecValTok{2}\NormalTok{))),}
+            \DataTypeTok{color =} \StringTok{'white'}
+\NormalTok{            ) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{guides}\NormalTok{(}\DataTypeTok{fill=}\KeywordTok{guide_legend}\NormalTok{(}\DataTypeTok{title=} \StringTok{"Mean Brews per Brewery by State"}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_fill_continuous}\NormalTok{(}\DataTypeTok{breaks =} \KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{50}\NormalTok{, }\DataTypeTok{by =} \DecValTok{5}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{coord_fixed}\NormalTok{(}\FloatTok{1.3}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# fix lat/long display ratio}
+\StringTok{  }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Breweries by State"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# set plot title}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\CommentTok{# center plot title}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"right"}\NormalTok{,}
+        \DataTypeTok{axis.title.x=}\KeywordTok{element_blank}\NormalTok{(), }\CommentTok{# hide x axis title}
+        \DataTypeTok{axis.text.x=}\KeywordTok{element_blank}\NormalTok{(),  }\CommentTok{# hide x axis text}
+        \DataTypeTok{axis.ticks.x=}\KeywordTok{element_blank}\NormalTok{(), }\CommentTok{# hide x axis ticks}
+        \DataTypeTok{axis.title.y=}\KeywordTok{element_blank}\NormalTok{(), }\CommentTok{# hide y axis title}
+        \DataTypeTok{axis.text.y=}\KeywordTok{element_blank}\NormalTok{(),  }\CommentTok{# hide y axis text}
+        \DataTypeTok{axis.ticks.y=}\KeywordTok{element_blank}\NormalTok{()) }\CommentTok{# hide y axis ticks}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Analysis_Final_files/figure-latex/unnamed-chunk-15-1} \end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#TODO: FILTER to contiguous 50 states}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1161,10 +1130,10 @@ Wisconsin(.099, 80).
 
 \begin{verbatim}
 ## # A tibble: 1 x 2
-## # Groups:   state [1]
-##   state   abv
-##   <fct> <dbl>
-## 1 CO    0.128
+## # Groups: state [1]
+##   state    abv
+##   <fctr> <dbl>
+## 1 CO     0.128
 \end{verbatim}
 
 \begin{Shaded}
@@ -1181,10 +1150,10 @@ Wisconsin(.099, 80).
 
 \begin{verbatim}
 ## # A tibble: 1 x 2
-## # Groups:   state [1]
-##   state   ibu
-##   <fct> <int>
-## 1 OR      138
+## # Groups: state [1]
+##   state    ibu
+##   <fctr> <int>
+## 1 OR       138
 \end{verbatim}
 
 \subsection{Question 6}\label{question-6}
@@ -1274,11 +1243,59 @@ To determine the relationship between ABV and IBU it's helpful to see
 all values for both variables at the same time. This is most easily
 accomplished using a scatterplot.
 
-With ABV on one axis and IBU on the other we start to see what appears
-to be a linear correlation between the values.
+Linear regression was used to model the relationship between ABV and IBU
+from a sample of cleaned data that was created in the previous questions
+above.
+
+The equation:
+
+\begin{verbatim}
+   y-intercept = IBU - slope * ABV       
+\end{verbatim}
+
+was used to plot thw linear model for the ABV and IBU data in this
+study.
+
+With ABV on the x-axis and IBU on the y-axis, we start to see that there
+is a positive linear correlation between the ABV and IBU values, with
+R-squared = 0.44593.
+
+R-squared is a statistical measure of how close the data are to the
+fitted regression line. It is also known as the coefficient of
+determination, and the definition of R-squared is fairly
+straight-forward; it is the percentage of the response variable
+variation that is explained by the linear model.
+
+Since the creation, consumption, and distribution of beer by methods of
+breweries is a human behavior, it is very important to note that it is
+common for studies to measure R-squared values less than 0.50. The
+reason is , that human behavior is harder to predict with linear models.
+
+The outcome of our study measured an R-squared value of 0.44593 which is
+an awesome fit, and much better than we expected for this study to
+produce, since the study is based on the human behavior of beer
+consumption with respect to the variation of ABV and IBU accross the
+United States of America.
 
 Adding a trendline allows us to determine a formula that specifies this
-correlation.
+correlation. The regression is plotted and the results of the Spearman's
+Rank Correlation Test are in the following figures.
+
+\subsubsection{Spearman's Rank Correlation Results for
+rho}\label{spearmans-rank-correlation-results-for-rho}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data}\OperatorTok{:}\StringTok{  }\NormalTok{styles}\OperatorTok{$}\NormalTok{ibu and styles}\OperatorTok{$}\NormalTok{abv}
+\NormalTok{S =}\StringTok{ }\DecValTok{153570000}\NormalTok{, p}\OperatorTok{-}\NormalTok{value }\OperatorTok{<}\StringTok{ }\FloatTok{2.2e-16}
+\NormalTok{alternative hypothesis}\OperatorTok{:}\StringTok{ }\NormalTok{true rho is not equal to }\DecValTok{0}
+\NormalTok{sample estimates}\OperatorTok{:}
+\NormalTok{rho }
+\FloatTok{0.6677798} 
+
+\NormalTok{[}\DecValTok{1}\NormalTok{] }\FloatTok{0.4459299}
+\end{Highlighting}
+\end{Shaded}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1322,21 +1339,29 @@ correlation.
   rating of beers selected from domestic craft breweries.
 \item
   Hypotheses:
-\item
-  H\textsubscript{o}: \(\rho= 0\)
-\item
-  H\textsubscript{A}: \(\rho\neq 0\)
+
+  \begin{itemize}
+  \tightlist
+  \item
+    H\textsubscript{o}: \(\rho= 0\)
+  \item
+    H\textsubscript{A}: \(\rho\neq 0\)
+  \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+\tightlist
 \item
   Assumptions:
 
   \begin{itemize}
   \tightlist
   \item
-    Continuity of data: \cmark
+    Continuity of \url{data:/cmark}
   \item
     Paired observations: \cmark
   \item
-    Data has linear relationship: \cmark
+    Data has linear relationship: \cmark 
   \item
     No significant outliers: \xmark
   \item
@@ -1486,8 +1511,8 @@ Outliers}\label{boxplot---check-for-outliers}
   test as an alternative to the preferred Pearson Correlation.
 \end{itemize}
 
-\paragraph{Spearman Rank-Order
-Correlation}\label{spearman-rank-order-correlation}
+\paragraph{Significance Testing: Spearman Rank-Order
+Correlation}\label{significance-testing-spearman-rank-order-correlation}
 
 \begin{verbatim}
 + More info on Spearman test: https://statistics.laerd.com/statistical-guides/spearmans-rank-order-correlation-statistical-guide.php
@@ -1501,9 +1526,9 @@ Correlation}\label{spearman-rank-order-correlation}
   \begin{itemize}
   \tightlist
   \item
-    H\textsubscript{o}: \(\rho = 0\)
+    H\textsubscript{o}: \(\rho= 0\)
   \item
-    H\textsubscript{A}: \(\rho \neq 0\)
+    H\textsubscript{A}: \(\rho\neq 0\)
   \end{itemize}
 \end{itemize}
 
@@ -1545,7 +1570,7 @@ Correlation}\label{spearman-rank-order-correlation}
 There is strong evidence that the ABV and IBU are positively associated
 (p-value \textless{} 0.001 from a Spearman Rank-Order Correlation). At a
 95\% confidence level, the IBU rating accounts for 44.59\% of the
-variation in the ABV . While IBU and ABV certainly have a correlation,
+variation in the ABV. While IBU and ABV certainly have a correlation,
 the correlation is weak (\(r^2 =\) 0.45). Thus, we reject the null
 hypothesis that IBU rating and ABV are un-corrolated across the beer
 styles in our sample. Beer styles were not randomly assigned to any
@@ -1553,15 +1578,6 @@ treatment and we do not know if the beer data were randomly selected, so
 we must limit our results to indicating an association between IBU
 rating an ABV. No causality or inferences to larger populations can be
 drawn.
-
-\subsection{Write datasets to file}\label{write-datasets-to-file}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# write.csv( beer_clean,file = '../data/beer_clean.csv', row.names = FALSE)}
-\CommentTok{# write.csv( breweries_clean,file = '../data/breweries_clean.csv', row.names = FALSE)}
-\end{Highlighting}
-\end{Shaded}
 
 \subsection{Appendex}\label{appendex}
 
@@ -1574,7 +1590,7 @@ drawn.
 \end{Shaded}
 
 \begin{verbatim}
-## R version 3.5.0 (2018-04-23)
+## R version 3.4.3 (2017-11-30)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows 10 x64 (build 16299)
 ## 
@@ -1591,26 +1607,30 @@ drawn.
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] bindrcpp_0.2.2     gridExtra_2.3      magrittr_1.5      
-##  [4] summarytools_0.8.5 RColorBrewer_1.1-2 maps_3.3.0        
-##  [7] ggplot2_2.2.1      knitr_1.20         tidyr_0.8.1       
-## [10] dplyr_0.7.5       
+##  [1] bindrcpp_0.2         gridExtra_2.3        magrittr_1.5        
+##  [4] summarytools_0.8.0   RColorBrewer_1.1-2   maps_3.2.0          
+##  [7] ggplot2_2.2.1        knitr_1.18           tidyr_0.7.2         
+## [10] dplyr_0.7.4          RevoUtilsMath_10.0.1 RevoUtils_10.0.7    
+## [13] RevoMods_11.0.0      MicrosoftML_9.3.0    mrsdeploy_1.1.3     
+## [16] RevoScaleR_9.3.0     lattice_0.20-35      rpart_4.1-11        
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.17       highr_0.7          pillar_1.2.3      
-##  [4] compiler_3.5.0     pryr_0.1.4         plyr_1.8.4        
-##  [7] bindr_0.1.1        bitops_1.0-6       tools_3.5.0       
-## [10] digest_0.6.15      lubridate_1.7.4    evaluate_0.10.1   
-## [13] tibble_1.4.2       gtable_0.2.0       pkgconfig_2.0.1   
-## [16] rlang_0.2.1        cli_1.0.0          yaml_2.1.19       
-## [19] stringr_1.3.1      rprojroot_1.3-2    grid_3.5.0        
-## [22] tidyselect_0.2.4   glue_1.2.0         R6_2.2.2          
-## [25] rmarkdown_1.10     pander_0.6.1       purrr_0.2.5       
-## [28] rapportools_1.0    backports_1.1.2    scales_0.5.0      
-## [31] codetools_0.2-15   htmltools_0.3.6    matrixStats_0.53.1
-## [34] assertthat_0.2.0   colorspace_1.3-2   labeling_0.3      
-## [37] utf8_1.1.4         stringi_1.1.7      RCurl_1.95-4.10   
-## [40] lazyeval_0.2.1     munsell_0.5.0      crayon_1.3.4
+##  [1] tidyselect_0.2.3       purrr_0.2.4            pander_0.6.1          
+##  [4] colorspace_1.3-2       htmltools_0.3.6        yaml_2.1.16           
+##  [7] CompatibilityAPI_1.1.0 utf8_1.1.2             rlang_0.1.6           
+## [10] pillar_1.0.1           glue_1.2.0             pryr_0.1.3            
+## [13] matrixStats_0.52.2     foreach_1.4.5          bindr_0.1             
+## [16] plyr_1.8.4             stringr_1.2.0          munsell_0.4.3         
+## [19] gtable_0.2.0           codetools_0.2-15       evaluate_0.10.1       
+## [22] labeling_0.3           curl_3.1               highr_0.6             
+## [25] Rcpp_0.12.14           scales_0.5.0           backports_1.1.2       
+## [28] jsonlite_1.5           rapportools_1.0        digest_0.6.13         
+## [31] stringi_1.1.6          grid_3.4.3             rprojroot_1.3-1       
+## [34] cli_1.0.0              tools_3.4.3            bitops_1.0-6          
+## [37] lazyeval_0.2.1         RCurl_1.95-4.9         tibble_1.4.1          
+## [40] crayon_1.3.4           pkgconfig_2.0.1        assertthat_0.2.0      
+## [43] rmarkdown_1.8          iterators_1.0.9        R6_2.2.2              
+## [46] compiler_3.4.3
 \end{verbatim}
 
 
