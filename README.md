@@ -9,18 +9,43 @@ output:
 
 ### Group Members
   
-`Member Name           GitHub Username           Project Duties`  
+<!-- Dark_Blue: #000080, Dark_Grey: #4d4d4d Light_Grey: 5a5a5a-->
 
-`Peter Flaming         PeterFlaming              Answers to Questions 1:7/README`  
 
-`Brock Friedrich       la-mar                    R Code/R Markdown`
-
-`Samuel Kadyebo        elelel                                                   `
-
-`Quinton Nixon         qatsmu                    Conclusion/Presentation` 
-
-`Matthew Trevathan     mrtrevathan0              Introduction/Purpose of Study`     
-
+<table id="header"> 
+        <tbody>
+        <tr>
+        <th>Member Name</th>
+        <th>GitHub Username</th>
+        <th>Project Duties</th>
+        </tr>
+        <tr>
+        <td>Peter Flaming</td>
+        <td>PeterFlaming</td>
+        <td>Answers to Questions 1:7/README</td>
+        </tr>
+        <tr>
+        <td>Brock Friedrich</td>
+        <td>la-mar</td>
+        <td>R Code/R Markdown</td>
+        </tr>
+        <tr>
+        <td>Quinton Nixon</td>
+        <td>qatsmu</td>
+        <td>Conclusion/Presentation</td>
+        </tr>
+        <tr>
+        <td>Matthew Trevathan</td>
+        <td>mrtrevathan0</td>
+        <td>Introduction/Purpose of Study</td>
+        </tr>
+        <tr>
+        <td>Samuel Kadyebo</td>
+        <td>-</td>
+        <td>-</td>
+        </tr>
+        </tbody>
+</table>  
 
 ### Purose of Case Study 1
 
