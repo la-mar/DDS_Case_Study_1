@@ -62,7 +62,7 @@ require(magrittr)
 require(gridExtra)
 #automatically set working directory to the directory containing this R script
 
-opts_chunk$set(results = 'markup') # table format option
+opts_chunk$set(results = 'asis') # table format option
 opts_chunk$set(fig.align = 'center') # plot align option
 opts_chunk$set(fig.width = 10) # plot width
 opts_chunk$set(fig.height = 10) # plot height
@@ -447,15 +447,28 @@ Those characteristics will be of high importance for the analysis of most deisir
 merged_data <- breweries_clean %>%
                full_join(beer_clean, by="brewery_id")
 
+kable(head(merged_data, 6), digits = 2)
+
+kable(tail(merged_data, 6), digits = 2)
 
 
-x <- select(merged_data, brewery_name, state) %>%
+
+
+```
+
+
+
+```{r}
+
+# Plot Mean Brews per Brewery by State
+
+
+
+brews_per_brewery <- select(merged_data, brewery_name, state) %>%
     group_by(state) %>% 
     summarise_all(funs(brews=n(), breweries = n_distinct(brewery_name))) %>%
                   inner_join(state_ll, by = c("state" = "Abbr"))
 
-
-#TODO: Plot -> brews by brewery
 
 ggplot((breweries_geo %>% arrange(desc(brewery_count))), 
        aes(group = state, stat="identity")) +
@@ -464,16 +477,18 @@ ggplot((breweries_geo %>% arrange(desc(brewery_count))),
                    group=group, 
                    fill=brewery_count), 
                color = "black") + 
-  geom_text(data = x, 
+  geom_text(data = (brews_per_brewery %>% 
+                    filter(!(state %in% c("AK", "DC", "HI")))), 
             aes(x = lon_center, 
                 y = lat_center, 
-                label = as.character(round((brews/breweries),2))),
+                label = as.character(round((brews/breweries),1))),
             color = 'white'
             ) +
-  guides(fill=guide_legend(title= "Mean Brews per Brewery by State")) +
+  guides(fill=guide_legend(title= "Mean Brews")) +
   scale_fill_continuous(breaks = seq(0,50, by = 5)) +
+  scale_colour_manual(values=abv_fill) +
   coord_fixed(1.3) + # fix lat/long display ratio
-  ggtitle("Breweries by State") + # set plot title
+  ggtitle("Mean Brews per Brewery by State") + # set plot title
   theme(plot.title = element_text(hjust = 0.5)) + # center plot title
   theme(legend.position = "right",
         axis.title.x=element_blank(), # hide x axis title
@@ -483,10 +498,8 @@ ggplot((breweries_geo %>% arrange(desc(brewery_count))),
         axis.text.y=element_blank(),  # hide y axis text
         axis.ticks.y=element_blank()) # hide y axis ticks
 
-#TODO: FILTER to contiguous 50 states
-
-
 ```
+
 
 
 ## Question 3
@@ -500,9 +513,10 @@ Below is a count missing values by variable.
 ```{r}
 
 # Number of nulls in each column
-merged_data %>%
+kable(merged_data %>%
   select_if(function(x) any(is.na(x))) %>% 
   summarise_all(funs(sum(is.na(.))))
+)
 
 ```
 
@@ -699,9 +713,12 @@ styles <- beer_clean %>%
 ```{r fig.width= 10, fig.height = 10}
 
 ggplot(styles, aes(x=abv, y=ibu)) +
-  geom_point() +
-  scale_colour_brewer() +
-  ggtitle("ABV v. IBU") +
+  geom_point(color = misc_cool,
+             size = 3) +
+  theme(legend.position="none") +
+  ggtitle("Alcohol Content v Bitterness") +
+  xlab("Alcohol Content (ABV)") +
+  ylab("International Bitterness Units (IBU)") +
   theme(plot.title = element_text(hjust = 0.5))
 
 ```
@@ -727,15 +744,40 @@ ggplot(styles, aes(x=abv, y=ibu)) +
     + No significant outliers:  \xmark
     + Normality: \xmark
     
-```{r}
+```{r dpi = 400}
+
+m_eqn = function(m) {
+
+  l <- list(a = format(coef(m)[1], digits = 2),
+      b = format(abs(coef(m)[2]), digits = 2),
+      r2 = format(summary(m)$r.squared, digits = 3));
+
+  if (coef(m)[2] >= 0)  {
+    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,l)
+  } else {
+    eq <- substitute(italic(y) == a - b %.% italic(x)*","~~italic(r)^2~"="~r2,l)    
+  }
+
+  as.character(as.expression(eq));                 
+}
 
 #Scatter plot of ABV v IBU
 ggplot(styles, aes(x=abv, y=ibu)) +
-  geom_point() +
-  geom_smooth(method = "lm", se = FALSE, color="red") +
+  geom_point(color = misc_cool,
+             size = 3) +
+  geom_smooth(method = "lm", 
+              se = FALSE, 
+              color=misc_warm) +
+  geom_text(aes(x = .045, 
+                y = 125, 
+                label = lm_eqn(lm(abv ~ ibu ,styles))), 
+            parse = TRUE, 
+            color = misc_warm) +
   theme(legend.position="none") +
-  ggtitle("ABV v. IBU") +
-  theme_minimal()  +
+  ggtitle("Alcohol Content v Bitterness") +
+  xlab("Alcohol Content (ABV)") +
+  ylab("International Bitterness Units (IBU)") +
+  scale_fill_manual(values=) +
   theme(plot.title = element_text(hjust = 0.5))
 
 ```
@@ -876,7 +918,6 @@ spear_test_result
 r_sq <- spear_test_result[["estimate"]][["rho"]]^2 # capture r-squared
 
 r_sq
-
 
 ```
 

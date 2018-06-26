@@ -17,7 +17,7 @@ require(RColorBrewer)
 require(summarytools)
 
 #automatically set working directory to the directory containing this R script
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
 ```
 
 ##Import Breweries Data
@@ -150,4 +150,20 @@ ggplot(styles, aes(x=reorder(Style, ABV, FUN=median), y=ABV)) +
 
 
 
+
+```{r}
+
+s <- as.data.frame(seq(1, 100))
+
+s$qual <- ifelse(s > 3, "Valid", "Error")
+
+# ggplot(s, aes(x="", y=qual, fill=qual))+
+# geom_bar(width = 1, stat = "identity") +
+# scale_fill_brewer(palette="Dark2") +
+# coord_polar("y", start=0) +
+# geom_text(aes(y = value/3 + c(0, cumsum(value)[-length(value)]), 
+#         label = percent(value/100)), size=5)
+
+
+```
 
