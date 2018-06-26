@@ -219,9 +219,9 @@ ggplot((breweries_geo2 %>% arrange(desc(abv))),
             size = 4
             ) +
   scale_fill_gradient(low=abv_fill, high='#8E5C05') +
-  guides(fill=guide_legend(title= "Brewery Count")) +
+  guides(fill=guide_legend(title= "Max ABV")) +
   coord_fixed(1.3) + # fix lat/long display ratio
-  ggtitle("Breweries by State") + # set plot title
+  ggtitle("Max ABV by State") + # set plot title
   theme(plot.title = element_text(hjust = 0.5)) + # center plot title
   theme(legend.position = "left",
         axis.title.x=element_blank(), # hide x axis title
@@ -266,9 +266,9 @@ ggplot((breweries_geo2 %>% arrange(desc(ibu))),
             color = 'white'
             ) +
   scale_fill_gradient(low=ibu_fill, high='#035C64') +
-  guides(fill=guide_legend(title= "Brewery Count")) +
+  guides(fill=guide_legend(title= "Max IBU")) +
   coord_fixed(1.3) + # fix lat/long display ratio
-  ggtitle("Breweries by State") + # set plot title
+  ggtitle("Max IBU by State") + # set plot title
   theme(plot.title = element_text(hjust = 0.5)) + # center plot title
   theme(legend.position = "left",
         axis.title.x=element_blank(), # hide x axis title

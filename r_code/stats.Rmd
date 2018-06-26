@@ -70,7 +70,9 @@ ggplot(styles, aes(x=ABV, y=IBU)) +
   scale_colour_brewer() +
   geom_smooth(method = "lm") +
   theme(legend.position="none")
-  #geom_text(aes(x = .06, y = 100, label = lm_eqn(lm(ABV ~ IBU ,styles))), parse = TRUE, color = "red")
+  geom_text(aes(x = .06, 
+                y = 100, 
+                label = lm_eqn(lm(ABV ~ IBU ,styles))), parse = TRUE, color = misc_warm)
 
 
 
